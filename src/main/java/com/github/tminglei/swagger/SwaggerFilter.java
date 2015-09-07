@@ -70,7 +70,7 @@ public class SwaggerFilter implements Filter {
                 // enable cross-origin resource sharing
                 resp.setHeader("Access-Control-Allow-Origin", "*");
                 resp.setHeader("Access-Control-Allow-Methods", "POST, GET, PUT, PATCH, DELETE, HEAD, OPTIONS");
-                resp.setHeader("Access-Control-Max-Age", "17280000");
+                resp.setHeader("Access-Control-Max-Age", "43200"); // half a day
 
                 ///
                 String json = new ObjectMapper().writer().writeValueAsString(check(SwaggerContext.swagger()));
