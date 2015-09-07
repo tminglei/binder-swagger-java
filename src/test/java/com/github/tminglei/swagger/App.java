@@ -1,15 +1,9 @@
 package com.github.tminglei.swagger;
 
-import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLDecoder;
 import java.util.*;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
 
 /**
  * Hello world!
@@ -90,7 +84,7 @@ public class App {
         System.out.println("resource - " + App.class.getResource("/com/github/tminglei/swagger"));
 
         System.out.println("-------------------");
-        List<String> classes = SwaggerUtils.getResourceListing(App.class, "com.github.tminglei");
+        List<String> classes = SwaggerUtils.scan(App.class, "com.github.tminglei");
         classes.forEach(cn -> System.out.println(cn));
     }
 
