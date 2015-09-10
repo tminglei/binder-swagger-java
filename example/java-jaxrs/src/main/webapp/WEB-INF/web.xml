@@ -7,10 +7,22 @@
     <filter>
         <filter-name>SwaggerFilter</filter-name>
         <filter-class>com.github.tminglei.swagger.SwaggerFilter</filter-class>
+        <!-- configure your extended swagger helper
         <init-param>
-            <param-name>scan-packages</param-name>
-            <param-value>com.example</param-value>
+            <param-name>my-extended-swagger-helper</param-name>
+            <param-value>com.mycompany.pkg.MySwaggerHelper</param-value>
         </init-param>
+        -->
+        <init-param>
+            <param-name>scan-packages-and-classes</param-name>
+            <param-value>com.example.resource; com.example.Bootstrap</param-value>
+        </init-param>
+        <!-- disable swagger, default value: true
+        <init-param>
+            <param-name>enabled</param-name>
+            <param-value>false</param-value>
+        </init-param>
+        -->
     </filter>
     <filter-mapping>
         <filter-name>SwaggerFilter</filter-name>

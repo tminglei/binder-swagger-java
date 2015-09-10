@@ -23,8 +23,8 @@ public class SwaggerFilter implements Filter {
         enabled = Optional.ofNullable(filterConfig.getInitParameter("enabled"))
                 .map(Boolean::parseBoolean).orElse(true);
 
-        // set user customized swagger helper
-        String mySwaggerHelper = filterConfig.getInitParameter("my-swagger-helper");
+        // set user extended swagger helper
+        String mySwaggerHelper = filterConfig.getInitParameter("my-extended-swagger-helper");
         if (!isEmpty(mySwaggerHelper)) {
             try {
                 Class<MSwaggerHelper> clazz = (Class<MSwaggerHelper>) Class.forName(mySwaggerHelper);
@@ -39,12 +39,12 @@ public class SwaggerFilter implements Filter {
         }
 
         // scan and register swagger api info
-        String[] scanPackages = Optional.ofNullable(filterConfig.getInitParameter("scan-packages"))
+        String[] scanPkgClasses = Optional.ofNullable(filterConfig.getInitParameter("scan-packages-and-classes"))
                 .map(s -> s.split(",|;")).orElse(new String[0]);
-        for(String pkgname : scanPackages) {
-            if (!isEmpty(pkgname)) {
+        for(String pkgClazz : scanPkgClasses) {
+            if (!isEmpty(pkgClazz)) {
                 try {
-                    scan(this.getClass(), pkgname.trim()).forEach(clz -> {
+                    scan(this.getClass(), pkgClazz.trim()).forEach(clz -> {
                         try {
                             Class.forName(clz);
                         } catch (ClassNotFoundException e) {
@@ -52,7 +52,7 @@ public class SwaggerFilter implements Filter {
                         }
                     });
                 } catch (URISyntaxException e) {
-                    throw new RuntimeException("INVALID package name: '" + pkgname + "'!!!");
+                    throw new RuntimeException("INVALID package or class name: '" + pkgClazz + "'!!!");
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }

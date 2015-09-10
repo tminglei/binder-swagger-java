@@ -33,13 +33,16 @@ public class SwaggerUtils {
 
     // (recursively) find class names under specified base package
     // inspired by: http://www.uofr.net/~greg/java/get-resource-listing.html
-    public static List<String> scan(Class<?> loaderClazz, String basePackage) throws URISyntaxException, IOException {
-        basePackage = basePackage.replace(".", "/").replaceAll("^/", "").replaceAll("/$", "") + "/";
+    public static List<String> scan(Class<?> loaderClazz, String pkgOrClassName) throws URISyntaxException, IOException {
+        pkgOrClassName = pkgOrClassName.replace(".", "/").replaceAll("^/", "").replaceAll("/$", "") + "/";
 
         Set<String> result = new HashSet<>();
+        boolean found = false;
 
-        Enumeration<URL> dirURLs = loaderClazz.getClassLoader().getResources(basePackage);
+        //1. first, let's try to treat it as package
+        Enumeration<URL> dirURLs = loaderClazz.getClassLoader().getResources(pkgOrClassName);
         while (dirURLs.hasMoreElements()) {
+            found = true;
             URL dirURL = dirURLs.nextElement();
 
             if (dirURL.getProtocol().equals("file")) {
@@ -47,11 +50,11 @@ public class SwaggerUtils {
                 String[] names = new File(dirURL.toURI()).list();
                 for(String name : names) {
                     if (name.endsWith(".class") && !name.contains("$")) { //filter out inner classes
-                        result.add(basePackage + name);
+                        result.add(pkgOrClassName + name);
                     } else {
                         File f = new File(dirURL.getPath() + name);
                         if (f.isDirectory()) { //recursively finding
-                            result.addAll(scan(loaderClazz, basePackage + name));
+                            result.addAll(scan(loaderClazz, pkgOrClassName + name));
                         }
                     }
                 }
@@ -64,11 +67,19 @@ public class SwaggerUtils {
                 Enumeration<JarEntry> entries = jar.entries(); //gives ALL entries in jar
                 while(entries.hasMoreElements()) {
                     String name = entries.nextElement().getName();
-                    if (name.startsWith(basePackage) && name.endsWith(".class") && !name.contains("$")) {
+                    if (name.startsWith(pkgOrClassName) && name.endsWith(".class") && !name.contains("$")) {
                         result.add(name);
                     }
                 }
             }
+        }
+
+        //2. if not found, let's try to treat it as class
+        if (!found) {
+            pkgOrClassName = pkgOrClassName.replaceAll("/$", "").replaceAll("/class", ".class");
+            if (!pkgOrClassName.endsWith(".class")) pkgOrClassName = pkgOrClassName + ".class";
+            URL clsURL = loaderClazz.getClassLoader().getResource(pkgOrClassName);
+            if (clsURL != null) result.add(pkgOrClassName);
         }
 
         return result.stream().map(
