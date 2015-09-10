@@ -1,3 +1,6 @@
 .idea
 target/
 binder-swagger-java.iml
+
+example/java-jaxrs/target/
+example/java-jaxrs/swagger-java-sample.iml
