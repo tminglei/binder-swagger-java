@@ -10,6 +10,7 @@ import java.net.URLDecoder;
 import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.stream.Collectors;
 
 /**
  * Some util methods
@@ -70,7 +71,9 @@ public class SwaggerUtils {
             }
         }
 
-        return new ArrayList<>(result);
+        return result.stream().map(
+                n -> n.replaceAll("\\.class$", "").replace(File.separator, ".")
+            ).collect(Collectors.toList());
     }
 
     public static Swagger check(Swagger swagger) {

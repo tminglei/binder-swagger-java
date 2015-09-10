@@ -1,5 +1,6 @@
 package com.github.tminglei.swagger;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.servlet.*;
@@ -39,7 +40,7 @@ public class SwaggerFilter implements Filter {
 
         // scan and register swagger api info
         String[] scanPackages = Optional.ofNullable(filterConfig.getInitParameter("scan-packages"))
-                .map(s -> s.split(",")).orElse(new String[0]);
+                .map(s -> s.split(",|;")).orElse(new String[0]);
         for(String pkgname : scanPackages) {
             if (!isEmpty(pkgname)) {
                 try {
@@ -65,15 +66,14 @@ public class SwaggerFilter implements Filter {
             HttpServletRequest req = (HttpServletRequest) request;
             HttpServletResponse resp = (HttpServletResponse) response;
 
-            String swaggerPath = (SwaggerContext.swagger().getBasePath() + "").replaceAll("/$", "") + "/swagger.json";
-            if (req.getPathInfo().equals(swaggerPath) && "GET".equalsIgnoreCase(req.getMethod())) {
-                // enable cross-origin resource sharing
-                resp.setHeader("Access-Control-Allow-Origin", "*");
-                resp.setHeader("Access-Control-Allow-Methods", "POST, GET, PUT, PATCH, DELETE, HEAD, OPTIONS");
-                resp.setHeader("Access-Control-Max-Age", "43200"); // half a day
+            // enable cross-origin resource sharing
+            resp.addHeader("Access-Control-Allow-Origin", "*");
+            resp.addHeader("Access-Control-Allow-Methods", "POST, GET, PUT, PATCH, DELETE, HEAD, OPTIONS");
+            resp.addHeader("Access-Control-Max-Age", "43200"); // half a day
 
-                ///
-                String json = new ObjectMapper().writer().writeValueAsString(check(SwaggerContext.swagger()));
+            if ("/swagger.json".equals(req.getPathInfo()) && "GET".equalsIgnoreCase(req.getMethod())) {
+                String json = new ObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL)
+                        .writer().writeValueAsString(check(SwaggerContext.swagger()));
                 response.getWriter().write(json);
                 response.flushBuffer();
                 return;
