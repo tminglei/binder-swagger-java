@@ -10,19 +10,13 @@
   <properties>
     <swagger-version>1.5.3</swagger-version>
     <binder-swagger-version>1.0-SNAPSHOT</binder-swagger-version>
-    <jersey-version>1.13</jersey-version>
+    <jersey-version>1.19</jersey-version>
     <jetty-version>9.2.2.v20140723</jetty-version>
     <logback-version>1.0.1</logback-version>
     <failsafe-version>2.18.1</failsafe-version>
   </properties>
 
   <dependencies>
-    <dependency>
-      <groupId>io.swagger</groupId>
-      <artifactId>swagger-jaxrs</artifactId>
-      <version>${swagger-version}</version>
-      <scope>compile</scope>
-    </dependency>
     <dependency>
       <groupId>com.github.tminglei</groupId>
       <artifactId>binder-swagger-java</artifactId>
@@ -75,6 +69,7 @@
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>
       <version>2.5</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.sun.jersey</groupId>
@@ -104,6 +99,16 @@
       </resource>
     </resources>
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.3</version>
+        <configuration>
+          <source>1.8</source>
+          <target>1.8</target>
+          <encoding>UTF-8</encoding>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>

@@ -40,89 +40,93 @@ public class H2DB {
     }
 
     ///
-    public static void setupDatabase() throws IOException, SQLException {
+    public static void setupDatabase() {
         QueryRunner run = new QueryRunner( getDataSource() );
 
-        run.update("create table category(" +
-                "id bigint primary key, " +
-                "name varchar(255)" +
-                ")");
-        run.update("create table pet(" +
-                "id bigint primary key, " +
-                "name varchar(255), " +
-                "category_id bigint, " +
-                "photo_urls varchar(2000) default '', " +
-                "tags varchar(500) default '', " +
-                "status varchar(25)" +
-                ")");
-        run.update("create table order1(" +
-                "id bigint primary key, " +
-                "pet_id bigint, " +
-                "quantity int, " +
-                "ship_date timestamp, " +
-                "status varchar(25)" +
-                ")");
-        run.update("create table user(" +
-                "id bigint primary key, " +
-                "user_name varchar(50), " +
-                "first_name varchar(50), " +
-                "last_name varchar(50), " +
-                "email varchar(100), " +
-                "password varchar(250), " +
-                "phone varchar(50), " +
-                "status int" +
-                ")");
+        try {
+            run.update("create table category(" +
+                    "id bigint primary key, " +
+                    "name varchar(255)" +
+                    ")");
+            run.update("create table pet(" +
+                    "id bigint primary key, " +
+                    "name varchar(255), " +
+                    "category_id bigint, " +
+                    "photo_urls varchar(2000) default '', " +
+                    "tags varchar(500) default '', " +
+                    "status varchar(25)" +
+                    ")");
+            run.update("create table order1(" +
+                    "id bigint primary key, " +
+                    "pet_id bigint, " +
+                    "quantity int, " +
+                    "ship_date timestamp, " +
+                    "status varchar(25)" +
+                    ")");
+            run.update("create table user(" +
+                    "id bigint primary key, " +
+                    "user_name varchar(50), " +
+                    "first_name varchar(50), " +
+                    "last_name varchar(50), " +
+                    "email varchar(100), " +
+                    "password varchar(250), " +
+                    "phone varchar(50), " +
+                    "status int" +
+                    ")");
 
-        run.batch("insert into category(id, name) values(?, ?)", new Object[][]{
-                new Object[]{1, "Dogs"},
-                new Object[]{2, "Cats"},
-                new Object[]{3, "Rabbits"},
-                new Object[]{4, "Lions"}
-        });
-        run.batch("insert into pet(id, category_id, name, photo_urls, tags, status) " +
-                "values(?, ?, ?, ?, ?, ?)", new Object[][]{
-                new Object[]{1, 2, "Cat 1", ",url1,url2,", ",tag1,tag2,", "available"},
-                new Object[]{2, 2, "Cat 2", ",url1,url2,", ",tag2,tag3,", "available"},
-                new Object[]{3, 2, "Cat 3", ",url1,url2,", ",tag3,tag4,", "pending"},
+            run.batch("insert into category(id, name) values(?, ?)", new Object[][]{
+                    new Object[]{1, "Dogs"},
+                    new Object[]{2, "Cats"},
+                    new Object[]{3, "Rabbits"},
+                    new Object[]{4, "Lions"}
+            });
+            run.batch("insert into pet(id, category_id, name, photo_urls, tags, status) " +
+                    "values(?, ?, ?, ?, ?, ?)", new Object[][]{
+                    new Object[]{1, 2, "Cat 1", ",url1,url2,", ",tag1,tag2,", "available"},
+                    new Object[]{2, 2, "Cat 2", ",url1,url2,", ",tag2,tag3,", "available"},
+                    new Object[]{3, 2, "Cat 3", ",url1,url2,", ",tag3,tag4,", "pending"},
 
-                new Object[]{4, 1, "Dog 1", ",url1,url2,", ",tag1,tag2,", "available"},
-                new Object[]{5, 1, "Dog 2", ",url1,url2,", ",tag2,tag3,", "sold"},
-                new Object[]{6, 1, "Dog 3", ",url1,url2,", ",tag3,tag4,", "pending"},
+                    new Object[]{4, 1, "Dog 1", ",url1,url2,", ",tag1,tag2,", "available"},
+                    new Object[]{5, 1, "Dog 2", ",url1,url2,", ",tag2,tag3,", "sold"},
+                    new Object[]{6, 1, "Dog 3", ",url1,url2,", ",tag3,tag4,", "pending"},
 
-                new Object[]{7, 4, "Lion 1", ",url1,url2,", ",tag1,tag2,", "available"},
-                new Object[]{8, 4, "Lion 1", ",url1,url2,", ",tag2,tag3,", "available"},
-                new Object[]{9, 4, "Lion 1", ",url1,url2,", ",tag3,tag4,", "available"},
+                    new Object[]{7, 4, "Lion 1", ",url1,url2,", ",tag1,tag2,", "available"},
+                    new Object[]{8, 4, "Lion 1", ",url1,url2,", ",tag2,tag3,", "available"},
+                    new Object[]{9, 4, "Lion 1", ",url1,url2,", ",tag3,tag4,", "available"},
 
-                new Object[]{10, 3, "Rabbit 1", ",url1,url2,", ",tag3,tag4,", "available"}
-        });
+                    new Object[]{10, 3, "Rabbit 1", ",url1,url2,", ",tag3,tag4,", "available"}
+            });
 
-        run.batch("insert into order1(id, pet_id, quantity, ship_date, status) " +
-                "values(?, ?, ?, ?, ?)", new Object[][]{
-                new Object[]{1, 1, 2, new Date(), "placed"},
-                new Object[]{2, 1, 2, new Date(), "delivered"},
-                new Object[]{3, 2, 2, new Date(), "placed"},
-                new Object[]{4, 2, 2, new Date(), "delivered"},
-                new Object[]{5, 3, 2, new Date(), "placed"},
-                new Object[]{11, 3, 2, new Date(), "placed"},
-                new Object[]{12, 3, 2, new Date(), "placed"},
-                new Object[]{13, 3, 2, new Date(), "placed"},
-                new Object[]{14, 3, 2, new Date(), "placed"},
-                new Object[]{15, 3, 2, new Date(), "placed"}
-        });
+            run.batch("insert into order1(id, pet_id, quantity, ship_date, status) " +
+                    "values(?, ?, ?, ?, ?)", new Object[][]{
+                    new Object[]{1, 1, 2, new Date(), "placed"},
+                    new Object[]{2, 1, 2, new Date(), "delivered"},
+                    new Object[]{3, 2, 2, new Date(), "placed"},
+                    new Object[]{4, 2, 2, new Date(), "delivered"},
+                    new Object[]{5, 3, 2, new Date(), "placed"},
+                    new Object[]{11, 3, 2, new Date(), "placed"},
+                    new Object[]{12, 3, 2, new Date(), "placed"},
+                    new Object[]{13, 3, 2, new Date(), "placed"},
+                    new Object[]{14, 3, 2, new Date(), "placed"},
+                    new Object[]{15, 3, 2, new Date(), "placed"}
+            });
 
-        run.batch("insert into user(id, user_name, first_name, last_name, email, password, phone, status) " +
-                "values(?, ?, ?, ?, ?, ?, ?, ?)", new Object[][]{
-                new Object[]{1, "user1", "fname1", "lname1", "email1@test.com", "XXXXXXXX", "123-456-7890", 1},
-                new Object[]{2, "user2", "fname2", "lname2", "email2@test.com", "XXXXXXXX", "123-456-7890", 2},
-                new Object[]{3, "user3", "fname3", "lname3", "email3@test.com", "XXXXXXXX", "123-456-7890", 3},
-                new Object[]{4, "user4", "fname4", "lname4", "email4@test.com", "XXXXXXXX", "123-456-7890", 1},
-                new Object[]{5, "user5", "fname5", "lname5", "email5@test.com", "XXXXXXXX", "123-456-7890", 2},
-                new Object[]{6, "user6", "fname6", "lname6", "email6@test.com", "XXXXXXXX", "123-456-7890", 3},
-                new Object[]{7, "user7", "fname7", "lname7", "email7@test.com", "XXXXXXXX", "123-456-7890", 1},
-                new Object[]{8, "user8", "fname8", "lname8", "email8@test.com", "XXXXXXXX", "123-456-7890", 2},
-                new Object[]{9, "user9", "fname9", "lname9", "email9@test.com", "XXXXXXXX", "123-456-7890", 3},
-                new Object[]{10, "user10", "fname10", "lname10", "email10@test.com", "XXXXXXXX", "123-456-7890", 1},
-                new Object[]{11, "user11", "fname11", "lname11", "email11@test.com", "XXXXXXXX", "123-456-7890", 1}
-        });
+            run.batch("insert into user(id, user_name, first_name, last_name, email, password, phone, status) " +
+                    "values(?, ?, ?, ?, ?, ?, ?, ?)", new Object[][]{
+                    new Object[]{1, "user1", "fname1", "lname1", "email1@test.com", "XXXXXXXX", "123-456-7890", 1},
+                    new Object[]{2, "user2", "fname2", "lname2", "email2@test.com", "XXXXXXXX", "123-456-7890", 2},
+                    new Object[]{3, "user3", "fname3", "lname3", "email3@test.com", "XXXXXXXX", "123-456-7890", 3},
+                    new Object[]{4, "user4", "fname4", "lname4", "email4@test.com", "XXXXXXXX", "123-456-7890", 1},
+                    new Object[]{5, "user5", "fname5", "lname5", "email5@test.com", "XXXXXXXX", "123-456-7890", 2},
+                    new Object[]{6, "user6", "fname6", "lname6", "email6@test.com", "XXXXXXXX", "123-456-7890", 3},
+                    new Object[]{7, "user7", "fname7", "lname7", "email7@test.com", "XXXXXXXX", "123-456-7890", 1},
+                    new Object[]{8, "user8", "fname8", "lname8", "email8@test.com", "XXXXXXXX", "123-456-7890", 2},
+                    new Object[]{9, "user9", "fname9", "lname9", "email9@test.com", "XXXXXXXX", "123-456-7890", 3},
+                    new Object[]{10, "user10", "fname10", "lname10", "email10@test.com", "XXXXXXXX", "123-456-7890", 1},
+                    new Object[]{11, "user11", "fname11", "lname11", "email11@test.com", "XXXXXXXX", "123-456-7890", 1}
+            });
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

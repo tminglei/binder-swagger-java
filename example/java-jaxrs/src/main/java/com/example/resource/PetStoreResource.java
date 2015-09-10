@@ -16,47 +16,88 @@
 
 package com.example.resource;
 
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
 import com.example.data.StoreData;
 import com.example.exception.NotFoundException;
 import com.example.model.Order;
 
+import java.util.Arrays;
+
+import static com.github.tminglei.swagger.SwaggerContext.*;
+import static com.github.tminglei.swagger.SwaggerExtensions.*;
+import static com.github.tminglei.bind.Simple.*;
+import static com.github.tminglei.bind.Mappings.*;
+import static com.github.tminglei.bind.Constraints.*;
+
 @Path("/store")
 @Produces({"application/json", "application/xml"})
 public class PetStoreResource {
-  static StoreData storeData = new StoreData();
-  static JavaRestResourceUtil ru = new JavaRestResourceUtil();
+    static StoreData storeData = new StoreData();
+    static JavaRestResourceUtil ru = new JavaRestResourceUtil();
 
-  @GET
-  @Path("/order/{orderId}")
-  public Response getOrderById(@PathParam("orderId") String orderId)
-      throws NotFoundException {
-    Order order = storeData.findOrderById(ru.getLong(0, 10000, 0, orderId));
-    if (null != order) {
-      return Response.ok().entity(order).build();
-    } else {
-      throw new NotFoundException(404, "Order not found");
+    static Mapping<?> orderStatus = text(oneOf(Arrays.asList("placed", "approved", "delivered")))
+            .$ext(o -> ext(o).desc("order status"));
+    static Mapping<?> order = mapping(
+            field("id", vLong().$ext(o -> ext(o).desc("order id"))),
+            field("petId", vLong(required()).$ext(o -> ext(o).desc("pet id"))),
+            field("quantity", vInt(required()).$ext(o -> ext(o).desc("number to be sold"))),
+            field("shipDate", datetime().$ext(o -> ext(o).desc("delivery time"))),
+            field("status", orderStatus)
+        ).$ext(o -> ext(o).desc("order info"));
+
+    ///
+    static {
+        operation("get", "/store/order/{orderId}")
+                .summary("get order by id")
+                .tag("store")
+                .parameter(param(vLong()).in("path").name("orderId").desc("order id"))
+                .response(200, response(order))
+                .response(404, new io.swagger.models.Response()
+                        .description("order not found")
+                )
+        ;
     }
-  }
+    @GET
+    @Path("/order/{orderId}")
+    public Response getOrderById(@PathParam("orderId") String orderId)
+            throws NotFoundException {
+        Order order = storeData.findOrderById(ru.getLong(0, 10000, 0, orderId));
+        if (null != order) {
+            return Response.ok().entity(order).build();
+        } else {
+            throw new NotFoundException(404, "Order not found");
+        }
+    }
 
-  @POST
-  @Path("/order")
-  public Response placeOrder(Order order) {
-    storeData.placeOrder(order);
-    return Response.ok().entity("").build();
-  }
+    static {
+        operation("post", "/store/order")
+                .summary("add an order")
+                .tag("store")
+                .parameter(param(order).in("body"))
+                .response(200, new io.swagger.models.Response())
+        ;
+    }
+    @POST
+    @Path("/order")
+    public Response placeOrder(Order order) {
+        storeData.placeOrder(order);
+        return Response.ok().entity("").build();
+    }
 
-  @DELETE
-  @Path("/order/{orderId}")
-  public Response deleteOrder(@PathParam("orderId") String orderId) {
-    storeData.deleteOrder(ru.getLong(0, 10000, 0, orderId));
-    return Response.ok().entity("").build();
-  }
+    static {
+        operation("delete", "/store/order")
+                .summary("delete specified order")
+                .tag("store")
+                .parameter(param(vLong()).in("path").name("orderId").desc("order id"))
+                .response(200, new io.swagger.models.Response())
+        ;
+    }
+    @DELETE
+    @Path("/order/{orderId}")
+    public Response deleteOrder(@PathParam("orderId") String orderId) {
+        storeData.deleteOrder(ru.getLong(0, 10000, 0, orderId));
+        return Response.ok().entity("").build();
+    }
 }
