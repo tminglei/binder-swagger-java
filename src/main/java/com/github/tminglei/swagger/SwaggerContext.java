@@ -3,6 +3,8 @@ package com.github.tminglei.swagger;
 import com.github.tminglei.bind.Framework;
 import io.swagger.models.*;
 import io.swagger.models.properties.Property;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static com.github.tminglei.swagger.SwaggerUtils.*;
 
@@ -11,6 +13,8 @@ import static com.github.tminglei.swagger.SwaggerUtils.*;
  */
 public class SwaggerContext {
     private static Swagger swagger = new Swagger();
+
+    private static final Logger logger = LoggerFactory.getLogger(SwaggerContext.class);
 
     public static Swagger swagger() {
         return swagger;
@@ -21,7 +25,7 @@ public class SwaggerContext {
 
         synchronized (swagger) {
             if (swagger.getPath(path) == null) {
-                System.out.println(">>> adding path - '" + path + "'");
+                logger.info(">>> adding path - '" + path + "'");
                 swagger.path(path, new Path());
             }
             return swagger.getPath(path);
@@ -34,7 +38,7 @@ public class SwaggerContext {
         HttpMethod method = HttpMethod.valueOf(httpMethod.toUpperCase());
         synchronized (swagger) {
             if (path(path).getOperationMap().get(method) == null) {
-                System.out.println(">>> adding operation - " + method + " '" + path + "'");
+                logger.info(">>> adding operation - " + method + " '" + path + "'");
                 path(path).set(httpMethod.toLowerCase(), new ExOperation());
             }
             return (ExOperation) path(path).getOperationMap().get(method);
