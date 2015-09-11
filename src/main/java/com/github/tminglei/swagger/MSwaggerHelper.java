@@ -68,7 +68,7 @@ public class MSwaggerHelper {
         if (isEmpty(name)) throw new IllegalArgumentException("name is required!!!");
         if (!isPrimitive(mapping, true)) throw new IllegalArgumentException("must be primitives or primitive list!!!");
 
-        if ("form".equalsIgnoreCase( ext(mapping).in() )) {
+        if ("form".equalsIgnoreCase( ext(mapping).in() ) || "formData".equalsIgnoreCase( ext(mapping).in() )) {
             return fillParameter(new FormParameter(), mapping).name(name);
         }
         if ("path".equalsIgnoreCase( ext(mapping).in() )) {
@@ -108,7 +108,7 @@ public class MSwaggerHelper {
         if (mapping.meta().targetType == List.class) {
             ArrayModel model = new ArrayModel()
                     .description(ext(mapping).desc())
-                    .items(mToProperty(mapping.meta().baseMappings[0]));
+                    .items(items(mapping));
             model.setExample(ext(mapping).example());
             return model;
         }
