@@ -1,20 +1,21 @@
 package com.example.data;
 
 import org.apache.commons.dbutils.QueryRunner;
+import org.apache.commons.dbutils.ResultSetHandler;
 import org.h2.jdbcx.JdbcDataSource;
 
 import javax.sql.DataSource;
 import java.io.IOException;
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Function;
 
 /**
  * Created by tminglei on 9/9/15.
  */
 public class H2DB {
-    static DataSource dataSource;
+    private static DataSource dataSource;
 
     public static DataSource getDataSource() {
         if (dataSource == null) {
@@ -27,6 +28,31 @@ public class H2DB {
         return dataSource;
     }
 
+    public static ResultSetHandler<List<Map<String, Object>>>
+            mkResultSetHandler(String... names) {
+        return (rs) -> {
+            try {
+                int columnCount = rs.getMetaData().getColumnCount();
+                List<Map<String, Object>> result = new ArrayList<>();
+                while (rs.next()) {
+                    Object[] data = readOneRow(rs, columnCount);
+                    result.add(arrayToMap(data, names));
+                }
+                return result;
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        };
+    }
+
+    public static Object[] readOneRow(ResultSet rs, int columnCount) throws SQLException {
+        Object[] result = new Object[columnCount];
+        for(int i=1; i<=columnCount; i++) {
+            result[i-1] = rs.getObject(i);
+        }
+        return result;
+    }
+
     public static Map<String, Object> arrayToMap(Object[] data, String... names) {
         if (data == null) throw new IllegalArgumentException("data is null!!!");
         if (data.length != names.length) throw new IllegalArgumentException(
@@ -35,6 +61,18 @@ public class H2DB {
         Map<String, Object> result = new HashMap<String, Object>();
         for(int i=0; i < names.length; i++) {
             result.put(names[i], data[i]);
+        }
+        return result;
+    }
+
+    static List<String> strToList(String listStr) {
+        if (listStr == null) return null;
+        List<String> result = new ArrayList<>();
+        String[] parts = listStr.split(",");
+        for(int i=0; i<parts.length; i++) {
+            if (parts[i].trim().length() > 0) {
+                result.add(parts[i].trim());
+            }
         }
         return result;
     }

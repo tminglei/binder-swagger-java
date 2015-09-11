@@ -20,32 +20,40 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
 import com.example.data.PetData;
+import com.example.exception.BadRequestException;
 import com.example.exception.NotFoundException;
-import com.example.model.Pet;
+import com.github.tminglei.bind.BindObject;
+import com.github.tminglei.bind.FormBinder;
 
+import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Map;
+import java.util.ResourceBundle;
 
 import static com.github.tminglei.swagger.SwaggerContext.*;
 import static com.github.tminglei.swagger.SwaggerExtensions.*;
+import static com.github.tminglei.swagger.SwaggerUtils.*;
 import static com.github.tminglei.bind.Simple.*;
 import static com.github.tminglei.bind.Mappings.*;
 import static com.github.tminglei.bind.Constraints.*;
+import static com.github.tminglei.bind.Processors.*;
 
 @Path("/pet")
 @Produces({"application/json", "application/xml"})
 public class PetResource {
     static PetData petData = new PetData();
-    static JavaRestResourceUtil ru = new JavaRestResourceUtil();
+    private ResourceBundle bundle = ResourceBundle.getBundle("bind-messages");
+    private Messages messages = (key) -> bundle.getString(key);
 
     static Mapping<?> petStatus = text(oneOf(Arrays.asList("available", "pending", "sold")))
             .$ext(o -> ext(o).desc("pet status in the store"));
     static Mapping<?> pet = mapping(
             field("id", vLong().$ext(o -> ext(o).desc("pet id"))),
             field("name", text(required()).$ext(o -> ext(o).desc("pet name"))),
-            field("category", mapping(
+            field("category", attach(required()).to(mapping(
                     field("id", vLong(required())),
                     field("name", text(required()))
-            ).$ext(o -> ext(o).desc("category belonged to"))),
+            )).$ext(o -> ext(o).desc("category belonged to"))),
             field("photoUrls", list(text()).$ext(o -> ext(o).desc("pet's photo urls"))),
             field("tags", list(text()).$ext(o -> ext(o).desc("tags for the pet"))),
             field("status", petStatus)
@@ -66,8 +74,8 @@ public class PetResource {
     @GET
     @Path("/{petId}")
     public Response getPetById(@PathParam("petId") String petId)
-            throws NotFoundException {
-        Pet pet = petData.getPetbyId(ru.getLong(0, 100000, 0, petId));
+            throws NotFoundException, SQLException {
+        Map<String, Object> pet = petData.getPetById(Long.parseLong(petId));
         if (null != pet) {
             return Response.ok().entity(pet).build();
         } else {
@@ -82,13 +90,20 @@ public class PetResource {
                 .parameter(param(pet).in("body"))
                 .response(200, new io.swagger.models.Response()
                                 .description("success")
-                )
+                ).response(400, new io.swagger.models.Response())
         ;
     }
     @POST
-    public Response addPet(Pet pet) {
-        petData.addPet(pet);
-        return Response.ok().entity("SUCCESS").build();
+    public Response addPet(String data) throws BadRequestException, SQLException {
+        BindObject bindObj = new FormBinder(messages).bind(
+                attach(expandJson()).to(pet),
+                newmap(entry("", data)));
+        if (bindObj.errors().isPresent()) {
+            throw new BadRequestException(400, "invalid pet");
+        } else {
+            petData.addPet(bindObj);
+            return Response.ok().entity("SUCCESS").build();
+        }
     }
 
     static {
@@ -98,26 +113,33 @@ public class PetResource {
                 .parameter(param(pet).in("body"))
                 .response(200, new io.swagger.models.Response()
                                 .description("success")
-                )
+                ).response(400, new io.swagger.models.Response())
         ;
     }
     @PUT
-    public Response updatePet(Pet pet) {
-        petData.addPet(pet);
-        return Response.ok().entity("SUCCESS").build();
+    public Response updatePet(String data) throws BadRequestException, SQLException {
+        BindObject bindObj = new FormBinder(messages).bind(
+                attach(expandJson()).to(pet),
+                newmap(entry("", data)));
+        if (bindObj.errors().isPresent()) {
+            throw new BadRequestException(400, "invalid pet");
+        } else {
+            petData.addPet(bindObj);
+            return Response.ok().entity("SUCCESS").build();
+        }
     }
 
     static {
         operation("get", "/pet/findByStatus")
                 .summary("find pets by status")
                 .tag("pet")
-                .parameter(param(petStatus).in("query").name("status"))
+                .parameter(param(list(petStatus)).in("query").name("status"))
                 .response(200, response(list(pet)).description("pet list"))
         ;
     }
     @GET
     @Path("/findByStatus")
-    public Response findPetsByStatus(@QueryParam("status") String status) {
+    public Response findPetsByStatus(@QueryParam("status") String status) throws SQLException {
         return Response.ok(petData.findPetByStatus(status)).build();
     }
 
@@ -131,7 +153,7 @@ public class PetResource {
     @GET
     @Path("/findByTags")
     @Deprecated
-    public Response findPetsByTags(@QueryParam("tags") String tags) {
+    public Response findPetsByTags(@QueryParam("tags") String tags) throws SQLException {
         return Response.ok(petData.findPetByTags(tags)).build();
     }
 }

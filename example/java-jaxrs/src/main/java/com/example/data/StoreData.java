@@ -16,66 +16,37 @@
 
 package com.example.data;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.sql.SQLException;
+import java.util.Map;
 
-import com.example.model.Order;
+import com.github.tminglei.bind.BindObject;
+import org.apache.commons.dbutils.QueryRunner;
 
 public class StoreData {
-  static List<Order> orders = new ArrayList<Order>();
 
-  static {
-    orders.add(createOrder(1, 1, 2, new Date(), "placed"));
-    orders.add(createOrder(2, 1, 2, new Date(), "delivered"));
-    orders.add(createOrder(3, 2, 2, new Date(), "placed"));
-    orders.add(createOrder(4, 2, 2, new Date(), "delivered"));
-    orders.add(createOrder(5, 3, 2, new Date(), "placed"));
-    orders.add(createOrder(11, 3, 2, new Date(), "placed"));
-    orders.add(createOrder(12, 3, 2, new Date(), "placed"));
-    orders.add(createOrder(13, 3, 2, new Date(), "placed"));
-    orders.add(createOrder(14, 3, 2, new Date(), "placed"));
-    orders.add(createOrder(15, 3, 2, new Date(), "placed"));
-  }
+    public Map<String, Object> findOrderById(long orderId) throws SQLException {
+        QueryRunner run = new QueryRunner( H2DB.getDataSource() );
 
-  public Order findOrderById(long orderId) {
-    for (Order order : orders) {
-      if (order.getId() == orderId) {
-        return order;
-      }
+        return run.query("select * from order where id=?", H2DB.mkResultSetHandler(
+                "id", "petId", "quantity", "shipDate", "status"
+        ), orderId).stream().findFirst().orElse(null);
     }
-    return null;
-  }
 
-  public void placeOrder(Order order) {
-    if (orders.size() > 0) {
-      for (int i = orders.size() - 1; i >= 0; i--) {
-        if (orders.get(i).getId() == order.getId()) {
-          orders.remove(i);
-        }
-      }
+    public void placeOrder(BindObject bindObj) throws SQLException {
+        deleteOrder(bindObj.get("id"));
+
+        QueryRunner run = new QueryRunner( H2DB.getDataSource() );
+        run.update("insert into order(id, pet_id, quantity, ship_date, status) " +
+                        "values(?, ?, ?, ?, ?)",
+                bindObj.get("id"),
+                bindObj.get("petId"),
+                bindObj.get("quantity"),
+                bindObj.get("shipDate"),
+                bindObj.get("status"));
     }
-    orders.add(order);
-  }
 
-  public void deleteOrder(long orderId) {
-    if (orders.size() > 0) {
-      for (int i = orders.size() - 1; i >= 0; i--) {
-        if (orders.get(i).getId() == orderId) {
-          orders.remove(i);
-        }
-      }
+    public void deleteOrder(long orderId) throws SQLException {
+        QueryRunner run = new QueryRunner( H2DB.getDataSource() );
+        run.update("delete from order where id=?", orderId);
     }
-  }
-
-  private static Order createOrder(long id, long petId, int quantity,
-      Date shipDate, String status) {
-    Order order = new Order();
-    order.setId(id);
-    order.setPetId(petId);
-    order.setQuantity(quantity);
-    order.setShipDate(shipDate);
-    order.setStatus(status);
-    return order;
-  }
 }

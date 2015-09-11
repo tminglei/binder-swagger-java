@@ -20,22 +20,32 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
 import com.example.data.UserData;
+import com.example.exception.BadRequestException;
 import com.example.exception.NotFoundException;
 import com.example.exception.ApiException;
-import com.example.model.User;
+import com.github.tminglei.bind.BindObject;
+import com.github.tminglei.bind.FormBinder;
 
+import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.ResourceBundle;
 
 import static com.github.tminglei.swagger.SwaggerContext.*;
 import static com.github.tminglei.swagger.SwaggerExtensions.*;
+import static com.github.tminglei.swagger.SwaggerUtils.*;
 import static com.github.tminglei.bind.Simple.*;
 import static com.github.tminglei.bind.Mappings.*;
 import static com.github.tminglei.bind.Constraints.*;
+import static com.github.tminglei.bind.Processors.*;
 
 @Path("/user")
 @Produces({"application/json", "application/xml"})
 public class UserResource {
     static UserData userData = new UserData();
+    private ResourceBundle bundle = ResourceBundle.getBundle("bind-messages");
+    private Messages messages = (key) -> bundle.getString(key);
 
     static Mapping<?> user = mapping(
             field("id", vLong().$ext(o -> ext(o).desc("user id"))),
@@ -58,9 +68,16 @@ public class UserResource {
         ;
     }
     @POST
-    public Response createUser(User user) {
-        userData.addUser(user);
-        return Response.ok().entity("").build();
+    public Response createUser(String data) throws BadRequestException, SQLException {
+        BindObject bindObj = new FormBinder(messages).bind(
+                attach(expandJson()).to(user),
+                newmap(entry("", data)));
+        if (bindObj.errors().isPresent()) {
+            throw new BadRequestException(400, "invalid pet");
+        } else {
+            userData.addUser(bindObj);
+            return Response.ok().entity("").build();
+        }
     }
 
     static {
@@ -73,9 +90,16 @@ public class UserResource {
     }
     @POST
     @Path("/createWithArray")
-    public Response createUsersWithArrayInput(User[] users) {
-        for (User user : users) {
-            userData.addUser(user);
+    public Response createUsersWithArrayInput(String data) throws BadRequestException, SQLException {
+        BindObject bindObj = new FormBinder(messages).bind(
+                attach(expandJson()).to(list(user)),
+                newmap(entry("", data)));
+        if (bindObj.errors().isPresent()) {
+            throw new BadRequestException(400, "invalid pet");
+        } else {
+            for(BindObject u : (List<BindObject>) bindObj.get()) {
+                userData.addUser(u);
+            }
         }
         return Response.ok().entity("").build();
     }
@@ -90,9 +114,16 @@ public class UserResource {
     }
     @POST
     @Path("/createWithList")
-    public Response createUsersWithListInput(java.util.List<User> users) {
-        for (User user : users) {
-            userData.addUser(user);
+    public Response createUsersWithListInput(String data) throws BadRequestException, SQLException {
+        BindObject bindObj = new FormBinder(messages).bind(
+                attach(expandJson()).to(list(user)),
+                newmap(entry("", data)));
+        if (bindObj.errors().isPresent()) {
+            throw new BadRequestException(400, "invalid pet");
+        } else {
+            for(BindObject u : (List<BindObject>) bindObj.get()) {
+                userData.addUser(u);
+            }
         }
         return Response.ok().entity("").build();
     }
@@ -108,9 +139,17 @@ public class UserResource {
     }
     @PUT
     @Path("/{username}")
-    public Response updateUser(@PathParam("username") String username, User user) {
-        userData.addUser(user);
-        return Response.ok().entity("").build();
+    public Response updateUser(@PathParam("username") String username, String data) throws BadRequestException, SQLException {
+        BindObject bindObj = new FormBinder(messages).bind(
+                attach(expandJson()).to(user),
+                newmap(entry("", data)));
+        if (bindObj.errors().isPresent()) {
+            throw new BadRequestException(400, "invalid pet");
+        } else {
+            userData.removeUser(username);
+            userData.addUser(bindObj);
+            return Response.ok().entity("").build();
+        }
     }
 
     static {
@@ -123,7 +162,7 @@ public class UserResource {
     }
     @DELETE
     @Path("/{username}")
-    public Response deleteUser(String username) {
+    public Response deleteUser(String username) throws SQLException {
         userData.removeUser(username);
         return Response.ok().entity("").build();
     }
@@ -142,8 +181,8 @@ public class UserResource {
     @GET
     @Path("/{username}")
     public Response getUserByName(@PathParam("username") String username)
-            throws ApiException {
-        User user = userData.findUserByName(username);
+            throws ApiException, SQLException {
+        Map<String, Object> user = userData.findUserByName(username);
         if (null != user) {
             return Response.ok().entity(user).build();
         } else {

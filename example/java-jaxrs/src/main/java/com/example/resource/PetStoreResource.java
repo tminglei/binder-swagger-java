@@ -20,22 +20,30 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
 import com.example.data.StoreData;
+import com.example.exception.BadRequestException;
 import com.example.exception.NotFoundException;
-import com.example.model.Order;
+import com.github.tminglei.bind.BindObject;
+import com.github.tminglei.bind.FormBinder;
 
+import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Map;
+import java.util.ResourceBundle;
 
 import static com.github.tminglei.swagger.SwaggerContext.*;
 import static com.github.tminglei.swagger.SwaggerExtensions.*;
+import static com.github.tminglei.swagger.SwaggerUtils.*;
 import static com.github.tminglei.bind.Simple.*;
 import static com.github.tminglei.bind.Mappings.*;
 import static com.github.tminglei.bind.Constraints.*;
+import static com.github.tminglei.bind.Processors.*;
 
 @Path("/store")
 @Produces({"application/json", "application/xml"})
 public class PetStoreResource {
     static StoreData storeData = new StoreData();
-    static JavaRestResourceUtil ru = new JavaRestResourceUtil();
+    private ResourceBundle bundle = ResourceBundle.getBundle("bind-messages");
+    private Messages messages = (key) -> bundle.getString(key);
 
     static Mapping<?> orderStatus = text(oneOf(Arrays.asList("placed", "approved", "delivered")))
             .$ext(o -> ext(o).desc("order status"));
@@ -62,8 +70,8 @@ public class PetStoreResource {
     @GET
     @Path("/order/{orderId}")
     public Response getOrderById(@PathParam("orderId") String orderId)
-            throws NotFoundException {
-        Order order = storeData.findOrderById(ru.getLong(0, 10000, 0, orderId));
+            throws NotFoundException, SQLException {
+        Map<String, Object> order = storeData.findOrderById(Long.parseLong(orderId));
         if (null != order) {
             return Response.ok().entity(order).build();
         } else {
@@ -81,9 +89,16 @@ public class PetStoreResource {
     }
     @POST
     @Path("/order")
-    public Response placeOrder(Order order) {
-        storeData.placeOrder(order);
-        return Response.ok().entity("").build();
+    public Response placeOrder(String data) throws BadRequestException, SQLException {
+        BindObject bindObj = new FormBinder(messages).bind(
+                attach(expandJson()).to(order),
+                newmap(entry("", data)));
+        if (bindObj.errors().isPresent()) {
+            throw new BadRequestException(400, "invalid pet");
+        } else {
+            storeData.placeOrder(bindObj);
+            return Response.ok().entity("").build();
+        }
     }
 
     static {
@@ -96,8 +111,8 @@ public class PetStoreResource {
     }
     @DELETE
     @Path("/order/{orderId}")
-    public Response deleteOrder(@PathParam("orderId") String orderId) {
-        storeData.deleteOrder(ru.getLong(0, 10000, 0, orderId));
+    public Response deleteOrder(@PathParam("orderId") String orderId) throws SQLException {
+        storeData.deleteOrder(Long.parseLong(orderId));
         return Response.ok().entity("").build();
     }
 }
