@@ -20,7 +20,7 @@ _p.s. and, of course, you can use [form-binder-java](https://github.com/tminglei
 1) define and register your api operations
 ```java
 // in `PetResource.java`
-static {
+static {  // for swagger
     operation("get", "/pet/{petId}")
         .summary("get pet by id")
         .tag("pet")
