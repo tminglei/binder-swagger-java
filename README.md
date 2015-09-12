@@ -9,7 +9,7 @@ Given the `swagger.json`, [swagger ui](http://petstore.swagger.io/) can dynamica
 _p.s. and, of course, you can use [form-binder-java](https://github.com/tminglei/form-binder-java) mappings, when constructing the swagger object. ;-)_
 
 ##How to use
-0. add the dependency to your project:
+0) add the dependency to your project:
 ```
 <dependency>
   <groupId>com.github.tminglei</groupId>
@@ -17,7 +17,7 @@ _p.s. and, of course, you can use [form-binder-java](https://github.com/tminglei
   <version>0.3.0</version>
 </dependency>
 ```
-1. define and register your api operations
+1) define and register your api operations
 ```java
 // in `PetResource.java`
 static {
@@ -36,7 +36,7 @@ static {
 public Response getPetById(@PathParam("petId") String petId)
 ...
 ```
-2.  supplement your other swagger info
+2) supplement your other swagger info
 ```java
 // in `Bootstrap.java`
 static {  // for swagger
@@ -71,7 +71,7 @@ static {  // for swagger
 	);
 }
 ```
-3.  configure the filter, which will serv the `swagger.json`
+3) configure the filter, which will serv the `swagger.json`
 ```
 // in `web.xml`
 <filter>
@@ -106,10 +106,14 @@ static {  // for swagger
 </filter-mapping>
 ...
 ```
+NOTES: if you extend the [MSwaggerHelper](https://github.com/tminglei/binder-swagger-java/blob/master/src/main/java/com/github/tminglei/swagger/MSwaggerHelper.java) and configure it here, pls ensure **SwaggerFilter** to be loaded eariler, that is, ensure the swagger helper to be set to [SwaggerContext](https://github.com/tminglei/binder-swagger-java/blob/master/src/main/java/com/github/tminglei/swagger/SwaggerContext.java) before other class scanner started working.
+
 
 That's all. Enjoy it!
 
+
 > Example is a good start, you can check the example project [here](https://github.com/tminglei/binder-swagger-java/tree/master/example/java-jaxrs).
+
 
 ##License
 The BSD License, Minglei Tu &lt;tmlneu@gmail.com&gt;
