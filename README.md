@@ -10,7 +10,7 @@ _p.s. and, of course, you can use [form-binder-java](https://github.com/tminglei
 
 ## How to use
 0) add the dependency to your project:
-```
+```xml
 <dependency>
   <groupId>com.github.tminglei</groupId>
   <artifactId>binder-swagger-java</artifactId>
@@ -72,7 +72,7 @@ static {  // for swagger
 }
 ```
 3) configure the filter, which will serv the `swagger.json`:
-```
+```xml
 // in `web.xml`
 <filter>
     <filter-name>SwaggerFilter</filter-name>
