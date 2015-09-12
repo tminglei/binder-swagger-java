@@ -4,11 +4,11 @@
 
   <groupId>com.github.tminglei</groupId>
   <artifactId>binder-swagger-java</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>0.3.0</version>
   <packaging>jar</packaging>
 
   <name>binder-swagger-java</name>
-  <description>A framework to adapt form-binder-java to swagger</description>
+  <description>A framework to bring form-binder-java to swagger</description>
   <organization>
     <name>binder-swagger-java</name>
   </organization>
@@ -41,7 +41,7 @@
     <dependency>
       <groupId>com.github.tminglei</groupId>
       <artifactId>form-binder-java</artifactId>
-      <version>0.11.0-SNAPSHOT</version>
+      <version>0.11.0</version>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
