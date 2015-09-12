@@ -17,7 +17,13 @@
             <param-name>scan-packages-and-classes</param-name>
             <param-value>com.example.resource; com.example.Bootstrap</param-value>
         </init-param>
-        <!-- disable swagger, default value: true
+        <!-- specify the path to fetch your swagger json, default '/swagger.json'
+        <init-param>
+            <param-name>swagger-path</param-name>
+            <param-value>/swagger.json</param-value>
+        </init-param>
+        -->
+        <!-- enable/disable swagger, default value: true
         <init-param>
             <param-name>enabled</param-name>
             <param-value>false</param-value>
@@ -26,7 +32,7 @@
     </filter>
     <filter-mapping>
         <filter-name>SwaggerFilter</filter-name>
-        <url-pattern>/*</url-pattern>
+        <url-pattern>/api/*</url-pattern><!-- keep consistent with the jersey servlet mapping -->
     </filter-mapping>
 
     <servlet>

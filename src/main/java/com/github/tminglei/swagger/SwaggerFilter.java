@@ -19,6 +19,7 @@ import static com.github.tminglei.swagger.SwaggerUtils.*;
  */
 public class SwaggerFilter implements Filter {
     private boolean enabled = true;
+    private String swaggerPath = "/swagger.json";
 
     private static final Logger logger = LoggerFactory.getLogger(SwaggerFilter.class);
 
@@ -26,6 +27,8 @@ public class SwaggerFilter implements Filter {
     public void init(FilterConfig filterConfig) throws ServletException {
         enabled = Optional.ofNullable(filterConfig.getInitParameter("enabled"))
                 .map(Boolean::parseBoolean).orElse(true);
+        swaggerPath = Optional.ofNullable(filterConfig.getInitParameter("swagger-path"))
+                .orElse("/swagger.json");
 
         // set user extended swagger helper
         String mySwaggerHelper = filterConfig.getInitParameter("my-extended-swagger-helper");
@@ -78,7 +81,7 @@ public class SwaggerFilter implements Filter {
             resp.addHeader("Access-Control-Allow-Methods", "POST, GET, PUT, PATCH, DELETE, HEAD, OPTIONS");
             resp.addHeader("Access-Control-Max-Age", "43200"); // half a day
 
-            if ("/swagger.json".equals(req.getPathInfo()) && "GET".equalsIgnoreCase(req.getMethod())) {
+            if (swaggerPath.equals(req.getPathInfo()) && "GET".equalsIgnoreCase(req.getMethod())) {
                 String json = new ObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL)
                         .writer().writeValueAsString(check(SwaggerContext.swagger()));
                 response.getWriter().write(json);
