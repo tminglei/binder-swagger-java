@@ -61,14 +61,12 @@ public class PetResource {
 
     ///
     static {
-        operation("get", "/pet/{petId}")
+        addOperation("get", "/pet/{petId}")
                 .summary("get pet by id")
                 .tag("pet")
                 .parameter(param(vLong()).in("path").name("petId").example(1l))
                 .response(200, response(pet))
-                .response(404, new io.swagger.models.Response()
-                        .description("pet not found")
-                )
+                .response(404, response().description("pet not found"))
         ;
     }
     @GET
@@ -84,13 +82,12 @@ public class PetResource {
     }
 
     static {
-        operation("post", "/pet")
+        addOperation("post", "/pet")
                 .summary("create a pet")
                 .tag("pet")
                 .parameter(param(pet).in("body"))
-                .response(200, new io.swagger.models.Response()
-                                .description("success")
-                ).response(400, new io.swagger.models.Response())
+                .response(200, response().description("success"))
+                .response(400, response())
         ;
     }
     @POST
@@ -107,13 +104,12 @@ public class PetResource {
     }
 
     static {
-        operation("put", "/pet")
+        addOperation("put", "/pet")
                 .summary("update pet")
                 .tag("pet")
                 .parameter(param(pet).in("body"))
-                .response(200, new io.swagger.models.Response()
-                                .description("success")
-                ).response(400, new io.swagger.models.Response())
+                .response(200, response().description("success"))
+                .response(400, response())
         ;
     }
     @PUT
@@ -130,7 +126,7 @@ public class PetResource {
     }
 
     static {
-        operation("get", "/pet/findByStatus")
+        addOperation("get", "/pet/findByStatus")
                 .summary("find pets by status")
                 .tag("pet")
                 .parameter(param(list(petStatus)).in("query").name("status"))
@@ -144,7 +140,7 @@ public class PetResource {
     }
 
     static {
-        operation("get", "/pet/findByTags")
+        addOperation("get", "/pet/findByTags")
                 .summary("find pets by tags")
                 .tag("pet")
                 .parameter(param(list(text())).in("query").name("tags").desc("pet tags"))

@@ -21,14 +21,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 
 import com.example.data.H2DB;
-import io.swagger.models.Contact;
-import io.swagger.models.ExternalDocs;
-import io.swagger.models.Info;
-import io.swagger.models.License;
-import io.swagger.models.Tag;
-import io.swagger.models.auth.ApiKeyAuthDefinition;
 import io.swagger.models.auth.In;
-import io.swagger.models.auth.OAuth2Definition;
 
 import static com.github.tminglei.swagger.SwaggerContext.*;
 
@@ -36,34 +29,30 @@ public class Bootstrap extends HttpServlet {
   private static final long serialVersionUID = 1L;
 
   static {  // for swagger
-      swagger().info(new Info()
+      swagger().info(info()
               .title("Swagger Sample App")
               .description("This is a sample server Petstore server.  You can find out more about Swagger " +
                       "at [http://swagger.io](http://swagger.io) or on [irc.freenode.net, #swagger](http://swagger.io/irc/).  For this sample, " +
                       "you can use the api key `special-key` to test the authorization filters.")
               .termsOfService("http://swagger.io/terms/")
-              .contact(new Contact().email("apiteam@swagger.io"))
-              .license(new License().name("Apache 2.0")
+              .contact(contact().email("apiteam@swagger.io"))
+              .license(license().name("Apache 2.0")
                               .url("http://www.apache.org/licenses/LICENSE-2.0.html")
               )
       ).host("localhost:8002")
       .basePath("/api")
       .consumes("application/json")
       .produces("application/json")
-      .securityDefinition("api_key", new ApiKeyAuthDefinition("api_key", In.HEADER))
-      .securityDefinition("petstore_auth",
-              new OAuth2Definition()
+      .securityDefinition("api_key", apiKeyAuth("api_key", In.HEADER))
+      .securityDefinition("petstore_auth", oAuth2()
                       .implicit("http://petstore.swagger.io/api/oauth/dialog")
                       .scope("read:pets", "read your pets")
                       .scope("write:pets", "modify pets in your account")
-      ).tag(new Tag().name("pet")
-                      .description("Everything about your Pets")
-                      .externalDocs(new ExternalDocs("Find out more", "http://swagger.io"))
-      ).tag(new Tag().name("store")
-              .description("Access to Petstore orders")
-      ).tag(new Tag().name("user")
-              .description("Operations about user")
-              .externalDocs(new ExternalDocs("Find out more about our store", "http://swagger.io"))
+      ).tag(tag("pet").description("Everything about your Pets")
+                      .externalDocs(externalDocs().description("Find out more").url("http://swagger.io"))
+      ).tag(tag("store").description("Access to Petstore orders")
+      ).tag(tag("user").description("Operations about user")
+              .externalDocs(externalDocs().description("Find out more about our store").url("http://swagger.io"))
       );
   }
 

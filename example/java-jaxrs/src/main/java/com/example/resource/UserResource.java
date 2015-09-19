@@ -60,11 +60,11 @@ public class UserResource {
 
     ///
     static {
-        operation("post", "/user")
+        addOperation("post", "/user")
                 .summary("create a user")
                 .tag("user")
                 .parameter(param(user).in("body"))
-                .response(200, new io.swagger.models.Response())
+                .response(200, response())
         ;
     }
     @POST
@@ -81,11 +81,11 @@ public class UserResource {
     }
 
     static {
-        operation("post", "/user/createWithArray")
+        addOperation("post", "/user/createWithArray")
                 .summary("create multiple users")
                 .tag("user")
                 .parameter(param(list(user)).in("body"))
-                .response(200, new io.swagger.models.Response())
+                .response(200, response())
         ;
     }
     @POST
@@ -105,11 +105,11 @@ public class UserResource {
     }
 
     static {
-        operation("post", "/user/createWithList")
+        addOperation("post", "/user/createWithList")
                 .summary("create multiple users")
                 .tag("user")
                 .parameter(param(list(user)).in("body"))
-                .response(200, new io.swagger.models.Response())
+                .response(200, response())
         ;
     }
     @POST
@@ -129,12 +129,12 @@ public class UserResource {
     }
 
     static {
-        operation("put", "/user/{username}")
+        addOperation("put", "/user/{username}")
                 .summary("update user")
                 .tag("user")
                 .parameter(param(text()).in("path").name("username").desc("user name"))
                 .parameter(param(user).in("body"))
-                .response(200, new io.swagger.models.Response())
+                .response(200, response())
         ;
     }
     @PUT
@@ -153,11 +153,11 @@ public class UserResource {
     }
 
     static {
-        operation("delete", "/user/{username}")
+        addOperation("delete", "/user/{username}")
                 .summary("delete user")
                 .tag("user")
                 .parameter(param(text()).in("path").name("username").desc("user name"))
-                .response(200, new io.swagger.models.Response())
+                .response(200, response())
         ;
     }
     @DELETE
@@ -168,14 +168,12 @@ public class UserResource {
     }
 
     static {
-        operation("get", "/user/{username}")
+        addOperation("get", "/user/{username}")
                 .summary("get specified user")
                 .tag("user")
                 .parameter(param(text()).in("path").name("username").desc("user name"))
                 .response(200, response(user))
-                .response(404, new io.swagger.models.Response()
-                        .description("user not found")
-                )
+                .response(404, response().description("user not found"))
         ;
     }
     @GET
@@ -191,12 +189,12 @@ public class UserResource {
     }
 
     static {
-        operation("post", "/user/login")
+        addOperation("post", "/user/login")
                 .summary("login user")
                 .tag("user")
                 .parameter(param(text(required())).in("form").name("username"))
                 .parameter(param(text(required())).in("form").name("password"))
-                .response(200, new io.swagger.models.Response())
+                .response(200, response())
         ;
     }
     @POST
@@ -208,10 +206,10 @@ public class UserResource {
     }
 
     static {
-        operation("get", "/user/logout")
+        addOperation("get", "/user/logout")
                 .summary("logout user")
                 .tag("user")
-                .response(200, new io.swagger.models.Response())
+                .response(200, response())
         ;
     }
     @GET

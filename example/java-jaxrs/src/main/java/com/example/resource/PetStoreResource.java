@@ -57,14 +57,12 @@ public class PetStoreResource {
 
     ///
     static {
-        operation("get", "/store/order/{orderId}")
+        addOperation("get", "/store/order/{orderId}")
                 .summary("get order by id")
                 .tag("store")
                 .parameter(param(vLong()).in("path").name("orderId").desc("order id"))
                 .response(200, response(order))
-                .response(404, new io.swagger.models.Response()
-                        .description("order not found")
-                )
+                .response(404, response().description("order not found"))
         ;
     }
     @GET
@@ -80,11 +78,11 @@ public class PetStoreResource {
     }
 
     static {
-        operation("post", "/store/order")
+        addOperation("post", "/store/order")
                 .summary("add an order")
                 .tag("store")
                 .parameter(param(order).in("body"))
-                .response(200, new io.swagger.models.Response())
+                .response(200, response())
         ;
     }
     @POST
@@ -102,11 +100,11 @@ public class PetStoreResource {
     }
 
     static {
-        operation("delete", "/store/order")
+        addOperation("delete", "/store/order")
                 .summary("delete specified order")
                 .tag("store")
                 .parameter(param(vLong()).in("path").name("orderId").desc("order id"))
-                .response(200, new io.swagger.models.Response())
+                .response(200, response())
         ;
     }
     @DELETE

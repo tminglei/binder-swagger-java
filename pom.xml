@@ -4,7 +4,7 @@
 
   <groupId>com.github.tminglei</groupId>
   <artifactId>binder-swagger-java</artifactId>
-  <version>0.3.0</version>
+  <version>0.5.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>binder-swagger-java</name>
