@@ -24,6 +24,7 @@ import com.example.exception.BadRequestException;
 import com.example.exception.NotFoundException;
 import com.github.tminglei.bind.BindObject;
 import com.github.tminglei.bind.FormBinder;
+import com.github.tminglei.swagger.SharingHolder;
 
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -55,11 +56,12 @@ public class PetStoreResource {
             field("status", orderStatus)
         ).$ext(o -> ext(o).desc("order info"));
 
+    static SharingHolder sharing = share().commPath("/store").tag("store");
+
     ///
     static {
-        addOperation("get", "/store/order/{orderId}")
+        addOperation("get", "/order/{orderId}", sharing)
                 .summary("get order by id")
-                .tag("store")
                 .parameter(param(vLong()).in("path").name("orderId").desc("order id"))
                 .response(200, response(order))
                 .response(404, response().description("order not found"))
@@ -78,9 +80,8 @@ public class PetStoreResource {
     }
 
     static {
-        addOperation("post", "/store/order")
+        addOperation("post", "/order", sharing)
                 .summary("add an order")
-                .tag("store")
                 .parameter(param(order).in("body"))
                 .response(200, response())
         ;
@@ -100,9 +101,8 @@ public class PetStoreResource {
     }
 
     static {
-        addOperation("delete", "/store/order")
+        addOperation("delete", "/order", sharing)
                 .summary("delete specified order")
-                .tag("store")
                 .parameter(param(vLong()).in("path").name("orderId").desc("order id"))
                 .response(200, response())
         ;

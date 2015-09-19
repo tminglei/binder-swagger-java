@@ -24,6 +24,7 @@ import com.example.exception.BadRequestException;
 import com.example.exception.NotFoundException;
 import com.github.tminglei.bind.BindObject;
 import com.github.tminglei.bind.FormBinder;
+import com.github.tminglei.swagger.SharingHolder;
 
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -59,9 +60,11 @@ public class PetResource {
             field("status", petStatus)
         ).$ext(o -> ext(o).desc("pet info"));
 
+    static SharingHolder sharing = share().commPath("/pet").tag("pet");
+
     ///
     static {
-        addOperation("get", "/pet/{petId}")
+        addOperation("get", "/{petId}", sharing)
                 .summary("get pet by id")
                 .tag("pet")
                 .parameter(param(vLong()).in("path").name("petId").example(1l))
@@ -82,7 +85,7 @@ public class PetResource {
     }
 
     static {
-        addOperation("post", "/pet")
+        addOperation("post", "/", sharing)
                 .summary("create a pet")
                 .tag("pet")
                 .parameter(param(pet).in("body"))
@@ -104,7 +107,7 @@ public class PetResource {
     }
 
     static {
-        addOperation("put", "/pet")
+        addOperation("put", "/", sharing)
                 .summary("update pet")
                 .tag("pet")
                 .parameter(param(pet).in("body"))
@@ -126,7 +129,7 @@ public class PetResource {
     }
 
     static {
-        addOperation("get", "/pet/findByStatus")
+        addOperation("get", "/findByStatus", sharing)
                 .summary("find pets by status")
                 .tag("pet")
                 .parameter(param(list(petStatus)).in("query").name("status"))
@@ -140,7 +143,7 @@ public class PetResource {
     }
 
     static {
-        addOperation("get", "/pet/findByTags")
+        addOperation("get", "/findByTags", sharing)
                 .summary("find pets by tags")
                 .tag("pet")
                 .parameter(param(list(text())).in("query").name("tags").desc("pet tags"))

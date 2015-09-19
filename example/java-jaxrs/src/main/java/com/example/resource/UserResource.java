@@ -25,6 +25,7 @@ import com.example.exception.NotFoundException;
 import com.example.exception.ApiException;
 import com.github.tminglei.bind.BindObject;
 import com.github.tminglei.bind.FormBinder;
+import com.github.tminglei.swagger.SharingHolder;
 
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -58,9 +59,11 @@ public class UserResource {
             field("status", vInt(oneOf(Arrays.asList("1", "2", "3"))).$ext(o -> ext(o).desc("user's status")))
         ).$ext(o -> ext(o).desc("user info"));
 
+    static SharingHolder sharing = share().commPath("/user").tag("user");
+
     ///
     static {
-        addOperation("post", "/user")
+        addOperation("post", "/", sharing)
                 .summary("create a user")
                 .tag("user")
                 .parameter(param(user).in("body"))
@@ -81,7 +84,7 @@ public class UserResource {
     }
 
     static {
-        addOperation("post", "/user/createWithArray")
+        addOperation("post", "/createWithArray", sharing)
                 .summary("create multiple users")
                 .tag("user")
                 .parameter(param(list(user)).in("body"))
@@ -105,7 +108,7 @@ public class UserResource {
     }
 
     static {
-        addOperation("post", "/user/createWithList")
+        addOperation("post", "/createWithList", sharing)
                 .summary("create multiple users")
                 .tag("user")
                 .parameter(param(list(user)).in("body"))
@@ -129,7 +132,7 @@ public class UserResource {
     }
 
     static {
-        addOperation("put", "/user/{username}")
+        addOperation("put", "/{username}", sharing)
                 .summary("update user")
                 .tag("user")
                 .parameter(param(text()).in("path").name("username").desc("user name"))
@@ -153,7 +156,7 @@ public class UserResource {
     }
 
     static {
-        addOperation("delete", "/user/{username}")
+        addOperation("delete", "/{username}", sharing)
                 .summary("delete user")
                 .tag("user")
                 .parameter(param(text()).in("path").name("username").desc("user name"))
@@ -168,7 +171,7 @@ public class UserResource {
     }
 
     static {
-        addOperation("get", "/user/{username}")
+        addOperation("get", "/{username}", sharing)
                 .summary("get specified user")
                 .tag("user")
                 .parameter(param(text()).in("path").name("username").desc("user name"))
@@ -189,7 +192,7 @@ public class UserResource {
     }
 
     static {
-        addOperation("post", "/user/login")
+        addOperation("post", "/login", sharing)
                 .summary("login user")
                 .tag("user")
                 .parameter(param(text(required())).in("form").name("username"))
@@ -206,7 +209,7 @@ public class UserResource {
     }
 
     static {
-        addOperation("get", "/user/logout")
+        addOperation("get", "/logout", sharing)
                 .summary("logout user")
                 .tag("user")
                 .response(200, response())

@@ -24,10 +24,19 @@ public class SwaggerContext {
         return swagger;
     }
 
+    public static SharingHolder share() {
+        return new SharingHolder();
+    }
+
     public static ExOperation addOperation(String method, String path) {
+        return addOperation(method, path, null);
+    }
+    public static ExOperation addOperation(String method, String path, SharingHolder sharing) {
         checkNotEmpty(path, "'path' CAN'T be null or empty!!!");
         checkNotEmpty(method, "'method' CAN'T be null or empty!!!");
 
+        sharing = sharing != null ? sharing : new SharingHolder();
+        path = joinPaths(sharing.commPath(), path);
         HttpMethod httpMethod = HttpMethod.valueOf(method.toUpperCase());
         synchronized (swagger) {
             if (swagger.getPath(path) == null) {
@@ -41,7 +50,7 @@ public class SwaggerContext {
             }
 
             logger.info(">>> adding operation - " + httpMethod + " '" + path + "'");
-            pathObj.set(method.toLowerCase(), new ExOperation());
+            pathObj.set(method.toLowerCase(), new ExOperation().merge(sharing));
             return (ExOperation) pathObj.getOperationMap().get(httpMethod);
         }
     }
@@ -89,7 +98,7 @@ public class SwaggerContext {
 
     ///////////////////////////////////////////////////////////////////////
 
-    static MSwaggerHelper mHelper = new MSwaggerHelper(); // extend and replace when necessary
+    static MSwaggerHelper mHelper = new MSwaggerHelper(); // extend and replace it when necessary
     public static void setMHelper(MSwaggerHelper mHelper) {
         SwaggerContext.mHelper = mHelper;
     }

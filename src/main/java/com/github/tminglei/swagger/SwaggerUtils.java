@@ -105,4 +105,11 @@ public class SwaggerUtils {
         }
     }
 
+    static String joinPaths(String... paths) {
+        return Arrays.asList(paths).stream()
+                .filter(s -> !isEmpty(s))
+                .collect(Collectors.joining("/"))
+                .replaceAll("/+", "/");
+    }
+
 }
