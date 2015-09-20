@@ -64,7 +64,7 @@ public class PetResource {
 
     ///
     static {
-        addOperation("get", "/{petId}", sharing)
+        operation("get", "/{petId}", sharing)
                 .summary("get pet by id")
                 .tag("pet")
                 .parameter(param(vLong()).in("path").name("petId").example(1l))
@@ -85,7 +85,7 @@ public class PetResource {
     }
 
     static {
-        addOperation("post", "/", sharing)
+        operation("post", "/", sharing)
                 .summary("create a pet")
                 .tag("pet")
                 .parameter(param(pet).in("body"))
@@ -107,7 +107,7 @@ public class PetResource {
     }
 
     static {
-        addOperation("put", "/", sharing)
+        operation("put", "/", sharing)
                 .summary("update pet")
                 .tag("pet")
                 .parameter(param(pet).in("body"))
@@ -129,7 +129,7 @@ public class PetResource {
     }
 
     static {
-        addOperation("get", "/findByStatus", sharing)
+        operation("get", "/findByStatus", sharing)
                 .summary("find pets by status")
                 .tag("pet")
                 .parameter(param(list(petStatus)).in("query").name("status"))
@@ -143,7 +143,7 @@ public class PetResource {
     }
 
     static {
-        addOperation("get", "/findByTags", sharing)
+        operation("get", "/findByTags", sharing)
                 .summary("find pets by tags")
                 .tag("pet")
                 .parameter(param(list(text())).in("query").name("tags").desc("pet tags"))

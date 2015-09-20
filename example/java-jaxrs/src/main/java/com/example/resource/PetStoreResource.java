@@ -60,7 +60,7 @@ public class PetStoreResource {
 
     ///
     static {
-        addOperation("get", "/order/{orderId}", sharing)
+        operation("get", "/order/{orderId}", sharing)
                 .summary("get order by id")
                 .parameter(param(vLong()).in("path").name("orderId").desc("order id"))
                 .response(200, response(order))
@@ -80,7 +80,7 @@ public class PetStoreResource {
     }
 
     static {
-        addOperation("post", "/order", sharing)
+        operation("post", "/order", sharing)
                 .summary("add an order")
                 .parameter(param(order).in("body"))
                 .response(200, response())
@@ -101,7 +101,7 @@ public class PetStoreResource {
     }
 
     static {
-        addOperation("delete", "/order", sharing)
+        operation("delete", "/order", sharing)
                 .summary("delete specified order")
                 .parameter(param(vLong()).in("path").name("orderId").desc("order id"))
                 .response(200, response())

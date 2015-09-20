@@ -63,7 +63,7 @@ public class UserResource {
 
     ///
     static {
-        addOperation("post", "/", sharing)
+        operation("post", "/", sharing)
                 .summary("create a user")
                 .tag("user")
                 .parameter(param(user).in("body"))
@@ -84,7 +84,7 @@ public class UserResource {
     }
 
     static {
-        addOperation("post", "/createWithArray", sharing)
+        operation("post", "/createWithArray", sharing)
                 .summary("create multiple users")
                 .tag("user")
                 .parameter(param(list(user)).in("body"))
@@ -108,7 +108,7 @@ public class UserResource {
     }
 
     static {
-        addOperation("post", "/createWithList", sharing)
+        operation("post", "/createWithList", sharing)
                 .summary("create multiple users")
                 .tag("user")
                 .parameter(param(list(user)).in("body"))
@@ -132,7 +132,7 @@ public class UserResource {
     }
 
     static {
-        addOperation("put", "/{username}", sharing)
+        operation("put", "/{username}", sharing)
                 .summary("update user")
                 .tag("user")
                 .parameter(param(text()).in("path").name("username").desc("user name"))
@@ -156,7 +156,7 @@ public class UserResource {
     }
 
     static {
-        addOperation("delete", "/{username}", sharing)
+        operation("delete", "/{username}", sharing)
                 .summary("delete user")
                 .tag("user")
                 .parameter(param(text()).in("path").name("username").desc("user name"))
@@ -171,7 +171,7 @@ public class UserResource {
     }
 
     static {
-        addOperation("get", "/{username}", sharing)
+        operation("get", "/{username}", sharing)
                 .summary("get specified user")
                 .tag("user")
                 .parameter(param(text()).in("path").name("username").desc("user name"))
@@ -192,7 +192,7 @@ public class UserResource {
     }
 
     static {
-        addOperation("post", "/login", sharing)
+        operation("post", "/login", sharing)
                 .summary("login user")
                 .tag("user")
                 .parameter(param(text(required())).in("form").name("username"))
@@ -209,7 +209,7 @@ public class UserResource {
     }
 
     static {
-        addOperation("get", "/logout", sharing)
+        operation("get", "/logout", sharing)
                 .summary("logout user")
                 .tag("user")
                 .response(200, response())

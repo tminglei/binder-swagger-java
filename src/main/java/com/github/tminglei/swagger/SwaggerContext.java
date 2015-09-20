@@ -28,10 +28,10 @@ public class SwaggerContext {
         return new SharingHolder();
     }
 
-    public static ExOperation addOperation(String method, String path) {
-        return addOperation(method, path, null);
+    public static ExOperation operation(String method, String path) {
+        return operation(method, path, null);
     }
-    public static ExOperation addOperation(String method, String path, SharingHolder sharing) {
+    public static ExOperation operation(String method, String path, SharingHolder sharing) {
         checkNotEmpty(path, "'path' CAN'T be null or empty!!!");
         checkNotEmpty(method, "'method' CAN'T be null or empty!!!");
 
