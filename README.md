@@ -14,7 +14,7 @@ _p.s. and, of course, you can use [form-binder-java](https://github.com/tminglei
 <dependency>
   <groupId>com.github.tminglei</groupId>
   <artifactId>binder-swagger-java</artifactId>
-  <version>0.3.0</version>
+  <version>0.5.0</version>
 </dependency>
 ```
 1) define and register your api operations:
