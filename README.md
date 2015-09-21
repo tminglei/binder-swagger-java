@@ -26,9 +26,7 @@ static {  // for swagger
         .tag("pet")
         .parameter(param(vLong()).in("path").name("petId").example(1l))
         .response(200, response(pet))
-        .response(404, new io.swagger.models.Response()
-                .description("pet not found")
-        )
+        .response(404, response().description("pet not found"))
     ;
 }
 @GET
