@@ -10,6 +10,7 @@ public class SwaggerExtensions implements Framework.Extensible {
     private String desc;
     private String format;
     private Object example;
+    private String refName;
 
     public String in() {
         return this.in;
@@ -43,6 +44,14 @@ public class SwaggerExtensions implements Framework.Extensible {
         return this;
     }
 
+    public String refName() {
+        return this.refName;
+    }
+    public SwaggerExtensions refName(String refName) {
+        this.refName = refName;
+        return this;
+    }
+
     ///
     public SwaggerExtensions merge(SwaggerExtensions other) {
         SwaggerExtensions merged = this.clone();
@@ -57,6 +66,7 @@ public class SwaggerExtensions implements Framework.Extensible {
         clone.desc = this.desc;
         clone.format = this.format;
         clone.example = this.example;
+        clone.refName = this.refName;
         return clone;
     }
 

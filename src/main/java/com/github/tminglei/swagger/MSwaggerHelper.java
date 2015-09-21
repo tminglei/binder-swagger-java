@@ -1,10 +1,7 @@
 package com.github.tminglei.swagger;
 
 import com.github.tminglei.bind.Framework;
-import io.swagger.models.ArrayModel;
-import io.swagger.models.Model;
-import io.swagger.models.ModelImpl;
-import io.swagger.models.Response;
+import io.swagger.models.*;
 import io.swagger.models.parameters.*;
 import io.swagger.models.properties.*;
 
@@ -105,6 +102,11 @@ public class MSwaggerHelper {
     }
 
     public Model mToModel(Framework.Mapping<?> mapping) {
+        String refName = ext(mapping).refName();
+        if (!isEmpty(refName)) {
+            return new RefModel(refName);
+        }
+
         if (mapping.meta().targetType == List.class) {
             ArrayModel model = new ArrayModel()
                     .description(ext(mapping).desc())
@@ -135,6 +137,11 @@ public class MSwaggerHelper {
     }
 
     public Property mToProperty(Framework.Mapping<?> mapping) {
+        String refName = ext(mapping).refName();
+        if (!isEmpty(refName)) {
+            return new RefProperty(refName);
+        }
+
         if (mapping instanceof Framework.GroupMapping) {
             Map<String, Property> properties = ((Framework.GroupMapping) mapping).fields().stream()
                     .map(m -> entry(m.getKey(), mToProperty(m.getValue())))
@@ -224,6 +231,32 @@ public class MSwaggerHelper {
         }
 
         return property;
+    }
+
+    public List<Map.Entry<String, Model>> scanModels(Framework.Mapping<?> mapping) {
+        List<Map.Entry<String, Model>> models = new ArrayList<>();
+
+        String refName = ext(mapping).refName();
+        if (!isEmpty(refName)) {
+            Framework.Mapping<?> mappingNoRef = mapping.$ext(o -> ext(o).refName(null));
+            models.add(entry(refName, mToModel(mappingNoRef)));
+        }
+
+        if (mapping instanceof Framework.GroupMapping) {
+            ((Framework.GroupMapping) mapping).fields()
+                    .forEach(m -> models.addAll(scanModels(m.getValue())));
+        }
+        if (mapping.meta().targetType == Map.class) {
+            models.addAll(scanModels(mapping.meta().baseMappings[1]));
+        }
+        if (mapping.meta().targetType == List.class) {
+            models.addAll(scanModels(mapping.meta().baseMappings[0]));
+        }
+        if (mapping.meta().targetType == Optional.class) {
+            models.addAll(scanModels(mapping.meta().baseMappings[0]));
+        }
+
+        return models;
     }
 
     ///

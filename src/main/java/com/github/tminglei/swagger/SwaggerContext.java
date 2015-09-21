@@ -59,16 +59,31 @@ public class SwaggerContext {
         return new MParamBuilder(mapping);
     }
     public static Model model(Framework.Mapping<?> mapping) {
+        scanRegisterNamedModels(mapping);
         return mHelper.mToModel(mapping);
     }
     public static Response response(Framework.Mapping<?> mapping) {
+        scanRegisterNamedModels(mapping);
         return mHelper.mToResponse(mapping);
     }
     public static Response response() {
         return new Response();
     }
     public static Property prop(Framework.Mapping<?> mapping) {
+        scanRegisterNamedModels(mapping);
         return mHelper.mToProperty(mapping);
+    }
+
+    public static void scanRegisterNamedModels(Framework.Mapping<?> mapping) {
+        synchronized (swagger) {
+            mHelper.scanModels(mapping).forEach(p -> {
+                Model existed = swagger.getDefinitions().get(p.getKey());
+                if (existed == null) swagger.model(p.getKey(), p.getValue());
+                else if (!existed.equals(p.getValue())) {
+                    throw new IllegalArgumentException("CONFLICTED model definitions for '" + p.getKey() + "'!!!");
+                }
+            });
+        }
     }
 
     public static Info info() {

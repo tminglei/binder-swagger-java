@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.*;
 import static com.github.tminglei.swagger.SwaggerExtensions.*;
@@ -147,6 +148,41 @@ public class MSwaggerHelperTest {
         StringProperty p2 = (StringProperty) p0.getProperties().get("name");
         assertEquals(p2.getRequired(), true);
         assertEquals(p2.getDescription(), "name");
+    }
+
+    @Test
+    public void testScanModels() {
+        List<Map.Entry<String, Model>> models = mHelper.scanModels(mapping(
+                field("id", vLong()),
+                field("props1", mapping(
+                        field("id", vLong()),
+                        field("name", text())
+                ).$ext(o -> ext(o).refName("props"))),
+                field("props2", mapping(
+                        field("id", vLong()),
+                        field("name", text()),
+                        field("extra", text())
+                ).$ext(o -> ext(o).refName("props"))),
+                field("props3", mapping(
+                        field("id", vLong()),
+                        field("name", text())
+                ).$ext(o -> ext(o).refName("props")))
+        ).$ext(o -> ext(o).refName("test")));
+
+        assertEquals(models.size(), 4);
+        assertEquals(models.get(0).getKey(), "test");
+        assertTrue(models.get(0).getValue().getProperties().get("props1") instanceof RefProperty);
+        assertEquals(((RefProperty) models.get(0).getValue().getProperties().get("props1")).get$ref(), "#/definitions/props");
+        assertTrue(models.get(0).getValue().getProperties().get("props2") instanceof RefProperty);
+        assertEquals(((RefProperty) models.get(0).getValue().getProperties().get("props2")).get$ref(), "#/definitions/props");
+        assertTrue(models.get(0).getValue().getProperties().get("props3") instanceof RefProperty);
+        assertEquals(((RefProperty) models.get(0).getValue().getProperties().get("props3")).get$ref(), "#/definitions/props");
+
+        assertEquals(models.get(1).getKey(), "props");
+        assertEquals(models.get(2).getKey(), "props");
+        assertEquals(models.get(3).getKey(), "props");
+        assertFalse(models.get(1).getValue().equals(models.get(2).getValue()));
+        assertTrue(models.get(1).getValue().equals(models.get(3).getValue()));
     }
 
     ///

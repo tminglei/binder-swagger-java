@@ -42,6 +42,7 @@ public class MParamBuilder {
         return ret.get(0);
     }
     public List<Parameter> build() {
+        SwaggerContext.scanRegisterNamedModels(mapping);
         return SwaggerContext.mHelper.mToParameters(name, mapping);
     }
 }
