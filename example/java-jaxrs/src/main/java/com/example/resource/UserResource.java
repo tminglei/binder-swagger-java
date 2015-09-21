@@ -57,7 +57,7 @@ public class UserResource {
             field("password", text().$ext(o -> ext(o).format("password").desc("password"))),
             field("phone", text(pattern("[\\d]{3}-[\\d]{4}-[\\d]{2}")).$ext(o -> ext(o).desc("phone number"))),
             field("status", vInt(oneOf(Arrays.asList("1", "2", "3"))).$ext(o -> ext(o).desc("user's status")))
-        ).$ext(o -> ext(o).desc("user info"));
+        ).$ext(o -> ext(o).refName("user").desc("user info"));
 
     static SharingHolder sharing = share().commPath("/user").tag("user");
 
@@ -65,7 +65,6 @@ public class UserResource {
     static {
         operation("post", "/", sharing)
                 .summary("create a user")
-                .tag("user")
                 .parameter(param(user).in("body"))
                 .response(200, response())
         ;
@@ -86,7 +85,6 @@ public class UserResource {
     static {
         operation("post", "/createWithArray", sharing)
                 .summary("create multiple users")
-                .tag("user")
                 .parameter(param(list(user)).in("body"))
                 .response(200, response())
         ;
@@ -110,7 +108,6 @@ public class UserResource {
     static {
         operation("post", "/createWithList", sharing)
                 .summary("create multiple users")
-                .tag("user")
                 .parameter(param(list(user)).in("body"))
                 .response(200, response())
         ;
@@ -134,7 +131,6 @@ public class UserResource {
     static {
         operation("put", "/{username}", sharing)
                 .summary("update user")
-                .tag("user")
                 .parameter(param(text()).in("path").name("username").desc("user name"))
                 .parameter(param(user).in("body"))
                 .response(200, response())
@@ -158,7 +154,6 @@ public class UserResource {
     static {
         operation("delete", "/{username}", sharing)
                 .summary("delete user")
-                .tag("user")
                 .parameter(param(text()).in("path").name("username").desc("user name"))
                 .response(200, response())
         ;
@@ -173,7 +168,6 @@ public class UserResource {
     static {
         operation("get", "/{username}", sharing)
                 .summary("get specified user")
-                .tag("user")
                 .parameter(param(text()).in("path").name("username").desc("user name"))
                 .response(200, response(user))
                 .response(404, response().description("user not found"))
@@ -194,7 +188,6 @@ public class UserResource {
     static {
         operation("post", "/login", sharing)
                 .summary("login user")
-                .tag("user")
                 .parameter(param(text(required())).in("form").name("username"))
                 .parameter(param(text(required())).in("form").name("password"))
                 .response(200, response())
@@ -211,7 +204,6 @@ public class UserResource {
     static {
         operation("get", "/logout", sharing)
                 .summary("logout user")
-                .tag("user")
                 .response(200, response())
         ;
     }

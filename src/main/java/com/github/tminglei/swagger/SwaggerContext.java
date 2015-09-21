@@ -77,7 +77,7 @@ public class SwaggerContext {
     public static void scanRegisterNamedModels(Framework.Mapping<?> mapping) {
         synchronized (swagger) {
             mHelper.scanModels(mapping).forEach(p -> {
-                Model existed = swagger.getDefinitions().get(p.getKey());
+                Model existed = swagger.getDefinitions() == null ? null : swagger.getDefinitions().get(p.getKey());
                 if (existed == null) swagger.model(p.getKey(), p.getValue());
                 else if (!existed.equals(p.getValue())) {
                     throw new IllegalArgumentException("CONFLICTED model definitions for '" + p.getKey() + "'!!!");

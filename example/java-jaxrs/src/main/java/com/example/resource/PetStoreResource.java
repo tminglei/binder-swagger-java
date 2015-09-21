@@ -54,7 +54,7 @@ public class PetStoreResource {
             field("quantity", vInt(required()).$ext(o -> ext(o).desc("number to be sold"))),
             field("shipDate", datetime().$ext(o -> ext(o).desc("delivery time"))),
             field("status", orderStatus)
-        ).$ext(o -> ext(o).desc("order info"));
+        ).$ext(o -> ext(o).refName("order").desc("order info"));
 
     static SharingHolder sharing = share().commPath("/store").tag("store");
 

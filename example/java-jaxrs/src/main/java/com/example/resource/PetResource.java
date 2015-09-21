@@ -54,11 +54,11 @@ public class PetResource {
             field("category", attach(required()).to(mapping(
                     field("id", vLong(required())),
                     field("name", text(required()))
-            )).$ext(o -> ext(o).desc("category belonged to"))),
+            )).$ext(o -> ext(o).refName("category").desc("category belonged to"))),
             field("photoUrls", list(text()).$ext(o -> ext(o).desc("pet's photo urls"))),
             field("tags", list(text()).$ext(o -> ext(o).desc("tags for the pet"))),
             field("status", petStatus)
-        ).$ext(o -> ext(o).desc("pet info"));
+        ).$ext(o -> ext(o).refName("pet").desc("pet info"));
 
     static SharingHolder sharing = share().commPath("/pet").tag("pet");
 
@@ -66,7 +66,6 @@ public class PetResource {
     static {
         operation("get", "/{petId}", sharing)
                 .summary("get pet by id")
-                .tag("pet")
                 .parameter(param(vLong()).in("path").name("petId").example(1l))
                 .response(200, response(pet))
                 .response(404, response().description("pet not found"))
@@ -87,7 +86,6 @@ public class PetResource {
     static {
         operation("post", "/", sharing)
                 .summary("create a pet")
-                .tag("pet")
                 .parameter(param(pet).in("body"))
                 .response(200, response().description("success"))
                 .response(400, response())
@@ -109,7 +107,6 @@ public class PetResource {
     static {
         operation("put", "/", sharing)
                 .summary("update pet")
-                .tag("pet")
                 .parameter(param(pet).in("body"))
                 .response(200, response().description("success"))
                 .response(400, response())
@@ -131,7 +128,6 @@ public class PetResource {
     static {
         operation("get", "/findByStatus", sharing)
                 .summary("find pets by status")
-                .tag("pet")
                 .parameter(param(list(petStatus)).in("query").name("status"))
                 .response(200, response(list(pet)).description("pet list"))
         ;
@@ -145,7 +141,6 @@ public class PetResource {
     static {
         operation("get", "/findByTags", sharing)
                 .summary("find pets by tags")
-                .tag("pet")
                 .parameter(param(list(text())).in("query").name("tags").desc("pet tags"))
                 .response(200, response(list(pet)).description("pet list"));
     }
