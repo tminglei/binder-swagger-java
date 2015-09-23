@@ -46,7 +46,7 @@ public class MSwaggerHelper {
                 return mToParameters(mergedName(name, m.getKey()), fMapping).stream();
             }).collect(Collectors.toList());
         } else {
-            if (!isPrimitive(mapping, true)) throw new IllegalArgumentException("must be primitives or primitive list!!!");
+            if (!isPrimitive(mapping)) throw new IllegalArgumentException("must be primitives or primitive list!!!");
             return Arrays.asList(mToParameter(name, mapping));
         }
 
@@ -63,7 +63,7 @@ public class MSwaggerHelper {
         }
 
         if (isEmpty(name)) throw new IllegalArgumentException("name is required!!!");
-        if (!isPrimitive(mapping, true)) throw new IllegalArgumentException("must be primitives or primitive list!!!");
+        if (!isPrimitive(mapping)) throw new IllegalArgumentException("must be primitives or primitive list!!!");
 
         if ("form".equalsIgnoreCase( ext(mapping).in() ) || "formData".equalsIgnoreCase( ext(mapping).in() )) {
             return fillParameter(new FormParameter(), mapping).name(name);
@@ -260,16 +260,19 @@ public class MSwaggerHelper {
     }
 
     ///
-    protected boolean isPrimitive(Framework.Mapping<?> mapping, boolean top) {
+    protected boolean isPrimitive(Framework.Mapping<?> mapping) {
+        return isPrimitive(mapping, true);
+    }
+    protected boolean isPrimitive(Framework.Mapping<?> mapping, boolean isTop) {
         if (mapping instanceof Framework.GroupMapping)
             return false;
         if (mapping.meta().targetType == Map.class)
             return false;
         if (mapping.meta().targetType == List.class) {
-            return top && isPrimitive(mapping.meta().baseMappings[0], false);
+            return isTop && isPrimitive(mapping.meta().baseMappings[0], false);
         }
         if (mapping.meta().targetType == Optional.class) {
-            return top && isPrimitive(mapping.meta().baseMappings[0], false);
+            return isTop && isPrimitive(mapping.meta().baseMappings[0], false);
         }
 
         return true;
