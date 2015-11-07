@@ -8,10 +8,9 @@ Given the `swagger.json`, [`swagger ui`](http://petstore.swagger.io/) can dynami
 
 
 ## Why another wheel?
-We used dynamic types in our projects, that is, we didn't define java beans (static types) for API inbound/outbound parameters, instead, we used json, map, list, etc. directly.  
-Existing frameworks, e.g. `springfox`, don't support dynamic types, and can't be enhanced to support them.
+We used many dynamic data structures (json, map, list, etc.) as API inbound/outbound parameters, didn't define java beans (static types), in our projects. And existing swagger solutions, e.g. `springfox`, don't support dynamic data structures, and can't be enhanced to support them.
 
-So, I created `binder-swagger-java`, which enable you use [`form-binder-java`](https://github.com/tminglei/form-binder-java) to define dynamic types, and use them as API inbound/outbound parameters.
+So, I created `binder-swagger-java`, which enable you use [`form-binder-java`](https://github.com/tminglei/form-binder-java) to define dynamic data structures, and use them in APIs.
 
 > _p.s. `binder-swagger-java` based on [`swagger-models`](https://github.com/swagger-api/swagger-core) directly, allow to operate the swagger object directly when necessary, so it's more expressive in theory._
 
