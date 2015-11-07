@@ -2,11 +2,18 @@
 
 [![Build Status](https://travis-ci.org/tminglei/binder-swagger-java.svg?branch=master)](https://travis-ci.org/tminglei/binder-swagger-java)
 
-Given the `swagger.json`, [swagger ui](http://petstore.swagger.io/) can dynamically build the web client, to enable online browsing your APIs, sending request and receiving response from your rest services.
+Given the `swagger.json`, [`swagger ui`](http://petstore.swagger.io/) can dynamically build the web client, to enable online browsing your APIs, sending request and receiving response from your rest services.
 
 `binder-swagger-java` was designed to help construct the swagger object, corresponding to `swagger.json`, and let it accessible from swagger ui or other http visitors.
 
-_p.s. and, of course, you can use [form-binder-java](https://github.com/tminglei/form-binder-java) mappings, when constructing the swagger object. ;-)_
+
+## Why another wheel?
+We used dynamic types in our projects, that is, we didn't define java beans (static types) for API inbound/outbound parameters, instead, we used json, map, list, etc. directly.  
+Existing frameworks, e.g. `springfox`, don't support dynamic types, and can't be enhanced to support them.
+
+So, I created `binder-swagger-java`, which enable you use [`form-binder-java`](https://github.com/tminglei/form-binder-java) to define dynamic types, and use them as API inbound/outbound parameters.
+
+> _p.s. `binder-swagger-java` based on [`swagger-models`](https://github.com/swagger-api/swagger-core) directly, allow to operate the swagger object directly when necessary, so it's more expressive in theory._
 
 ## How to use
 0) add the dependency to your project:
@@ -20,18 +27,31 @@ _p.s. and, of course, you can use [form-binder-java](https://github.com/tminglei
 1) define and register your api operations:
 ```java
 // in `PetResource.java`
-static {  // for swagger
-    operation("get", "/pet/{petId}")
-        .summary("get pet by id")
+static Mapping<?> petStatus = text(oneOf(Arrays.asList("available", "pending", "sold")))
+    .$ext(o -> ext(o).desc("pet status in the store"));
+static Mapping<?> pet = mapping(
+    field("id", vLong().$ext(o -> ext(o).desc("pet id"))),
+    field("name", text(required()).$ext(o -> ext(o).desc("pet name"))),
+    field("category", attach(required()).to(mapping(
+            field("id", vLong(required())),
+            field("name", text(required()))
+    )).$ext(o -> ext(o).refName("category").desc("category belonged to"))),
+    field("photoUrls", list(text()).$ext(o -> ext(o).desc("pet's photo urls"))),
+    field("tags", list(text()).$ext(o -> ext(o).desc("tags for the pet"))),
+    field("status", petStatus)
+).$ext(o -> ext(o).refName("pet").desc("pet info"));
+
+static {
+    operation("post", "/pet")
+        .summary("create a pet")
         .tag("pet")
-        .parameter(param(vLong()).in("path").name("petId").example(1l))
-        .response(200, response(pet))
-        .response(404, response().description("pet not found"))
+        .parameter(param(pet).in("body"))
+        .response(200, response().description("success"))
+        .response(400, response())
     ;
 }
-@GET
-@Path("/{petId}")
-public Response getPetById(@PathParam("petId") String petId)
+@POST
+public Response addPet(String data) throws BadRequestException, SQLException {
 ...
 ```
 2) supplement your other swagger info:
