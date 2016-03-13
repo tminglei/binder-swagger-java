@@ -1,11 +1,14 @@
 package com.github.tminglei.swagger;
 
 import com.github.tminglei.bind.Framework;
+import com.github.tminglei.bind.spi.Extensible;
+
+import static com.github.tminglei.bind.OptionsOps.*;
 
 /**
  * Extension class to be used to associate extra data to a `com.github.tminglei.bind.Framework.Mapping`
  */
-public class SwaggerExtensions implements Framework.Extensible {
+public class SwaggerExtensions implements Extensible {
     private String in;
     private String desc;
     private String format;
@@ -71,10 +74,10 @@ public class SwaggerExtensions implements Framework.Extensible {
     }
 
     /// --- static helper methods --------
-    public static SwaggerExtensions ext(Framework.Extensible ext) {
+    public static SwaggerExtensions ext(Extensible ext) {
         return ext != null ? (SwaggerExtensions) ext : new SwaggerExtensions();
     }
     public static SwaggerExtensions ext(Framework.Mapping<?> mapping) {
-        return ext(mapping.options()._ext());
+        return ext(_ext(mapping.options()));
     }
 }

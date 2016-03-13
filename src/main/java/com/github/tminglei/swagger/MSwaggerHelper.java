@@ -1,6 +1,8 @@
 package com.github.tminglei.swagger;
 
 import com.github.tminglei.bind.Framework;
+import com.github.tminglei.bind.spi.Constraint;
+import com.github.tminglei.bind.spi.ExtraConstraint;
 import io.swagger.models.*;
 import io.swagger.models.parameters.*;
 import io.swagger.models.properties.*;
@@ -17,6 +19,7 @@ import java.util.stream.Collectors;
 
 import static com.github.tminglei.swagger.SwaggerExtensions.*;
 import static com.github.tminglei.swagger.SwaggerUtils.*;
+import static com.github.tminglei.bind.OptionsOps.*;
 
 /**
  * Helper class to build swagger elements from `com.github.tminglei.bind.Framework.Mapping`
@@ -162,7 +165,7 @@ public class MSwaggerHelper {
         }
         if (mapping.meta().targetType == Optional.class) {
             Property bProperty = mToProperty(mapping.meta().baseMappings[0]
-                    .options(o -> o.append_constraints(mapping.options()._constraints())));
+                    .options(o -> append_constraints(o, _constraints(mapping.options()))));
             bProperty.setRequired(false);
             return bProperty;
         }
@@ -208,7 +211,7 @@ public class MSwaggerHelper {
     }
 
     protected AbstractProperty fillProperty(AbstractProperty property, Framework.Mapping<?> mapping) {
-        property.setTitle(mapping.options()._label().orElse(""));
+        property.setTitle(_label(mapping.options()).orElse(""));
         property.setDescription(ext(mapping).desc());
         property.setFormat(format(mapping));
         property.setRequired(required(mapping));
@@ -360,46 +363,46 @@ public class MSwaggerHelper {
     }
 
     protected List<String> enums(Framework.Mapping<?> mapping) {
-        Framework.Constraint oneOf = findConstraint(mapping, "oneOf");
+        Constraint oneOf = findConstraint(mapping, "oneOf");
         return oneOf != null ? new ArrayList<>((Collection<String>) oneOf.meta().params.get(0)) : null;
     }
 
     protected String pattern(Framework.Mapping<?> mapping) {
-        Framework.Constraint pattern = findConstraint(mapping, "pattern");
+        Constraint pattern = findConstraint(mapping, "pattern");
         return pattern != null ? (String) pattern.meta().params.get(0) : null;
     }
 
     protected Double maximum(Framework.Mapping<?> mapping) {
-        Framework.ExtraConstraint<?> max = findExtraConstraint(mapping, "max");
+        ExtraConstraint<?> max = findExtraConstraint(mapping, "max");
         return max != null && max.meta().params.get(0) instanceof Number
                 ? ((Number) max.meta().params.get(0)) .doubleValue()
                 : null;
     }
 
     protected Boolean exclusiveMaximum(Framework.Mapping<?> mapping) {
-        Framework.ExtraConstraint<?> max = findExtraConstraint(mapping, "max");
+        ExtraConstraint<?> max = findExtraConstraint(mapping, "max");
         return max != null ? (Boolean) max.meta().params.get(1) : null;
     }
 
     protected Double minimum(Framework.Mapping<?> mapping) {
-        Framework.ExtraConstraint<?> min = findExtraConstraint(mapping, "min");
+        ExtraConstraint<?> min = findExtraConstraint(mapping, "min");
         return min != null && min.meta().params.get(0) instanceof Number
                 ? ((Number) min.meta().params.get(0)) .doubleValue()
                 : null;
     }
 
     protected Boolean exclusiveMinimum(Framework.Mapping<?> mapping) {
-        Framework.ExtraConstraint<?> max = findExtraConstraint(mapping, "min");
+        ExtraConstraint<?> max = findExtraConstraint(mapping, "min");
         return max != null ? (Boolean) max.meta().params.get(1) : null;
     }
 
     protected Integer maxLength(Framework.Mapping<?> mapping) {
-        Framework.Constraint maxlen = findConstraint(mapping, "maxLength");
+        Constraint maxlen = findConstraint(mapping, "maxLength");
         return maxlen != null ? (Integer) maxlen.meta().params.get(0) : null;
     }
 
     protected Integer minLength(Framework.Mapping<?> mapping) {
-        Framework.Constraint minlen = findConstraint(mapping, "minLength");
+        Constraint minlen = findConstraint(mapping, "minLength");
         return minlen != null ? (Integer) minlen.meta().params.get(0) : null;
     }
 
@@ -408,8 +411,8 @@ public class MSwaggerHelper {
         return isEmpty(parent) ? current : parent + "." + current;
     }
 
-    protected Framework.Constraint findConstraint(Framework.Mapping<?> mapping, String name) {
-        for(Framework.Constraint c : mapping.options()._constraints()) {
+    protected Constraint findConstraint(Framework.Mapping<?> mapping, String name) {
+        for(Constraint c : _constraints(mapping.options())) {
             if (c.meta() != null && c.meta().name.equalsIgnoreCase(name)) {
                 return c;
             }
@@ -417,8 +420,8 @@ public class MSwaggerHelper {
         return null;
     }
 
-    protected Framework.ExtraConstraint<?> findExtraConstraint(Framework.Mapping<?> mapping, String name) {
-        for(Framework.ExtraConstraint<?> c : mapping.options()._extraConstraints()) {
+    protected ExtraConstraint<?> findExtraConstraint(Framework.Mapping<?> mapping, String name) {
+        for(ExtraConstraint<?> c : _extraConstraints(mapping.options())) {
             if (c.meta() != null && c.meta().name.equalsIgnoreCase(name)) {
                 return c;
             }
