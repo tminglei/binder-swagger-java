@@ -61,7 +61,7 @@ public class PetResource {
             field("status", petStatus)
         )).refName("pet").desc("pet info").$$;
 
-    static SharingHolder sharing = share().commPath("/pet").tag("pet");
+    static SharingHolder sharing = share().commonPath("/pet").tag("pet");
 
     ///
     static {

@@ -36,7 +36,7 @@ public class SwaggerContext {
         checkNotEmpty(method, "'method' CAN'T be null or empty!!!");
 
         sharing = sharing != null ? sharing : new SharingHolder();
-        path = joinPaths(sharing.commPath(), path);
+        path = joinPaths(sharing.commonPath(), path);
         HttpMethod httpMethod = HttpMethod.valueOf(method.toUpperCase());
         synchronized (swagger) {
             if (swagger.getPath(path) == null) {

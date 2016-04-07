@@ -10,7 +10,7 @@ import java.util.*;
  * Used to hold sharing configurations (unmodifiable)
  */
 public class SharingHolder {
-    private String commPath = "";
+    private String commonPath = "";
     private List<String> tags = new ArrayList<>();
     private List<Scheme> schemes = new ArrayList<>();
     private List<String> consumes = new ArrayList<>();
@@ -20,16 +20,16 @@ public class SharingHolder {
     private Map<Integer, Response> responses = new HashMap<>();
 
     ///
-    public String commPath() {
-        return this.commPath;
+    public String commonPath() {
+        return this.commonPath;
     }
-    public SharingHolder commPath(String path) {
+    public SharingHolder commonPath(String path) {
         SharingHolder clone = this.clone();
-        clone.commPath = path;
+        clone.commonPath = path;
         return clone;
     }
-    public SharingHolder reCommPath() {
-        return commPath("");
+    public SharingHolder reCommonPath() {
+        return commonPath("");
     }
 
     ///
@@ -163,7 +163,7 @@ public class SharingHolder {
     @Override
     protected SharingHolder clone() {
         SharingHolder clone = new SharingHolder();
-        clone.commPath = this.commPath;
+        clone.commonPath = this.commonPath;
         clone.tags = new ArrayList<>(this.tags);
         clone.params = new ArrayList<>(this.params);
         clone.responses = new HashMap<>(this.responses);

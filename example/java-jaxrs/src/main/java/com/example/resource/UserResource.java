@@ -60,7 +60,7 @@ public class UserResource {
             field("status", $(vInt(oneOf(Arrays.asList("1", "2", "3")))).desc("user's status").$$)
         )).refName("user").desc("user info").$$;
 
-    static SharingHolder sharing = share().commPath("/user").tag("user");
+    static SharingHolder sharing = share().commonPath("/user").tag("user");
 
     ///
     static {

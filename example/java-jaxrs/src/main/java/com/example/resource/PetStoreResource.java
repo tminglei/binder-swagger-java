@@ -57,7 +57,7 @@ public class PetStoreResource {
             field("status", orderStatus)
         )).refName("order").desc("order info").$$;
 
-    static SharingHolder sharing = share().commPath("/store").tag("store");
+    static SharingHolder sharing = share().commonPath("/store").tag("store");
 
     ///
     static {
