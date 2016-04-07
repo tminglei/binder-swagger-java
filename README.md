@@ -20,25 +20,25 @@ So, I created `binder-swagger-java`, which enable to use [`form-binder-java`](ht
 <dependency>
   <groupId>com.github.tminglei</groupId>
   <artifactId>binder-swagger-java</artifactId>
-  <version>0.5.0</version>
+  <version>0.6.0</version>
 </dependency>
 ```
 1) define and register your api operations:
 ```java
 // in `PetResource.java`
-static Mapping<?> petStatus = text(oneOf(Arrays.asList("available", "pending", "sold")))
-    .$ext(o -> ext(o).desc("pet status in the store"));
-static Mapping<?> pet = mapping(
-    field("id", vLong().$ext(o -> ext(o).desc("pet id"))),
-    field("name", text(required()).$ext(o -> ext(o).desc("pet name"))),
-    field("category", attach(required()).to(mapping(
+static Mapping<?> petStatus = $(text(oneOf(Arrays.asList("available", "pending", "sold"))))
+    .desc("pet status in the store").$$;
+static Mapping<?> pet = $(mapping(
+    field("id", $(vLong()).desc("pet id").$$),
+    field("name", $(text(required())).desc("pet name").$$),
+    field("category", attach(required()).to($(mapping(
             field("id", vLong(required())),
             field("name", text(required()))
-    )).$ext(o -> ext(o).refName("category").desc("category belonged to"))),
-    field("photoUrls", list(text()).$ext(o -> ext(o).desc("pet's photo urls"))),
-    field("tags", list(text()).$ext(o -> ext(o).desc("tags for the pet"))),
+    )).refName("category").desc("category belonged to").$$)),
+    field("photoUrls", $(list(text())).desc("pet's photo urls").$$),
+    field("tags", $(list(text())).desc("tags for the pet").$$),
     field("status", petStatus)
-).$ext(o -> ext(o).refName("pet").desc("pet info"));
+)).refName("pet").desc("pet info").$$;
 
 static {
     operation("post", "/pet")
