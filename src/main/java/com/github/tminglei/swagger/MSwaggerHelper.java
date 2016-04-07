@@ -17,7 +17,7 @@ import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.github.tminglei.swagger.SwaggerExtensions.*;
+import static com.github.tminglei.swagger.Attachment.*;
 import static com.github.tminglei.swagger.SwaggerUtils.*;
 import static com.github.tminglei.bind.OptionsOps.*;
 
@@ -27,25 +27,25 @@ import static com.github.tminglei.bind.OptionsOps.*;
 public class MSwaggerHelper {
 
     public List<Parameter> mToParameters(String name, Framework.Mapping<?> mapping) {
-        if ("body".equalsIgnoreCase( ext(mapping).in() )) {
+        if ("body".equalsIgnoreCase( attach(mapping).in() )) {
             return Arrays.asList(new BodyParameter()
                     .schema(mToModel(mapping))
                     .name(name)
-                    .description(ext(mapping).desc()));
+                    .description(attach(mapping).desc()));
         }
 
-        if (isEmpty( ext(mapping).in() ) && mapping instanceof Framework.GroupMapping) {
+        if (isEmpty( attach(mapping).in() ) && mapping instanceof Framework.GroupMapping) {
             return ((Framework.GroupMapping) mapping).fields().stream().flatMap(m -> {
-                if (isEmpty(ext(m.getValue()).in())) throw new IllegalArgumentException("in is required!!!");
+                if (isEmpty(attach(m.getValue()).in())) throw new IllegalArgumentException("in is required!!!");
                 return mToParameters(mergedName(name, m.getKey()), m.getValue()).stream();
             }).collect(Collectors.toList());
         }
 
-        if (isEmpty(ext(mapping).in())) throw new IllegalArgumentException("in is required!!!");
+        if (isEmpty(attach(mapping).in())) throw new IllegalArgumentException("in is required!!!");
 
         if (mapping instanceof Framework.GroupMapping) {
             return ((Framework.GroupMapping) mapping).fields().stream().flatMap(m -> {
-                Framework.Mapping<?> fMapping = m.getValue().$ext(e -> ext(e).merge(ext(mapping)));
+                Framework.Mapping<?> fMapping = mergeAttach(m.getValue(), attach(mapping));
                 return mToParameters(mergedName(name, m.getKey()), fMapping).stream();
             }).collect(Collectors.toList());
         } else {
@@ -56,42 +56,42 @@ public class MSwaggerHelper {
     }
 
     public Parameter mToParameter(String name, Framework.Mapping<?> mapping) {
-        if (isEmpty( ext(mapping).in() )) throw new IllegalArgumentException("in is required!!!");
+        if (isEmpty( attach(mapping).in() )) throw new IllegalArgumentException("in is required!!!");
 
-        if ("body".equalsIgnoreCase(ext(mapping).in())) {
+        if ("body".equalsIgnoreCase(attach(mapping).in())) {
             return new BodyParameter()
                     .schema(mToModel(mapping))
                     .name(name)
-                    .description(ext(mapping).desc());
+                    .description(attach(mapping).desc());
         }
 
         if (isEmpty(name)) throw new IllegalArgumentException("name is required!!!");
         if (!isPrimitive(mapping)) throw new IllegalArgumentException("must be primitives or primitive list!!!");
 
-        if ("form".equalsIgnoreCase( ext(mapping).in() ) || "formData".equalsIgnoreCase( ext(mapping).in() )) {
+        if ("form".equalsIgnoreCase( attach(mapping).in() ) || "formData".equalsIgnoreCase( attach(mapping).in() )) {
             return fillParameter(new FormParameter(), mapping).name(name);
         }
-        if ("path".equalsIgnoreCase( ext(mapping).in() )) {
+        if ("path".equalsIgnoreCase( attach(mapping).in() )) {
             return fillParameter(new PathParameter(), mapping).name(name).required(true);
         }
-        if ("query".equalsIgnoreCase( ext(mapping).in() )) {
+        if ("query".equalsIgnoreCase( attach(mapping).in() )) {
             return fillParameter(new QueryParameter(), mapping).name(name);
         }
-        if ("cookie".equalsIgnoreCase(ext(mapping).in())) {
+        if ("cookie".equalsIgnoreCase( attach(mapping).in())) {
             return fillParameter(new CookieParameter(), mapping).name(name);
         }
-        if ("header".equalsIgnoreCase( ext(mapping).in() )) {
+        if ("header".equalsIgnoreCase( attach(mapping).in() )) {
             return fillParameter(new HeaderParameter(), mapping).name(name);
         }
 
-        throw new IllegalArgumentException("Unsupported in type: '" + ext(mapping).in() + "'!!!");
+        throw new IllegalArgumentException("Unsupported in type: '" + attach(mapping).in() + "'!!!");
     }
 
     protected AbstractSerializableParameter fillParameter(AbstractSerializableParameter parameter, Framework.Mapping<?> mapping) {
         parameter = parameter.type(targetType(mapping))
                 .format(format(mapping))
                 .required(required(mapping))
-                .description(ext(mapping).desc())
+                .description(attach(mapping).desc())
                 .items(items(mapping))
                 ._enum(enums(mapping));
 
@@ -105,24 +105,24 @@ public class MSwaggerHelper {
     }
 
     public Model mToModel(Framework.Mapping<?> mapping) {
-        String refName = ext(mapping).refName();
+        String refName = attach(mapping).refName();
         if (!isEmpty(refName)) {
             return new RefModel(refName);
         }
 
         if (mapping.meta().targetType == List.class) {
             ArrayModel model = new ArrayModel()
-                    .description(ext(mapping).desc())
+                    .description(attach(mapping).desc())
                     .items(items(mapping));
-            model.setExample(ext(mapping).example());
+            model.setExample(attach(mapping).example());
             return model;
         }
 
         ModelImpl model = new ModelImpl()
                 .type(targetType(mapping))
                 .format(format(mapping))
-                .description(ext(mapping).desc())
-                .example(ext(mapping).example());
+                .description(attach(mapping).desc())
+                .example(attach(mapping).example());
 
         if (mapping instanceof Framework.GroupMapping) {
             ((Framework.GroupMapping) mapping).fields().forEach(m -> {
@@ -136,11 +136,11 @@ public class MSwaggerHelper {
 
     public Response mToResponse(Framework.Mapping<?> mapping) {
         return new Response().schema(mToProperty(mapping))
-                .description(ext(mapping).desc());
+                .description(attach(mapping).desc());
     }
 
     public Property mToProperty(Framework.Mapping<?> mapping) {
-        String refName = ext(mapping).refName();
+        String refName = attach(mapping).refName();
         if (!isEmpty(refName)) {
             return new RefProperty(refName);
         }
@@ -212,10 +212,10 @@ public class MSwaggerHelper {
 
     protected AbstractProperty fillProperty(AbstractProperty property, Framework.Mapping<?> mapping) {
         property.setTitle(_label(mapping.options()).orElse(""));
-        property.setDescription(ext(mapping).desc());
+        property.setDescription(attach(mapping).desc());
         property.setFormat(format(mapping));
         property.setRequired(required(mapping));
-        property.setExample(ext(mapping).example() != null ? ext(mapping).example().toString() : null);
+        property.setExample(attach(mapping).example() != null ? attach(mapping).example().toString() : null);
 
         if (property instanceof AbstractNumericProperty) {
             AbstractNumericProperty numericProperty = (AbstractNumericProperty) property;
@@ -239,9 +239,9 @@ public class MSwaggerHelper {
     public List<Map.Entry<String, Model>> scanModels(Framework.Mapping<?> mapping) {
         List<Map.Entry<String, Model>> models = new ArrayList<>();
 
-        String refName = ext(mapping).refName();
+        String refName = attach(mapping).refName();
         if (!isEmpty(refName)) {
-            Framework.Mapping<?> mappingNoRef = mapping.$ext(o -> ext(o).refName(null));
+            Framework.Mapping<?> mappingNoRef = new Attachment.Builder(mapping).refName(null).$$;
             models.add(entry(refName, mToModel(mappingNoRef)));
         }
 
@@ -348,7 +348,7 @@ public class MSwaggerHelper {
             return "double";
         }
 
-        return ext(mapping).format();
+        return attach(mapping).format();
     }
 
     protected boolean required(Framework.Mapping<?> mapping) {

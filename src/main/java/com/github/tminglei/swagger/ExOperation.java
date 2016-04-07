@@ -6,6 +6,7 @@ import io.swagger.models.parameters.Parameter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Extend `Operation` to provide some more helper methods
@@ -67,8 +68,7 @@ public class ExOperation extends Operation {
 
     @Override
     public ExOperation security(SecurityRequirement security) {
-        this.addSecurity(security.getName(), security.getScopes());
-        return this;
+        return this.security(security.getName(), security.getScopes());
     }
     public ExOperation security(String name, List<String> scopes) {
         this.addSecurity(name, scopes);
@@ -118,6 +118,12 @@ public class ExOperation extends Operation {
     @Override
     public ExOperation deprecated(Boolean deprecated) {
         this.setDeprecated(deprecated);
+        return this;
+    }
+
+    @Override
+    public ExOperation vendorExtensions(Map<String, Object> vendorExtensions) {
+        super.vendorExtensions( vendorExtensions );
         return this;
     }
 

@@ -5,17 +5,15 @@ import io.swagger.models.parameters.Parameter;
 
 import java.util.List;
 
-import static com.github.tminglei.swagger.SwaggerExtensions.*;
-
 /**
  * Helper class to build `Parameter` from a `com.github.tminglei.bind.Framework.Mapping`
  */
 public class MParamBuilder {
-    private Framework.Mapping<?> mapping;
+    private Attachment.Builder<?> attachBuilder;
     private String name;
 
     MParamBuilder(Framework.Mapping<?> mapping) {
-        this.mapping = mapping;
+        this.attachBuilder = new Attachment.Builder(mapping);
     }
     public MParamBuilder name(String name) {
         this.name = name;
@@ -23,15 +21,15 @@ public class MParamBuilder {
     }
 
     public MParamBuilder in(String where) {
-        mapping = mapping.$ext(e -> ext(e).in(where));
+        attachBuilder.in(where);
         return this;
     }
     public MParamBuilder desc(String desc) {
-        mapping = mapping.$ext(e -> ext(e).desc(desc));
+        attachBuilder.desc(desc);
         return this;
     }
     public MParamBuilder example(Object example) {
-        mapping = mapping.$ext(e -> ext(e).example(example));
+        attachBuilder.example(example);
         return this;
     }
 
@@ -42,7 +40,7 @@ public class MParamBuilder {
         return ret.get(0);
     }
     public List<Parameter> build() {
-        SwaggerContext.scanRegisterNamedModels(mapping);
-        return SwaggerContext.mHelper.mToParameters(name, mapping);
+        SwaggerContext.scanRegisterNamedModels(attachBuilder.$$);
+        return SwaggerContext.mHelper.mToParameters(name, attachBuilder.$$);
     }
 }

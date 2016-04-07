@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.*;
-import static com.github.tminglei.swagger.SwaggerExtensions.*;
+import static com.github.tminglei.swagger.Attachment.*;
 import static com.github.tminglei.bind.Simple.*;
 import static com.github.tminglei.bind.Mappings.*;
 import static com.github.tminglei.bind.Constraints.*;
@@ -28,7 +28,7 @@ public class MSwaggerHelperTest {
 
     @Test
     public void testMtoParameters_Single() {
-        List<Parameter> params = mHelper.mToParameters("id", vLong(required()).$ext(o -> ext(o).in("query").desc("id")));
+        List<Parameter> params = mHelper.mToParameters("id", $(vLong(required())).in("query").desc("id").$$);
 
         assertEquals(params.size(), 1);
 
@@ -42,7 +42,7 @@ public class MSwaggerHelperTest {
 
         /// 'in' is required!!!
         try {
-            List<Parameter> params1 = mHelper.mToParameters("id", vLong(required()).$ext(o -> ext(o).desc("id")));
+            List<Parameter> params1 = mHelper.mToParameters("id", $(vLong(required())).desc("id").$$);
             assertTrue("shouldn't", false);
         } catch (Exception e) {
             assertEquals(e.getMessage(), "in is required!!!");
@@ -52,11 +52,11 @@ public class MSwaggerHelperTest {
     @Test
     public void testMtoParameters_Multiple() {
         List<Parameter> params = mHelper.mToParameters("", mapping(
-                field("id", vInt().$ext(o -> ext(o).in("path").desc("id"))),
-                field("data", mapping(
-                        field("id", vInt().$ext(o -> ext(o).desc("id"))),
-                        field("name", text(required()).$ext(o -> ext(o).desc("name")))
-                ).$ext(o -> ext(o).in("body")))
+                field("id", $(vInt()).in("path").desc("id").$$),
+                field("data", $(mapping(
+                        field("id", $(vInt()).desc("id").$$),
+                        field("name", $(text(required())).desc("name").$$)
+                )).in("body").$$)
         ));
 
         assertEquals(params.size(), 2);
@@ -85,12 +85,13 @@ public class MSwaggerHelperTest {
         /// 'in' is required!!!
         try {
             List<Parameter> params1 = mHelper.mToParameters("", mapping(
-                    field("id", vInt().$ext(o -> ext(o).desc("id"))),
-                    field("data", mapping(
-                            field("id", vInt().$ext(o -> ext(o).desc("id"))),
-                            field("name", text(required()).$ext(o -> ext(o).desc("name")))
-                    ).$ext(o -> ext(o).in("body")))
+                    field("id", $(vInt()).desc("id").$$),
+                    field("data", $(mapping(
+                            field("id", $(vInt()).desc("id").$$),
+                            field("name", $(text(required())).desc("name").$$)
+                    )).in("body").$$)
             ));
+            assertEquals(false, "shouldn't happen");
         } catch (Exception e) {
             assertEquals(e.getMessage(), "in is required!!!");
         }
@@ -99,8 +100,8 @@ public class MSwaggerHelperTest {
     @Test
     public void testMtoModel() {
         Model model = mHelper.mToModel(list(mapping(
-                field("id", vInt().$ext(o -> ext(o).desc("id"))),
-                field("name", text(required()).$ext(o -> ext(o).desc("name")))
+                field("id", $(vInt()).desc("id").$$),
+                field("name", $(text(required())).desc("name").$$)
         )));
         assertTrue(model instanceof ArrayModel);
         ArrayModel m = (ArrayModel) model;
@@ -126,8 +127,8 @@ public class MSwaggerHelperTest {
     @Test
     public void testMtoProperty() {
         Property prop = mHelper.mToProperty(list(mapping(
-                field("id", vInt().$ext(o -> ext(o).desc("id"))),
-                field("name", text(required()).$ext(o -> ext(o).desc("name")))
+                field("id", $(vInt()).desc("id").$$),
+                field("name", $(text(required())).desc("name").$$)
         )));
         assertTrue(prop instanceof ArrayProperty);
         ArrayProperty p = (ArrayProperty) prop;
@@ -152,22 +153,22 @@ public class MSwaggerHelperTest {
 
     @Test
     public void testScanModels() {
-        List<Map.Entry<String, Model>> models = mHelper.scanModels(mapping(
+        List<Map.Entry<String, Model>> models = mHelper.scanModels($(mapping(
                 field("id", vLong()),
-                field("props1", mapping(
+                field("props1", $(mapping(
                         field("id", vLong()),
                         field("name", text())
-                ).$ext(o -> ext(o).refName("props"))),
-                field("props2", mapping(
+                )).refName("props").$$),
+                field("props2", $(mapping(
                         field("id", vLong()),
                         field("name", text()),
                         field("extra", text())
-                ).$ext(o -> ext(o).refName("props"))),
-                field("props3", mapping(
+                )).refName("props").$$),
+                field("props3", $(mapping(
                         field("id", vLong()),
                         field("name", text())
-                ).$ext(o -> ext(o).refName("props")))
-        ).$ext(o -> ext(o).refName("test")));
+                )).refName("props").$$)
+        )).refName("test").$$);
 
         assertEquals(models.size(), 4);
         assertEquals(models.get(0).getKey(), "test");
@@ -208,6 +209,6 @@ public class MSwaggerHelperTest {
         assertEquals(mHelper.format(datetime()), "date-time");
         assertEquals(mHelper.format(text(email())), "email");
         assertEquals(mHelper.format(vLong(email())), "int64");
-        assertEquals(mHelper.format(text().$ext(o -> ext(o).format("json"))), "json");
+        assertEquals(mHelper.format($(text()).format("json").$$), "json");
     }
 }
