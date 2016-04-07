@@ -103,7 +103,7 @@ public class PetData {
         run.update("insert into pet(id, category_id, name, photo_urls, tags, status) " +
                 "values(?, ?, ?, ?, ?, ?)",
                 bindObj.get("id"),
-                bindObj.node("category").get("id"),
+                bindObj.obj("category").get("id"),
                 bindObj.get("name"),
                 bindObj.get("photoUrls"),
                 bindObj.get("tags"),
