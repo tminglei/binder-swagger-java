@@ -24,6 +24,7 @@ import com.example.exception.BadRequestException;
 import com.example.exception.NotFoundException;
 import com.github.tminglei.bind.BindObject;
 import com.github.tminglei.bind.FormBinder;
+import com.github.tminglei.bind.Messages;
 import com.github.tminglei.swagger.SharingHolder;
 
 import java.sql.SQLException;
@@ -32,7 +33,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 
 import static com.github.tminglei.swagger.SwaggerContext.*;
-import static com.github.tminglei.swagger.SwaggerExtensions.*;
+import static com.github.tminglei.swagger.Attachment.*;
 import static com.github.tminglei.swagger.SwaggerUtils.*;
 import static com.github.tminglei.bind.Simple.*;
 import static com.github.tminglei.bind.Mappings.*;
@@ -46,19 +47,19 @@ public class PetResource {
     private ResourceBundle bundle = ResourceBundle.getBundle("bind-messages");
     private Messages messages = (key) -> bundle.getString(key);
 
-    static Mapping<?> petStatus = text(oneOf(Arrays.asList("available", "pending", "sold")))
-            .$ext(o -> ext(o).desc("pet status in the store"));
-    static Mapping<?> pet = mapping(
-            field("id", vLong().$ext(o -> ext(o).desc("pet id"))),
-            field("name", text(required()).$ext(o -> ext(o).desc("pet name"))),
-            field("category", attach(required()).to(mapping(
+    static Mapping<?> petStatus = $(text(oneOf(Arrays.asList("available", "pending", "sold"))))
+            .desc("pet status in the store").$$;
+    static Mapping<?> pet = $(mapping(
+            field("id", $(vLong()).desc("pet id").$$),
+            field("name", $(text(required())).desc("pet name").$$),
+            field("category", attach(required()).to($(mapping(
                     field("id", vLong(required())),
                     field("name", text(required()))
-            )).$ext(o -> ext(o).refName("category").desc("category belonged to"))),
-            field("photoUrls", list(text()).$ext(o -> ext(o).desc("pet's photo urls"))),
-            field("tags", list(text()).$ext(o -> ext(o).desc("tags for the pet"))),
+            )).desc("category belonged to").$$)),
+            field("photoUrls", $(list(text())).desc("pet's photo urls").$$),
+            field("tags", $(list(text())).desc("tags for the pet").$$),
             field("status", petStatus)
-        ).$ext(o -> ext(o).refName("pet").desc("pet info"));
+        )).refName("pet").desc("pet info").$$;
 
     static SharingHolder sharing = share().commPath("/pet").tag("pet");
 

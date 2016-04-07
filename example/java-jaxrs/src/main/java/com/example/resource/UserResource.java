@@ -25,6 +25,7 @@ import com.example.exception.NotFoundException;
 import com.example.exception.ApiException;
 import com.github.tminglei.bind.BindObject;
 import com.github.tminglei.bind.FormBinder;
+import com.github.tminglei.bind.Messages;
 import com.github.tminglei.swagger.SharingHolder;
 
 import java.sql.SQLException;
@@ -34,7 +35,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 
 import static com.github.tminglei.swagger.SwaggerContext.*;
-import static com.github.tminglei.swagger.SwaggerExtensions.*;
+import static com.github.tminglei.swagger.Attachment.*;
 import static com.github.tminglei.swagger.SwaggerUtils.*;
 import static com.github.tminglei.bind.Simple.*;
 import static com.github.tminglei.bind.Mappings.*;
@@ -48,16 +49,16 @@ public class UserResource {
     private ResourceBundle bundle = ResourceBundle.getBundle("bind-messages");
     private Messages messages = (key) -> bundle.getString(key);
 
-    static Mapping<?> user = mapping(
-            field("id", vLong().$ext(o -> ext(o).desc("user id"))),
-            field("username", text(required()).$ext(o -> ext(o).desc("user name"))),
-            field("firstName", text().$ext(o -> ext(o).desc("user's first name"))),
-            field("lastName", text().$ext(o -> ext(o).desc("user's last name"))),
-            field("email", text(email()).$ext(o -> ext(o).desc("user's email"))),
-            field("password", text().$ext(o -> ext(o).format("password").desc("password"))),
-            field("phone", text(pattern("[\\d]{3}-[\\d]{4}-[\\d]{2}")).$ext(o -> ext(o).desc("phone number"))),
-            field("status", vInt(oneOf(Arrays.asList("1", "2", "3"))).$ext(o -> ext(o).desc("user's status")))
-        ).$ext(o -> ext(o).refName("user").desc("user info"));
+    static Mapping<?> user = $(mapping(
+            field("id", $(vLong()).desc("user id").$$),
+            field("username", $(text(required())).desc("user name").$$),
+            field("firstName", $(text()).desc("user's first name").$$),
+            field("lastName", $(text()).desc("user's last name").$$),
+            field("email", $(text(email())).desc("user's email").$$),
+            field("password", $(text()).format("password").desc("password").$$),
+            field("phone", $(text(pattern("[\\d]{3}-[\\d]{4}-[\\d]{2}"))).desc("phone number").$$),
+            field("status", $(vInt(oneOf(Arrays.asList("1", "2", "3")))).desc("user's status").$$)
+        )).refName("user").desc("user info").$$;
 
     static SharingHolder sharing = share().commPath("/user").tag("user");
 

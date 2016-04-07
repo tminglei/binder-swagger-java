@@ -24,6 +24,7 @@ import com.example.exception.BadRequestException;
 import com.example.exception.NotFoundException;
 import com.github.tminglei.bind.BindObject;
 import com.github.tminglei.bind.FormBinder;
+import com.github.tminglei.bind.Messages;
 import com.github.tminglei.swagger.SharingHolder;
 
 import java.sql.SQLException;
@@ -32,7 +33,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 
 import static com.github.tminglei.swagger.SwaggerContext.*;
-import static com.github.tminglei.swagger.SwaggerExtensions.*;
+import static com.github.tminglei.swagger.Attachment.*;
 import static com.github.tminglei.swagger.SwaggerUtils.*;
 import static com.github.tminglei.bind.Simple.*;
 import static com.github.tminglei.bind.Mappings.*;
@@ -46,15 +47,15 @@ public class PetStoreResource {
     private ResourceBundle bundle = ResourceBundle.getBundle("bind-messages");
     private Messages messages = (key) -> bundle.getString(key);
 
-    static Mapping<?> orderStatus = text(oneOf(Arrays.asList("placed", "approved", "delivered")))
-            .$ext(o -> ext(o).desc("order status"));
-    static Mapping<?> order = mapping(
-            field("id", vLong().$ext(o -> ext(o).desc("order id"))),
-            field("petId", vLong(required()).$ext(o -> ext(o).desc("pet id"))),
-            field("quantity", vInt(required()).$ext(o -> ext(o).desc("number to be sold"))),
-            field("shipDate", datetime().$ext(o -> ext(o).desc("delivery time"))),
+    static Mapping<?> orderStatus = $(text(oneOf(Arrays.asList("placed", "approved", "delivered"))))
+            .desc("order status").$$;
+    static Mapping<?> order = $(mapping(
+            field("id", $(vLong()).desc("order id").$$),
+            field("petId", $(vLong(required())).desc("pet id").$$),
+            field("quantity", $(vInt(required())).desc("number to be sold").$$),
+            field("shipDate", $(datetime()).desc("delivery time").$$),
             field("status", orderStatus)
-        ).$ext(o -> ext(o).refName("order").desc("order info"));
+        )).refName("order").desc("order info").$$;
 
     static SharingHolder sharing = share().commPath("/store").tag("store");
 
