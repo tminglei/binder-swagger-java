@@ -131,7 +131,7 @@ NOTES: if you extend the [MSwaggerHelper](https://github.com/tminglei/binder-swa
 
 ## Q & A
 **Q:** Why use static code blocks to associate/register operation meta info instead of annotations?  
-**A:** Well, because annotation requires static defined data structure. But we didn't define java beans in our project.  
+**A:** Well, because we can't use annotations. Annotation requires static defined data types, but we didn't define java beans in our project.  
 _(p.s. because of this, we can't also use existing frameworks, like `springfox`.)_
 
 
