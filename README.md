@@ -2,20 +2,19 @@
 
 [![Build Status](https://travis-ci.org/tminglei/binder-swagger-java.svg?branch=master)](https://travis-ci.org/tminglei/binder-swagger-java)
 
-Given the `swagger.json`, [`swagger ui`](http://petstore.swagger.io/) can dynamically build the web client, to enable online browsing your APIs, sending request and receiving response from your rest services.
+I noticed, if we provided the `swagger.json`, [`swagger ui`](http://petstore.swagger.io/) will take care of the others: dynamically build the web client, enable us online browsing the APIs, sending request to and receiving response from the real services.
 
-`binder-swagger-java` was designed to help construct the swagger object, corresponding to `swagger.json`, and let it accessible from swagger ui or other http visitors.
+`binder-swagger-java` was designed to help construct the swagger object (corresponding to `swagger.json`), and let it accessible from swagger ui or other http visitors.
 
 
-## Why another wheel?
-We used many dynamic data structures (json, map, list, etc.) as API inbound/outbound parameters, didn't define java beans (static types), in our projects. And existing swagger solutions, e.g. `springfox`, don't support dynamic data structures, and can't be enhanced to support them.
+## How it works
+You define the api meta data in classes' static code blocks, then it was collected to a static global swagger object when class scan/loading, so when requested, the program can serve it right now.
 
-So, I created `binder-swagger-java`, which enable to use [`form-binder-java`](https://github.com/tminglei/form-binder-java) to define dynamic data structures, and use them in swagger API docs.
+> _p.s. `binder-swagger-java` based on [`form-binder-java`](https://github.com/tminglei/form-binder-java) and [`swagger-models`](https://github.com/swagger-api/swagger-core), allow to define dynamic data structures and operate the swagger object directly when necessary, so it's more expressive in theory._
 
-> _p.s. `binder-swagger-java` based on [`swagger-models`](https://github.com/swagger-api/swagger-core) directly, allow to operate the swagger object directly when necessary, so it's more expressive in theory._
 
 ## How to use
-0) add the dependency to your project:
+#### 0) add the dependency to your project:
 ```xml
 <dependency>
   <groupId>com.github.tminglei</groupId>
@@ -23,7 +22,7 @@ So, I created `binder-swagger-java`, which enable to use [`form-binder-java`](ht
   <version>0.6.0</version>
 </dependency>
 ```
-1) define and register your api operations:
+#### 1) define and register your api operations:
 ```java
 // in `PetResource.java`
 static Mapping<?> petStatus = $(text(oneOf(Arrays.asList("available", "pending", "sold"))))
@@ -53,7 +52,7 @@ static {
 public Response addPet(String data) throws BadRequestException, SQLException {
 ...
 ```
-2) supplement your other swagger info:
+#### 2) supplement your other swagger info:
 ```java
 // in `Bootstrap.java`
 static {  // for swagger
@@ -84,7 +83,7 @@ static {  // for swagger
 	);
 }
 ```
-3) configure the filter, which will serv the `swagger.json`:
+#### 3) configure the filter, which will serv the `swagger.json`:
 ```xml
 // in `web.xml`
 <filter>
