@@ -10,6 +10,8 @@ I noticed, if we provided the `swagger.json`, [`swagger ui`](http://petstore.swa
 ## How it works
 You define the api meta data in classes' static code blocks, then it was collected to a static global swagger object when class scan/loading, so when requested, the program can serve it right now.
 
+![binder-swagger description](https://raw.githubusercontent.com/tminglei/binder-swagger-java/master/binder-swagger-java.png)
+
 > _p.s. `binder-swagger-java` based on [`form-binder-java`](https://github.com/tminglei/form-binder-java) and [`swagger-models`](https://github.com/swagger-api/swagger-core), allow to define dynamic data structures and operate the swagger object directly when necessary, so it's more expressive in theory._
 
 
