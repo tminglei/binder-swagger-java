@@ -58,7 +58,7 @@ public class UserResource {
             field("password", $(text()).format("password").desc("password").$$),
             field("phone", $(text(pattern("[\\d]{3}-[\\d]{4}-[\\d]{2}"))).desc("phone number").$$),
             field("status", $(vInt(oneOf(Arrays.asList("1", "2", "3")))).desc("user's status").$$)
-        )).refName("user").desc("user info").$$;
+        )).refName("User").desc("user info").$$;
 
     static SharingHolder sharing = share().commonPath("/user").tag("user");
 

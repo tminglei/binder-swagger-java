@@ -21,15 +21,15 @@ public class MParamBuilder {
     }
 
     public MParamBuilder in(String where) {
-        attachBuilder.in(where);
+        attachBuilder = attachBuilder.in(where);
         return this;
     }
     public MParamBuilder desc(String desc) {
-        attachBuilder.desc(desc);
+        attachBuilder = attachBuilder.desc(desc);
         return this;
     }
     public MParamBuilder example(Object example) {
-        attachBuilder.example(example);
+        attachBuilder = attachBuilder.example(example);
         return this;
     }
 

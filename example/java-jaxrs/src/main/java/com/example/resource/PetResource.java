@@ -59,7 +59,7 @@ public class PetResource {
             field("photoUrls", $(list(text())).desc("pet's photo urls").$$),
             field("tags", $(list(text())).desc("tags for the pet").$$),
             field("status", petStatus)
-        )).refName("pet").desc("pet info").$$;
+        )).refName("Pet").desc("pet info").$$;
 
     static SharingHolder sharing = share().commonPath("/pet").tag("pet");
 

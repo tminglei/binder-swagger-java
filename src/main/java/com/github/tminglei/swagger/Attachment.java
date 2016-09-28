@@ -68,35 +68,41 @@ public class Attachment {
 
     public static class Builder<T> {
         public final Framework.Mapping<T> $$;
+        private final Attachment _attach;
 
         Builder(Framework.Mapping<T> mapping) {
-            this.$$ = _attachment(mapping.options()) == null ? mapping.options(o -> _attachment(o, new Attachment()))
-                    : mapping;
+            this._attach = attach(mapping).clone();
+            this.$$ = mapping.options(o -> _attachment(o, _attach));
         }
 
         public Builder<T> in(String in) {
-            attach($$).in = in;
-            return this;
+            Builder<T> clone = new Builder<>($$);
+            clone._attach.in = in;
+            return clone;
         }
 
         public Builder<T> desc(String desc) {
-            attach($$).desc = desc;
-            return this;
+            Builder<T> clone = new Builder<>($$);
+            clone._attach.desc = desc;
+            return clone;
         }
 
         public Builder<T> format(String format) {
-            attach($$).format = format;
-            return this;
+            Builder<T> clone = new Builder<>($$);
+            clone._attach.format = format;
+            return clone;
         }
 
         public Builder<T> example(Object example) {
-            attach($$).example = example;
-            return this;
+            Builder<T> clone = new Builder<>($$);
+            clone._attach.example = example;
+            return clone;
         }
 
         public Builder<T> refName(String refName) {
-            attach($$).refName = refName;
-            return this;
+            Builder<T> clone = new Builder<>($$);
+            clone._attach.refName = refName;
+            return clone;
         }
     }
 }

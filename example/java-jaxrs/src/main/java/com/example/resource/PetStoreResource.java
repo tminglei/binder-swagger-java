@@ -55,7 +55,7 @@ public class PetStoreResource {
             field("quantity", $(vInt(required())).desc("number to be sold").$$),
             field("shipDate", $(datetime()).desc("delivery time").$$),
             field("status", orderStatus)
-        )).refName("order").desc("order info").$$;
+        )).refName("Order").desc("order info").$$;
 
     static SharingHolder sharing = share().commonPath("/store").tag("store");
 
