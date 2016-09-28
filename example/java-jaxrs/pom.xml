@@ -174,7 +174,7 @@
               <goal>wget</goal>
             </goals>
             <configuration>
-              <url>https://github.com/swagger-api/swagger-ui/archive/master.tar.gz</url>
+              <url>https://github.com/swagger-api/swagger-ui/archive/v2.2.5.tar.gz</url>
               <unpack>true</unpack>
               <outputDirectory>${project.build.directory}</outputDirectory>
             </configuration>
@@ -195,7 +195,7 @@
               <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}</outputDirectory>
               <resources>
                 <resource>
-                  <directory>${project.build.directory}/swagger-ui-master/dist</directory>
+                  <directory>${project.build.directory}/swagger-ui-2.2.5/dist</directory>
                   <filtering>true</filtering>
                   <excludes>
                     <exclude>index.html</exclude>
