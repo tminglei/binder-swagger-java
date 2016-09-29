@@ -21,7 +21,7 @@ You define the api meta data in classes' static code blocks, then it was collect
 <dependency>
   <groupId>com.github.tminglei</groupId>
   <artifactId>binder-swagger-java</artifactId>
-  <version>0.6.0</version>
+  <version>0.6.1</version>
 </dependency>
 ```
 #### 1) define and register your api operations:
