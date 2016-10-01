@@ -211,7 +211,6 @@ public class MSwaggerHelper {
     }
 
     protected AbstractProperty fillProperty(AbstractProperty property, Framework.Mapping<?> mapping) {
-        property.setTitle(_label(mapping.options()).orElse(""));
         property.setDescription(attach(mapping).desc());
         property.setFormat(format(mapping));
         property.setRequired(required(mapping));

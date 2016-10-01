@@ -129,7 +129,7 @@ public class PetResource {
     static {
         operation("get", "/findByStatus", sharing)
                 .summary("find pets by status")
-                .parameter(param(list(petStatus)).in("query").name("status"))
+                .parameter(param(list(petStatus, required())).in("query").name("status"))
                 .response(200, response(list(pet)).description("pet list"))
         ;
     }
@@ -143,7 +143,8 @@ public class PetResource {
         operation("get", "/findByTags", sharing)
                 .summary("find pets by tags")
                 .parameter(param(list(text())).in("query").name("tags").desc("pet tags"))
-                .response(200, response(list(pet)).description("pet list"));
+                .response(200, response(list(pet)).description("pet list"))
+                .deprecated(true);
     }
     @GET
     @Path("/findByTags")
