@@ -37,7 +37,7 @@ public class MSwaggerHelper {
         if (isEmpty( attach(mapping).in() ) && mapping instanceof Framework.GroupMapping) {
             return ((Framework.GroupMapping) mapping).fields().stream().flatMap(m -> {
                 if (isEmpty(attach(m.getValue()).in())) throw new IllegalArgumentException("in is required!!!");
-                return mToParameters(mergedName(name, m.getKey()), m.getValue()).stream();
+                return mToParameters(concatName(name, m.getKey()), m.getValue()).stream();
             }).collect(Collectors.toList());
         }
 
@@ -46,7 +46,7 @@ public class MSwaggerHelper {
         if (mapping instanceof Framework.GroupMapping) {
             return ((Framework.GroupMapping) mapping).fields().stream().flatMap(m -> {
                 Framework.Mapping<?> fMapping = mergeAttach(m.getValue(), attach(mapping));
-                return mToParameters(mergedName(name, m.getKey()), fMapping).stream();
+                return mToParameters(concatName(name, m.getKey()), fMapping).stream();
             }).collect(Collectors.toList());
         } else {
             if (!isPrimitive(mapping)) throw new IllegalArgumentException("must be primitives or primitive list!!!");
@@ -406,7 +406,7 @@ public class MSwaggerHelper {
     }
 
     ///
-    protected String mergedName(String parent, String current) {
+    protected String concatName(String parent, String current) {
         return isEmpty(parent) ? current : parent + "." + current;
     }
 

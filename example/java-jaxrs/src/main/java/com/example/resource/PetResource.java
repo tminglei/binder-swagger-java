@@ -56,7 +56,7 @@ public class PetResource {
                     field("id", vLong(required())),
                     field("name", text(required()))
             )).desc("category belonged to").$$)),
-            field("photoUrls", $(list(text())).desc("pet's photo urls").$$),
+            field("photoUrls", $(list(text().constraint(pattern("http://.*")))).desc("pet's photo urls").$$),
             field("tags", $(list(text())).desc("tags for the pet").$$),
             field("status", petStatus)
         )).refName("Pet").desc("pet info").$$;

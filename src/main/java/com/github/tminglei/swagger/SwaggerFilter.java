@@ -76,16 +76,16 @@ public class SwaggerFilter implements Filter {
             HttpServletRequest req = (HttpServletRequest) request;
             HttpServletResponse resp = (HttpServletResponse) response;
 
-            // enable cross-origin resource sharing
-            resp.addHeader("Access-Control-Allow-Origin", "*");
-            resp.addHeader("Access-Control-Allow-Methods", "POST, GET, PUT, PATCH, DELETE, HEAD, OPTIONS");
-            resp.addHeader("Access-Control-Max-Age", "43200"); // half a day
-
             if (swaggerPath.equals(req.getPathInfo()) && "GET".equalsIgnoreCase(req.getMethod())) {
+                // enable cross-origin resource sharing
+                resp.addHeader("Access-Control-Allow-Origin", "*");
+                resp.addHeader("Access-Control-Allow-Methods", "POST, GET, PUT, PATCH, DELETE, HEAD, OPTIONS");
+                resp.addHeader("Access-Control-Max-Age", "43200"); // half a day
+
                 String json = new ObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL)
                         .writer().writeValueAsString(check(SwaggerContext.swagger()));
-                response.getWriter().write(json);
-                response.flushBuffer();
+                resp.getWriter().write(json);
+                resp.flushBuffer();
                 return;
             }
         }
