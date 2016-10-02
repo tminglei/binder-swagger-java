@@ -41,7 +41,7 @@
     <dependency>
       <groupId>com.github.tminglei</groupId>
       <artifactId>form-binder-java</artifactId>
-      <version>0.13.0</version>
+      <version>0.13.2</version>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>

@@ -28,7 +28,7 @@ public class MSwaggerHelperTest {
 
     @Test
     public void testMtoParameters_Single() {
-        List<Parameter> params = mHelper.mToParameters("id", $(vLong(required())).in("query").desc("id").$$);
+        List<Parameter> params = mHelper.mToParameters("id", $(longv(required())).in("query").desc("id").$$);
 
         assertEquals(params.size(), 1);
 
@@ -42,7 +42,7 @@ public class MSwaggerHelperTest {
 
         /// 'in' is required!!!
         try {
-            List<Parameter> params1 = mHelper.mToParameters("id", $(vLong(required())).desc("id").$$);
+            List<Parameter> params1 = mHelper.mToParameters("id", $(longv(required())).desc("id").$$);
             assertTrue("shouldn't", false);
         } catch (Exception e) {
             assertEquals(e.getMessage(), "in is required!!!");
@@ -52,9 +52,9 @@ public class MSwaggerHelperTest {
     @Test
     public void testMtoParameters_Multiple() {
         List<Parameter> params = mHelper.mToParameters("", mapping(
-                field("id", $(vInt()).in("path").desc("id").$$),
+                field("id", $(intv()).in("path").desc("id").$$),
                 field("data", $(mapping(
-                        field("id", $(vInt()).desc("id").$$),
+                        field("id", $(intv()).desc("id").$$),
                         field("name", $(text(required())).desc("name").$$)
                 )).in("body").$$)
         ));
@@ -85,9 +85,9 @@ public class MSwaggerHelperTest {
         /// 'in' is required!!!
         try {
             List<Parameter> params1 = mHelper.mToParameters("", mapping(
-                    field("id", $(vInt()).desc("id").$$),
+                    field("id", $(intv()).desc("id").$$),
                     field("data", $(mapping(
-                            field("id", $(vInt()).desc("id").$$),
+                            field("id", $(intv()).desc("id").$$),
                             field("name", $(text(required())).desc("name").$$)
                     )).in("body").$$)
             ));
@@ -100,7 +100,7 @@ public class MSwaggerHelperTest {
     @Test
     public void testMtoModel() {
         Model model = mHelper.mToModel(list(mapping(
-                field("id", $(vInt()).desc("id").$$),
+                field("id", $(intv()).desc("id").$$),
                 field("name", $(text(required())).desc("name").$$)
         )));
         assertTrue(model instanceof ArrayModel);
@@ -127,7 +127,7 @@ public class MSwaggerHelperTest {
     @Test
     public void testMtoProperty() {
         Property prop = mHelper.mToProperty(list(mapping(
-                field("id", $(vInt()).desc("id").$$),
+                field("id", $(intv()).desc("id").$$),
                 field("name", $(text(required())).desc("name").$$)
         )));
         assertTrue(prop instanceof ArrayProperty);
@@ -154,18 +154,18 @@ public class MSwaggerHelperTest {
     @Test
     public void testScanModels() {
         List<Map.Entry<String, Model>> models = mHelper.scanModels($(mapping(
-                field("id", vLong()),
+                field("id", longv()),
                 field("props1", $(mapping(
-                        field("id", vLong()),
+                        field("id", longv()),
                         field("name", text())
                 )).refName("props").$$),
                 field("props2", $(mapping(
-                        field("id", vLong()),
+                        field("id", longv()),
                         field("name", text()),
                         field("extra", text())
                 )).refName("props").$$),
                 field("props3", $(mapping(
-                        field("id", vLong()),
+                        field("id", longv()),
                         field("name", text())
                 )).refName("props").$$)
         )).refName("test").$$);
@@ -189,16 +189,16 @@ public class MSwaggerHelperTest {
     ///
     @Test
     public void testIsPrimitive() {
-        assertEquals(mHelper.isPrimitive(vLong(), true), true);
-        assertEquals(mHelper.isPrimitive(list(vLong()), true), true);
-        assertEquals(mHelper.isPrimitive(list(vLong()), false), false);
+        assertEquals(mHelper.isPrimitive(longv(), true), true);
+        assertEquals(mHelper.isPrimitive(list(longv()), true), true);
+        assertEquals(mHelper.isPrimitive(list(longv()), false), false);
         assertEquals(mHelper.isPrimitive(mapping(), true), false);
     }
 
     @Test
     public void testTargetType() {
-        assertEquals(mHelper.targetType(vLong()), "integer");
-        assertEquals(mHelper.targetType(list(vInt())), "array");
+        assertEquals(mHelper.targetType(longv()), "integer");
+        assertEquals(mHelper.targetType(list(intv())), "array");
         assertEquals(mHelper.targetType(mapping()), "object");
         assertEquals(mHelper.targetType(uuid()), "string");
         assertEquals(mHelper.targetType(bigDecimal()), "number");
@@ -208,7 +208,7 @@ public class MSwaggerHelperTest {
     public void testFormat() {
         assertEquals(mHelper.format(datetime()), "date-time");
         assertEquals(mHelper.format(text(email())), "email");
-        assertEquals(mHelper.format(vLong(email())), "int64");
+        assertEquals(mHelper.format(longv(email())), "int64");
         assertEquals(mHelper.format($(text()).format("json").$$), "json");
     }
 }

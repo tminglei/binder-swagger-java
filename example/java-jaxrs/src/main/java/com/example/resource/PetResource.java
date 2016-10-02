@@ -50,10 +50,10 @@ public class PetResource {
     static Mapping<?> petStatus = $(text(oneOf(Arrays.asList("available", "pending", "sold"))))
             .desc("pet status in the store").$$;
     static Mapping<?> pet = $(mapping(
-            field("id", $(vLong()).desc("pet id").$$),
+            field("id", $(longv()).desc("pet id").$$),
             field("name", $(text(required())).desc("pet name").$$),
             field("category", attach(required()).to($(mapping(
-                    field("id", vLong(required())),
+                    field("id", longv(required())),
                     field("name", text(required()))
             )).desc("category belonged to").$$)),
             field("photoUrls", $(list(text().constraint(pattern("http://.*")))).desc("pet's photo urls").$$),
@@ -67,7 +67,7 @@ public class PetResource {
     static {
         operation("get", "/{petId}", sharing)
                 .summary("get pet by id")
-                .parameter(param(vLong()).in("path").name("petId").example(1l))
+                .parameter(param(longv()).in("path").name("petId").example(1l))
                 .response(200, response(pet))
                 .response(404, response().description("pet not found"))
         ;

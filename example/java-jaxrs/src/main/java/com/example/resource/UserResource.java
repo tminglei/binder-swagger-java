@@ -50,14 +50,14 @@ public class UserResource {
     private Messages messages = (key) -> bundle.getString(key);
 
     static Mapping<?> user = $(mapping(
-            field("id", $(vLong()).desc("user id").$$),
+            field("id", $(longv()).desc("user id").$$),
             field("username", $(text(required())).desc("user name").$$),
             field("firstName", $(text()).desc("user's first name").$$),
             field("lastName", $(text()).desc("user's last name").$$),
             field("email", $(text(email())).desc("user's email").$$),
             field("password", $(text()).format("password").desc("password").$$),
             field("phone", $(text(pattern("[\\d]{3}-[\\d]{4}-[\\d]{2}"))).desc("phone number").$$),
-            field("status", $(vInt(oneOf(Arrays.asList("1", "2", "3")))).desc("user's status").$$)
+            field("status", $(intv(oneOf(Arrays.asList("1", "2", "3")))).desc("user's status").$$)
         )).refName("User").desc("user info").$$;
 
     static SharingHolder sharing = share().commonPath("/user").tag("user");

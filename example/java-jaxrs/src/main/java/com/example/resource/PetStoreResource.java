@@ -50,9 +50,9 @@ public class PetStoreResource {
     static Mapping<?> orderStatus = $(text(oneOf(Arrays.asList("placed", "approved", "delivered"))))
             .desc("order status").$$;
     static Mapping<?> order = $(mapping(
-            field("id", $(vLong()).desc("order id").$$),
-            field("petId", $(vLong(required())).desc("pet id").$$),
-            field("quantity", $(vInt(required())).desc("number to be sold").$$),
+            field("id", $(longv()).desc("order id").$$),
+            field("petId", $(longv(required())).desc("pet id").$$),
+            field("quantity", $(intv(required())).desc("number to be sold").$$),
             field("shipDate", $(datetime()).desc("delivery time").$$),
             field("status", orderStatus)
         )).refName("Order").desc("order info").$$;
@@ -63,7 +63,7 @@ public class PetStoreResource {
     static {
         operation("get", "/order/{orderId}", sharing)
                 .summary("get order by id")
-                .parameter(param(vLong()).in("path").name("orderId").desc("order id"))
+                .parameter(param(longv()).in("path").name("orderId").desc("order id"))
                 .response(200, response(order))
                 .response(404, response().description("order not found"))
         ;
@@ -104,7 +104,7 @@ public class PetStoreResource {
     static {
         operation("delete", "/order", sharing)
                 .summary("delete specified order")
-                .parameter(param(vLong()).in("path").name("orderId").desc("order id"))
+                .parameter(param(longv()).in("path").name("orderId").desc("order id"))
                 .response(200, response())
         ;
     }
