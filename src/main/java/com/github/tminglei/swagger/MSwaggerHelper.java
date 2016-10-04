@@ -218,7 +218,7 @@ public class MSwaggerHelper {
         property.setDescription(attach(mapping).desc());
         property.setFormat(format(mapping));
         property.setRequired(required(mapping));
-        property.setExample(attach(mapping).example() != null ? attach(mapping).example().toString() : null);
+        property.setExample(attach(mapping).example());
 
         if (property instanceof AbstractNumericProperty) {
             AbstractNumericProperty numericProperty = (AbstractNumericProperty) property;
