@@ -1,5 +1,7 @@
 package com.github.tminglei.swagger;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.github.tminglei.bind.Framework;
 import com.github.tminglei.bind.spi.Constraint;
 import com.github.tminglei.bind.spi.ExtraConstraint;
@@ -25,6 +27,7 @@ import static com.github.tminglei.bind.OptionsOps.*;
  * Helper class to build swagger elements from `com.github.tminglei.bind.Framework.Mapping`
  */
 public class MSwaggerHelper {
+    private ObjectWriter objectWriter = new ObjectMapper().writer();
 
     public List<Parameter> mToParameters(String name, Framework.Mapping<?> mapping) {
         if ("body".equalsIgnoreCase( attach(mapping).in() )) {
@@ -92,6 +95,7 @@ public class MSwaggerHelper {
                 .format(format(mapping))
                 .required(required(mapping))
                 .description(attach(mapping).desc())
+                .example(example(mapping))
                 .items(items(mapping))
                 ._enum(enums(mapping));
 
@@ -348,6 +352,15 @@ public class MSwaggerHelper {
         }
 
         return attach(mapping).format();
+    }
+
+    protected String example(Framework.Mapping<?> mapping) {
+        Object example = attach(mapping).example();
+        try {
+            return example == null ? null : objectWriter.writeValueAsString(example);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     protected boolean required(Framework.Mapping<?> mapping) {

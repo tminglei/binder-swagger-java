@@ -48,16 +48,16 @@ public class PetResource {
     private Messages messages = (key) -> bundle.getString(key);
 
     static Mapping<?> petStatus = $(text(oneOf(Arrays.asList("available", "pending", "sold"))))
-            .desc("pet status in the store").$$;
+            .desc("pet status in the store").example("available").$$;
     static Mapping<?> pet = $(mapping(
             field("id", $(longv()).desc("pet id").$$),
             field("name", $(text(required())).desc("pet name").$$),
-            field("category", attach(required()).to($(mapping(
+            field("category", $(mapping(
                     field("id", longv(required())),
                     field("name", text(required()))
-            )).desc("category belonged to").$$)),
-            field("photoUrls", $(list(text().constraint(pattern("http://.*")))).desc("pet's photo urls").$$),
-            field("tags", $(list(text())).desc("tags for the pet").$$),
+            )).desc("category belonged to").$$),
+            field("photoUrls", $(list(text())).desc("pet's photo urls").example(Arrays.asList("http://example.com/photo1")).$$),
+            field("tags", $(list(text())).desc("tags for the pet").example(Arrays.asList("tag1", "tag2")).$$),
             field("status", petStatus)
         )).refName("Pet").desc("pet info").$$;
 

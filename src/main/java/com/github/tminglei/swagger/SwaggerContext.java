@@ -16,9 +16,9 @@ import static com.github.tminglei.swagger.SwaggerUtils.*;
  * Context class to hold swagger instance and related helper methods
  */
 public class SwaggerContext {
-    private static Swagger swagger = new Swagger();
-
     private static final Logger logger = LoggerFactory.getLogger(SwaggerContext.class);
+
+    private static Swagger swagger = new Swagger();
 
     public static Swagger swagger() {
         return swagger;
