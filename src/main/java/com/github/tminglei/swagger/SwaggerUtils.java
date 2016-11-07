@@ -83,7 +83,7 @@ public class SwaggerUtils {
         }
 
         return result.stream().map(
-                n -> n.replaceAll("\\.class$", "").replace(File.separator, ".")
+                n -> n.replaceAll("\\.class$", "").replace("/", ".")
             ).collect(Collectors.toList());
     }
 
