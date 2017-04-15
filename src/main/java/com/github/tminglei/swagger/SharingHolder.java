@@ -28,7 +28,7 @@ public class SharingHolder {
         clone.commonPath = path;
         return clone;
     }
-    public SharingHolder reCommonPath() {
+    public SharingHolder clearCommonPath() {
         return commonPath("");
     }
 
@@ -46,7 +46,7 @@ public class SharingHolder {
         clone.tags.add(tag);
         return clone;
     }
-    public SharingHolder reTags() {
+    public SharingHolder clearTags() {
         return tags(new ArrayList<>());
     }
 
@@ -64,7 +64,7 @@ public class SharingHolder {
         clone.schemes.add(scheme);
         return clone;
     }
-    public SharingHolder reSchemes() {
+    public SharingHolder clearSchemes() {
         return schemes(new ArrayList<>());
     }
 
@@ -82,7 +82,7 @@ public class SharingHolder {
         clone.consumes.add(consume);
         return clone;
     }
-    public SharingHolder reConsumes() {
+    public SharingHolder clearConsumes() {
         return consumes(new ArrayList<>());
     }
 
@@ -100,7 +100,7 @@ public class SharingHolder {
         clone.produces.add(produce);
         return clone;
     }
-    public SharingHolder reProduces() {
+    public SharingHolder clearProduces() {
         return produces(new ArrayList<>());
     }
 
@@ -119,7 +119,7 @@ public class SharingHolder {
         clone.securities.put(name, scopes);
         return clone;
     }
-    public SharingHolder reSecurities() {
+    public SharingHolder clearSecurities() {
         return securities(new HashMap<>());
     }
 
@@ -137,7 +137,7 @@ public class SharingHolder {
         clone.params.add(param);
         return clone;
     }
-    public SharingHolder reParameters() {
+    public SharingHolder clearParameters() {
         return parameters(new ArrayList<>());
     }
 
@@ -155,7 +155,7 @@ public class SharingHolder {
         clone.responses.put(code, response);
         return clone;
     }
-    public SharingHolder reResponses() {
+    public SharingHolder clearResponses() {
         return responses(new HashMap<>());
     }
 

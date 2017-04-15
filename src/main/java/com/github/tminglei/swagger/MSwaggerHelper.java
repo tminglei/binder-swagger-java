@@ -377,10 +377,10 @@ public class MSwaggerHelper {
         return pattern != null ? (String) pattern.meta().params.get(0) : null;
     }
 
-    protected Double maximum(Framework.Mapping<?> mapping) {
+    protected BigDecimal maximum(Framework.Mapping<?> mapping) {
         ExtraConstraint<?> max = findExtraConstraint(mapping, "max");
         return max != null && max.meta().params.get(0) instanceof Number
-                ? ((Number) max.meta().params.get(0)) .doubleValue()
+                ? new BigDecimal( ((Number) max.meta().params.get(0)) .doubleValue() )
                 : null;
     }
 
@@ -389,10 +389,10 @@ public class MSwaggerHelper {
         return max != null ? (Boolean) max.meta().params.get(1) : null;
     }
 
-    protected Double minimum(Framework.Mapping<?> mapping) {
+    protected BigDecimal minimum(Framework.Mapping<?> mapping) {
         ExtraConstraint<?> min = findExtraConstraint(mapping, "min");
         return min != null && min.meta().params.get(0) instanceof Number
-                ? ((Number) min.meta().params.get(0)) .doubleValue()
+                ? new BigDecimal( ((Number) min.meta().params.get(0)) .doubleValue() )
                 : null;
     }
 
