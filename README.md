@@ -91,20 +91,20 @@ static {  // for swagger
 <filter>
     <filter-name>SwaggerFilter</filter-name>
     <filter-class>com.github.tminglei.swagger.SwaggerFilter</filter-class>
-    <!-- configure your extended swagger helper
+    <!-- configure your custom mapping converter
     <init-param>
-        <param-name>my-extended-swagger-helper</param-name>
-        <param-value>com.mycompany.pkg.MySwaggerHelper</param-value>
+        <param-name>mapping-converter</param-name>
+        <param-value>com.company.pkg.MyMappingConverter</param-value>
     </init-param>
     -->
     <init-param>
         <param-name>scan-packages-and-classes</param-name>
         <param-value>com.example.resource; com.example.Bootstrap</param-value>
     </init-param>
-    <!-- specify the path to fetch your swagger json, default '/swagger.json'
+    <!-- specify the requestURI to fetch your swagger json, default '/api/swagger.json'
     <init-param>
-        <param-name>swagger-path</param-name>
-        <param-value>/swagger.json</param-value>
+        <param-name>swagger-uri</param-name>
+        <param-value>/api/swagger.json</param-value>
     </init-param>
     -->
     <!-- enable/disable swagger, default value: true
@@ -116,7 +116,7 @@ static {  // for swagger
 </filter>
 <filter-mapping>
     <filter-name>SwaggerFilter</filter-name>
-    <url-pattern>/api/*</url-pattern><!-- keep consistent with the jersey servlet mapping -->
+    <url-pattern>/api/*</url-pattern>
 </filter-mapping>
 ...
 ```

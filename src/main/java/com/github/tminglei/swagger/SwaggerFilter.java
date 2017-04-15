@@ -26,7 +26,7 @@ import static com.github.tminglei.swagger.SwaggerUtils.*;
  */
 public class SwaggerFilter implements Filter {
     private boolean enabled = true;
-    private String swaggerPath = "/swagger.json";
+    private String swaggerUri = "/api/swagger.json";
 
     private static final Logger logger = LoggerFactory.getLogger(SwaggerFilter.class);
 
@@ -34,8 +34,8 @@ public class SwaggerFilter implements Filter {
     public void init(FilterConfig filterConfig) throws ServletException {
         enabled = Optional.ofNullable(filterConfig.getInitParameter("enabled"))
                 .map(Boolean::parseBoolean).orElse(true);
-        swaggerPath = Optional.ofNullable(filterConfig.getInitParameter("swagger-path"))
-                .orElse("/swagger.json");
+        swaggerUri = Optional.ofNullable(filterConfig.getInitParameter("swagger-uri"))
+                .orElse(swaggerUri);
 
         // set user extended swagger helper
         String mappingConverter = filterConfig.getInitParameter("mapping-converter");
@@ -83,14 +83,14 @@ public class SwaggerFilter implements Filter {
             HttpServletRequest req = (HttpServletRequest) request;
             HttpServletResponse resp = (HttpServletResponse) response;
 
-            if (swaggerPath.equals(req.getPathInfo()) && "GET".equalsIgnoreCase(req.getMethod())) {
+            if (req.getRequestURI().equals(swaggerUri) && "GET".equalsIgnoreCase(req.getMethod())) {
                 // enable cross-origin resource sharing
                 resp.addHeader("Access-Control-Allow-Origin", "*");
                 resp.addHeader("Access-Control-Allow-Methods", "POST, GET, PUT, PATCH, DELETE, HEAD, OPTIONS");
                 resp.addHeader("Access-Control-Max-Age", "43200"); // half a day
 
                 String json = new ObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL)
-                        .writer().writeValueAsString(SwaggerContext.swagger());
+                        .writer().writeValueAsString(SwaggerContext.INSTANCE.getSwagger());
                 resp.getWriter().write(json);
                 resp.flushBuffer();
                 return;
