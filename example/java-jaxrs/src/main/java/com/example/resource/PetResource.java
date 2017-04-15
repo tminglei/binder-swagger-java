@@ -33,8 +33,6 @@ import java.util.Map;
 import java.util.ResourceBundle;
 
 import static com.github.tminglei.swagger.SwaggerContext.*;
-import static com.github.tminglei.swagger.Attachment.*;
-import static com.github.tminglei.swagger.SwaggerUtils.*;
 import static com.github.tminglei.bind.Simple.*;
 import static com.github.tminglei.bind.Mappings.*;
 import static com.github.tminglei.bind.Constraints.*;
@@ -61,15 +59,15 @@ public class PetResource {
             field("status", petStatus)
         )).refName("Pet").desc("pet info").$$;
 
-    static SharingHolder sharing = share().commonPath("/pet").tag("pet");
+    static SharingHolder sharing = sharing().pathPrefix("/pet").tag("pet");
 
     ///
     static {
-        operation("get", "/{petId}", sharing)
-                .summary("get pet by id")
-                .parameter(param(longv()).in("path").name("petId").example(1l))
-                .response(200, response(pet))
-                .response(404, response().description("pet not found"))
+        sharing.operation("get", "/{petId}")
+            .summary("get pet by id")
+            .parameter(param(longv()).in("path").name("petId").example(1l))
+            .response(200, response(pet))
+            .response(404, response().description("pet not found"))
         ;
     }
     @GET
@@ -85,18 +83,18 @@ public class PetResource {
     }
 
     static {
-        operation("post", "/", sharing)
-                .summary("create a pet")
-                .parameter(param(pet).in("body"))
-                .response(200, response().description("success"))
-                .response(400, response())
+        sharing.operation("post", "/")
+            .summary("create a pet")
+            .parameter(param(pet).in("body"))
+            .response(200, response().description("success"))
+            .response(400, response())
         ;
     }
     @POST
     public Response addPet(String data) throws BadRequestException, SQLException {
         BindObject bindObj = new FormBinder(messages).bind(
                 attach(expandJson()).to(pet),
-                newmap(entry("", data)));
+                hashmap(entry("", data)));
         if (bindObj.errors().isPresent()) {
             throw new BadRequestException(400, "invalid pet");
         } else {
@@ -106,18 +104,18 @@ public class PetResource {
     }
 
     static {
-        operation("put", "/", sharing)
-                .summary("update pet")
-                .parameter(param(pet).in("body"))
-                .response(200, response().description("success"))
-                .response(400, response())
+        sharing.operation("put", "/")
+            .summary("update pet")
+            .parameter(param(pet).in("body"))
+            .response(200, response().description("success"))
+            .response(400, response())
         ;
     }
     @PUT
     public Response updatePet(String data) throws BadRequestException, SQLException {
         BindObject bindObj = new FormBinder(messages).bind(
                 attach(expandJson()).to(pet),
-                newmap(entry("", data)));
+                hashmap(entry("", data)));
         if (bindObj.errors().isPresent()) {
             throw new BadRequestException(400, "invalid pet");
         } else {
@@ -127,10 +125,10 @@ public class PetResource {
     }
 
     static {
-        operation("get", "/findByStatus", sharing)
-                .summary("find pets by status")
-                .parameter(param(list(petStatus, required())).in("query").name("status"))
-                .response(200, response(list(pet)).description("pet list"))
+        sharing.operation("get", "/findByStatus")
+            .summary("find pets by status")
+            .parameter(param(list(petStatus, required())).in("query").name("status"))
+            .response(200, response(list(pet)).description("pet list"))
         ;
     }
     @GET
@@ -140,11 +138,11 @@ public class PetResource {
     }
 
     static {
-        operation("get", "/findByTags", sharing)
-                .summary("find pets by tags")
-                .parameter(param(list(text())).in("query").name("tags").desc("pet tags"))
-                .response(200, response(list(pet)).description("pet list"))
-                .deprecated(true);
+        sharing.operation("get", "/findByTags")
+            .summary("find pets by tags")
+            .parameter(param(list(text())).in("query").name("tags").desc("pet tags"))
+            .response(200, response(list(pet)).description("pet list"))
+            .deprecated(true);
     }
     @GET
     @Path("/findByTags")

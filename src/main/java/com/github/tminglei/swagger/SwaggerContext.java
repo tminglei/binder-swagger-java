@@ -1,6 +1,10 @@
 package com.github.tminglei.swagger;
 
 import com.github.tminglei.bind.Framework;
+import com.github.tminglei.swagger.bind.Attachment;
+import com.github.tminglei.swagger.bind.MParamBuilder;
+import com.github.tminglei.swagger.bind.DefaultMappingConverter;
+import com.github.tminglei.swagger.bind.MappingConverter;
 import io.swagger.models.*;
 import io.swagger.models.auth.ApiKeyAuthDefinition;
 import io.swagger.models.auth.BasicAuthDefinition;
@@ -10,6 +14,13 @@ import io.swagger.models.properties.Property;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.AbstractMap;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import static com.github.tminglei.bind.OptionsOps._attachment;
 import static com.github.tminglei.swagger.SwaggerUtils.*;
 
 /**
@@ -18,25 +29,37 @@ import static com.github.tminglei.swagger.SwaggerUtils.*;
 public class SwaggerContext {
     private static final Logger logger = LoggerFactory.getLogger(SwaggerContext.class);
 
-    private static Swagger swagger = new Swagger();
+    public final static SwaggerContext INSTANCE = new SwaggerContext(new Swagger(), new DefaultMappingConverter());
 
-    public static Swagger swagger() {
-        return swagger;
+    private Swagger swagger;
+    private MappingConverter mConverter;
+
+    public SwaggerContext(Swagger swagger, MappingConverter mConverter) {
+        this.swagger = swagger;
+        this.mConverter = mConverter;
     }
 
-    public static SharingHolder share() {
-        return new SharingHolder();
+    ///---
+
+    public Swagger getSwagger() {
+        return this.swagger;
     }
 
-    public static ExOperation operation(String method, String path) {
-        return operation(method, path, null);
+    public MappingConverter getMConverter() {
+        return this.mConverter;
     }
-    public static ExOperation operation(String method, String path, SharingHolder sharing) {
-        checkNotEmpty(path, "'path' CAN'T be null or empty!!!");
-        checkNotEmpty(method, "'method' CAN'T be null or empty!!!");
+    public void setMConverter(MappingConverter mConverter) {
+        this.mConverter = mConverter;
+    }
 
-        sharing = sharing != null ? sharing : new SharingHolder();
-        path = joinPaths(sharing.commonPath(), path);
+    public SharingHolder mkSharing() {
+        return new SharingHolder(this);
+    }
+
+    public ExOperation mkOperation(String method, String path) {
+        notEmpty(path, "'path' CAN'T be null or empty!!!");
+        notEmpty(method, "'method' CAN'T be null or empty!!!");
+
         HttpMethod httpMethod = HttpMethod.valueOf(method.toUpperCase());
         synchronized (swagger) {
             if (swagger.getPath(path) == null) {
@@ -50,33 +73,33 @@ public class SwaggerContext {
             }
 
             logger.info(">>> adding operation - " + httpMethod + " '" + path + "'");
-            pathObj.set(method.toLowerCase(), new ExOperation().merge(sharing));
+            pathObj.set(method.toLowerCase(), new ExOperation());
             return (ExOperation) pathObj.getOperationMap().get(httpMethod);
         }
     }
 
-    public static MParamBuilder param(Framework.Mapping<?> mapping) {
-        return new MParamBuilder(mapping);
-    }
-    public static Model model(Framework.Mapping<?> mapping) {
-        scanRegisterNamedModels(mapping);
-        return mHelper.mToModel(mapping);
-    }
-    public static Response response(Framework.Mapping<?> mapping) {
-        scanRegisterNamedModels(mapping);
-        return mHelper.mToResponse(mapping);
-    }
-    public static Response response() {
-        return new Response();
-    }
-    public static Property prop(Framework.Mapping<?> mapping) {
-        scanRegisterNamedModels(mapping);
-        return mHelper.mToProperty(mapping);
+    public MParamBuilder mkParamBuilder(Framework.Mapping<?> mapping) {
+        return new MParamBuilder(this, mapping);
     }
 
-    public static void scanRegisterNamedModels(Framework.Mapping<?> mapping) {
+    public Property mkProperty(Framework.Mapping<?> mapping) {
+        scanAndRegisterNamedModels(mapping);
+        return mConverter.mToProperty(mapping);
+    }
+
+    public Model mkModel(Framework.Mapping<?> mapping) {
+        scanAndRegisterNamedModels(mapping);
+        return mConverter.mToModel(mapping);
+    }
+
+    public Response mkResponse(Framework.Mapping<?> mapping) {
+        scanAndRegisterNamedModels(mapping);
+        return mConverter.mToResponse(mapping);
+    }
+
+    public void scanAndRegisterNamedModels(Framework.Mapping<?> mapping) {
         synchronized (swagger) {
-            mHelper.scanModels(mapping).forEach(p -> {
+            mConverter.scanModels(mapping).forEach(p -> {
                 Model existed = swagger.getDefinitions() == null ? null : swagger.getDefinitions().get(p.getKey());
                 if (existed == null) swagger.model(p.getKey(), p.getValue());
                 else if (!existed.equals(p.getValue())) {
@@ -84,6 +107,38 @@ public class SwaggerContext {
                 }
             });
         }
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    ///                      static convenient methods
+    ///////////////////////////////////////////////////////////////////////////
+
+    public static Swagger swagger() {
+        return INSTANCE.getSwagger();
+    }
+
+    public static SharingHolder sharing() {
+        return INSTANCE.mkSharing();
+    }
+
+    public static ExOperation operation(String method, String path) {
+        return INSTANCE.mkOperation(method, path);
+    }
+
+    public static MParamBuilder param(Framework.Mapping<?> mapping) {
+        return INSTANCE.mkParamBuilder(mapping);
+    }
+    public static Property prop(Framework.Mapping<?> mapping) {
+        return INSTANCE.mkProperty(mapping);
+    }
+    public static Model model(Framework.Mapping<?> mapping) {
+        return INSTANCE.mkModel(mapping);
+    }
+    public static Response response(Framework.Mapping<?> mapping) {
+        return INSTANCE.mkResponse(mapping);
+    }
+    public static Response response() {
+        return new Response();
     }
 
     public static Info info() {
@@ -111,10 +166,21 @@ public class SwaggerContext {
         return new ExternalDocs();
     }
 
-    ///////////////////////////////////////////////////////////////////////
+    ///---
 
-    static MSwaggerHelper mHelper = new MSwaggerHelper(); // extend and replace it when necessary
-    public static void setMHelper(MSwaggerHelper mHelper) {
-        SwaggerContext.mHelper = mHelper;
+    public static <T> Attachment.Builder<T> $(Framework.Mapping<T> mapping) {
+        return new Attachment.Builder<>(mapping);
+    }
+
+    public static <K, V> Map.Entry<K, V> entry(K key, V value) {
+        return new AbstractMap.SimpleImmutableEntry(key, value);
+    }
+
+    public static <K, V> Map<K, V> hashmap(Map.Entry<K, V>... entries) {
+        Map<K, V> result = new HashMap<>();
+        for(Map.Entry<K, V> entry : entries) {
+            result.put(entry.getKey(), entry.getValue());
+        }
+        return result;
     }
 }

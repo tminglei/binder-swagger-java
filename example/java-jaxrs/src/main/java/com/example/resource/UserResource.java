@@ -35,7 +35,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 
 import static com.github.tminglei.swagger.SwaggerContext.*;
-import static com.github.tminglei.swagger.Attachment.*;
+import static com.github.tminglei.swagger.bind.Attachment.*;
 import static com.github.tminglei.swagger.SwaggerUtils.*;
 import static com.github.tminglei.bind.Simple.*;
 import static com.github.tminglei.bind.Mappings.*;
@@ -60,11 +60,11 @@ public class UserResource {
             field("status", $(intv(oneOf(Arrays.asList("1", "2", "3")))).desc("user's status").$$)
         )).refName("User").desc("user info").$$;
 
-    static SharingHolder sharing = share().commonPath("/user").tag("user");
+    static SharingHolder sharing = sharing().pathPrefix("/user").tag("user");
 
     ///
     static {
-        operation("post", "/", sharing)
+        sharing.operation("post", "/")
                 .summary("create a user")
                 .parameter(param(user).in("body"))
                 .response(200, response())
@@ -74,7 +74,7 @@ public class UserResource {
     public Response createUser(String data) throws BadRequestException, SQLException {
         BindObject bindObj = new FormBinder(messages).bind(
                 attach(expandJson()).to(user),
-                newmap(entry("", data)));
+                hashmap(entry("", data)));
         if (bindObj.errors().isPresent()) {
             throw new BadRequestException(400, "invalid pet");
         } else {
@@ -84,7 +84,7 @@ public class UserResource {
     }
 
     static {
-        operation("post", "/createWithArray", sharing)
+        sharing.operation("post", "/createWithArray")
                 .summary("create multiple users")
                 .parameter(param(list(user)).in("body"))
                 .response(200, response())
@@ -95,7 +95,7 @@ public class UserResource {
     public Response createUsersWithArrayInput(String data) throws BadRequestException, SQLException {
         BindObject bindObj = new FormBinder(messages).bind(
                 attach(expandJson()).to(list(user)),
-                newmap(entry("", data)));
+                hashmap(entry("", data)));
         if (bindObj.errors().isPresent()) {
             throw new BadRequestException(400, "invalid pet");
         } else {
@@ -107,7 +107,7 @@ public class UserResource {
     }
 
     static {
-        operation("post", "/createWithList", sharing)
+        sharing.operation("post", "/createWithList")
                 .summary("create multiple users")
                 .parameter(param(list(user)).in("body"))
                 .response(200, response())
@@ -118,7 +118,7 @@ public class UserResource {
     public Response createUsersWithListInput(String data) throws BadRequestException, SQLException {
         BindObject bindObj = new FormBinder(messages).bind(
                 attach(expandJson()).to(list(user)),
-                newmap(entry("", data)));
+                hashmap(entry("", data)));
         if (bindObj.errors().isPresent()) {
             throw new BadRequestException(400, "invalid pet");
         } else {
@@ -130,7 +130,7 @@ public class UserResource {
     }
 
     static {
-        operation("put", "/{username}", sharing)
+        sharing.operation("put", "/{username}")
                 .summary("update user")
                 .parameter(param(text()).in("path").name("username").desc("user name"))
                 .parameter(param(user).in("body"))
@@ -142,7 +142,7 @@ public class UserResource {
     public Response updateUser(@PathParam("username") String username, String data) throws BadRequestException, SQLException {
         BindObject bindObj = new FormBinder(messages).bind(
                 attach(expandJson()).to(user),
-                newmap(entry("", data)));
+                hashmap(entry("", data)));
         if (bindObj.errors().isPresent()) {
             throw new BadRequestException(400, "invalid pet");
         } else {
@@ -153,7 +153,7 @@ public class UserResource {
     }
 
     static {
-        operation("delete", "/{username}", sharing)
+        sharing.operation("delete", "/{username}")
                 .summary("delete user")
                 .parameter(param(text()).in("path").name("username").desc("user name"))
                 .response(200, response())
@@ -167,7 +167,7 @@ public class UserResource {
     }
 
     static {
-        operation("get", "/{username}", sharing)
+        sharing.operation("get", "/{username}")
                 .summary("get specified user")
                 .parameter(param(text()).in("path").name("username").desc("user name"))
                 .response(200, response(user))
@@ -187,7 +187,7 @@ public class UserResource {
     }
 
     static {
-        operation("post", "/login", sharing)
+        sharing.operation("post", "/login")
                 .summary("login user")
                 .parameter(param(text(required())).in("form").name("username"))
                 .parameter(param(text(required())).in("form").name("password"))
@@ -203,7 +203,7 @@ public class UserResource {
     }
 
     static {
-        operation("get", "/logout", sharing)
+        sharing.operation("get", "/logout")
                 .summary("logout user")
                 .response(200, response())
         ;

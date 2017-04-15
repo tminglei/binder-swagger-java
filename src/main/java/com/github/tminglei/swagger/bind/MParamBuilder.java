@@ -1,6 +1,7 @@
-package com.github.tminglei.swagger;
+package com.github.tminglei.swagger.bind;
 
 import com.github.tminglei.bind.Framework;
+import com.github.tminglei.swagger.SwaggerContext;
 import io.swagger.models.parameters.Parameter;
 
 import java.util.List;
@@ -9,10 +10,13 @@ import java.util.List;
  * Helper class to build `Parameter` from a `com.github.tminglei.bind.Framework.Mapping`
  */
 public class MParamBuilder {
+    private SwaggerContext context;
+
     private Attachment.Builder<?> attachBuilder;
     private String name;
 
-    MParamBuilder(Framework.Mapping<?> mapping) {
+    public MParamBuilder(SwaggerContext context, Framework.Mapping<?> mapping) {
+        this.context = context;
         this.attachBuilder = new Attachment.Builder(mapping);
     }
     public MParamBuilder name(String name) {
@@ -40,7 +44,7 @@ public class MParamBuilder {
         return ret.get(0);
     }
     public List<Parameter> build() {
-        SwaggerContext.scanRegisterNamedModels(attachBuilder.$$);
-        return SwaggerContext.mHelper.mToParameters(name, attachBuilder.$$);
+        context.scanAndRegisterNamedModels(attachBuilder.$$);
+        return context.getMConverter().mToParameters(name, attachBuilder.$$);
     }
 }

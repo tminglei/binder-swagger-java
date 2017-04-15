@@ -1,4 +1,4 @@
-package com.github.tminglei.swagger;
+package com.github.tminglei.swagger.bind;
 
 import com.github.tminglei.bind.Framework;
 
@@ -50,12 +50,9 @@ public class Attachment {
 
     ///---
 
-    public static <T> Attachment.Builder<T> $(Framework.Mapping<T> mapping) {
-        return new Attachment.Builder<>(mapping);
-    }
-
     public static <T> Attachment attach(Framework.Mapping<T> mapping) {
-        return _attachment(mapping.options()) == null ? NULL_OBJECT : (Attachment) _attachment(mapping.options());
+        Attachment attach = (Attachment) _attachment(mapping.options());
+        return attach == null ? NULL_OBJECT : attach;
     }
 
     public static <T> Framework.Mapping<T> mergeAttach(Framework.Mapping<T> mapping, Attachment other) {
@@ -70,7 +67,7 @@ public class Attachment {
         public final Framework.Mapping<T> $$;
         private final Attachment _attach;
 
-        Builder(Framework.Mapping<T> mapping) {
+        public Builder(Framework.Mapping<T> mapping) {
             this._attach = attach(mapping).clone();
             this.$$ = mapping.options(o -> _attachment(o, _attach));
         }

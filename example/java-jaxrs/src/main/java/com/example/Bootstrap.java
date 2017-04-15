@@ -29,7 +29,7 @@ public class Bootstrap extends HttpServlet {
   private static final long serialVersionUID = 1L;
 
   static {  // for swagger
-      swagger().info(info()
+    swagger().info(info()
               .title("Swagger Sample App")
               .description("This is a sample server Petstore server.  You can find out more about Swagger " +
                       "at [http://swagger.io](http://swagger.io) or on [irc.freenode.net, #swagger](http://swagger.io/irc/).  For this sample, " +

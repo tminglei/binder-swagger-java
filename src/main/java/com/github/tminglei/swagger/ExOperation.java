@@ -1,10 +1,9 @@
 package com.github.tminglei.swagger;
 
+import com.github.tminglei.swagger.bind.MParamBuilder;
 import io.swagger.models.*;
 import io.swagger.models.parameters.Parameter;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -80,6 +79,7 @@ public class ExOperation extends Operation {
         this.addParameter(parameter);
         return this;
     }
+    // helper method
     public ExOperation parameter(MParamBuilder builder) {
         builder.build().forEach(p -> parameter(p));
         return this;
@@ -124,34 +124,6 @@ public class ExOperation extends Operation {
     @Override
     public ExOperation vendorExtensions(Map<String, Object> vendorExtensions) {
         super.vendorExtensions( vendorExtensions );
-        return this;
-    }
-
-    ///
-    ExOperation merge(SharingHolder sharing) {
-        if (!sharing.tags().isEmpty()) {    // turn unmodifiable list to modifiable list
-            this.setTags(new ArrayList<>(sharing.tags()));
-        }
-        if (!sharing.schemes().isEmpty()) {
-            this.setSchemes(new ArrayList<>(sharing.schemes()));
-        }
-        if (!sharing.consumes().isEmpty()) {
-            this.setConsumes(new ArrayList<>(sharing.consumes()));
-        }
-        if (!sharing.produces().isEmpty()) {
-            this.setProduces(new ArrayList<>(sharing.produces()));
-        }
-        if (!sharing.securities().isEmpty()) {
-            this.setSecurity(new ArrayList<>());
-            sharing.securities().forEach((name, scopes) -> this.security(name, scopes));
-        }
-        if (!sharing.parameters().isEmpty()) {
-            this.setParameters(new ArrayList<>(sharing.parameters()));
-        }
-        if (!sharing.responses().isEmpty()) {
-            this.setResponses(new HashMap<>());
-            sharing.responses().forEach((code, response) -> this.response(code, response));
-        }
         return this;
     }
 }

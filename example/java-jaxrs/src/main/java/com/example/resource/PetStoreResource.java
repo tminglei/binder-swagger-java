@@ -33,8 +33,6 @@ import java.util.Map;
 import java.util.ResourceBundle;
 
 import static com.github.tminglei.swagger.SwaggerContext.*;
-import static com.github.tminglei.swagger.Attachment.*;
-import static com.github.tminglei.swagger.SwaggerUtils.*;
 import static com.github.tminglei.bind.Simple.*;
 import static com.github.tminglei.bind.Mappings.*;
 import static com.github.tminglei.bind.Constraints.*;
@@ -57,15 +55,15 @@ public class PetStoreResource {
             field("status", orderStatus)
         )).refName("Order").desc("order info").$$;
 
-    static SharingHolder sharing = share().commonPath("/store").tag("store");
+    static SharingHolder sharing = sharing().pathPrefix("/store").tag("store");
 
     ///
     static {
-        operation("get", "/order/{orderId}", sharing)
-                .summary("get order by id")
-                .parameter(param(longv()).in("path").name("orderId").desc("order id"))
-                .response(200, response(order))
-                .response(404, response().description("order not found"))
+        sharing.operation("get", "/order/{orderId}")
+            .summary("get order by id")
+            .parameter(param(longv()).in("path").name("orderId").desc("order id"))
+            .response(200, response(order))
+            .response(404, response().description("order not found"))
         ;
     }
     @GET
@@ -81,10 +79,10 @@ public class PetStoreResource {
     }
 
     static {
-        operation("post", "/order", sharing)
-                .summary("add an order")
-                .parameter(param(order).in("body"))
-                .response(200, response())
+        sharing.operation("post", "/order")
+            .summary("add an order")
+            .parameter(param(order).in("body"))
+            .response(200, response())
         ;
     }
     @POST
@@ -92,7 +90,7 @@ public class PetStoreResource {
     public Response placeOrder(String data) throws BadRequestException, SQLException {
         BindObject bindObj = new FormBinder(messages).bind(
                 attach(expandJson()).to(order),
-                newmap(entry("", data)));
+                hashmap(entry("", data)));
         if (bindObj.errors().isPresent()) {
             throw new BadRequestException(400, "invalid pet");
         } else {
@@ -102,10 +100,10 @@ public class PetStoreResource {
     }
 
     static {
-        operation("delete", "/order", sharing)
-                .summary("delete specified order")
-                .parameter(param(longv()).in("path").name("orderId").desc("order id"))
-                .response(200, response())
+        sharing.operation("delete", "/order")
+            .summary("delete specified order")
+            .parameter(param(longv()).in("path").name("orderId").desc("order id"))
+            .response(200, response())
         ;
     }
     @DELETE

@@ -1,4 +1,4 @@
-package com.github.tminglei.swagger;
+package com.github.tminglei.swagger.bind;
 
 import com.github.tminglei.bind.Framework;
 import com.github.tminglei.bind.spi.Constraint;
@@ -17,15 +17,17 @@ import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.github.tminglei.swagger.Attachment.*;
+import static com.github.tminglei.swagger.bind.Attachment.*;
+import static com.github.tminglei.swagger.SwaggerContext.entry;
 import static com.github.tminglei.swagger.SwaggerUtils.*;
 import static com.github.tminglei.bind.OptionsOps.*;
 
 /**
  * Helper class to build swagger elements from `com.github.tminglei.bind.Framework.Mapping`
  */
-public class MSwaggerHelper {
+public class DefaultMappingConverter implements MappingConverter {
 
+    @Override
     public List<Parameter> mToParameters(String name, Framework.Mapping<?> mapping) {
         if ("body".equalsIgnoreCase( attach(mapping).in() )) {
             return Arrays.asList(new BodyParameter()
@@ -55,6 +57,7 @@ public class MSwaggerHelper {
 
     }
 
+    @Override
     public Parameter mToParameter(String name, Framework.Mapping<?> mapping) {
         if (isEmpty( attach(mapping).in() )) throw new IllegalArgumentException("in is required!!!");
 
@@ -87,59 +90,13 @@ public class MSwaggerHelper {
         throw new IllegalArgumentException("Unsupported in type: '" + attach(mapping).in() + "'!!!");
     }
 
-    protected AbstractSerializableParameter fillParameter(AbstractSerializableParameter parameter, Framework.Mapping<?> mapping) {
-        parameter = parameter.type(targetType(mapping))
-                .format(format(mapping))
-                .required(required(mapping))
-                .description(attach(mapping).desc())
-                .example(exampleString(mapping))
-                .items(items(mapping))
-                ._enum(enums(mapping));
-
-        parameter.setPattern(pattern(mapping));
-        parameter.setMaximum(maximum(mapping));
-        parameter.setExclusiveMaximum(exclusiveMaximum(mapping));
-        parameter.setMinimum(minimum(mapping));
-        parameter.setExclusiveMinimum(exclusiveMinimum(mapping));
-
-        return parameter;
-    }
-
-    public Model mToModel(Framework.Mapping<?> mapping) {
-        String refName = attach(mapping).refName();
-        if (!isEmpty(refName)) {
-            return new RefModel(refName);
-        }
-
-        if (mapping.meta().targetType == List.class) {
-            ArrayModel model = new ArrayModel()
-                    .description(attach(mapping).desc())
-                    .items(items(mapping));
-            model.setExample(attach(mapping).example());
-            return model;
-        }
-
-        ModelImpl model = new ModelImpl()
-                .type(targetType(mapping))
-                .format(format(mapping))
-                .description(attach(mapping).desc())
-                .example(attach(mapping).example());
-
-        if (mapping instanceof Framework.GroupMapping) {
-            ((Framework.GroupMapping) mapping).fields().forEach(m -> {
-                model.addProperty(m.getKey(), mToProperty(m.getValue()));
-                if (required(m.getValue())) model.required(m.getKey());
-            });
-        }
-
-        return model;
-    }
-
+    @Override
     public Response mToResponse(Framework.Mapping<?> mapping) {
         return new Response().schema(mToProperty(mapping))
                 .description(attach(mapping).desc());
     }
 
+    @Override
     public Property mToProperty(Framework.Mapping<?> mapping) {
         String refName = attach(mapping).refName();
         if (!isEmpty(refName)) {
@@ -211,6 +168,83 @@ public class MSwaggerHelper {
         throw new IllegalArgumentException("Unsupported target type: " + mapping.meta().targetType);
     }
 
+    @Override
+    public Model mToModel(Framework.Mapping<?> mapping) {
+        String refName = attach(mapping).refName();
+        if (!isEmpty(refName)) {
+            return new RefModel(refName);
+        }
+
+        if (mapping.meta().targetType == List.class) {
+            ArrayModel model = new ArrayModel()
+                .description(attach(mapping).desc())
+                .items(items(mapping));
+            model.setExample(attach(mapping).example());
+            return model;
+        }
+
+        ModelImpl model = new ModelImpl()
+            .type(targetType(mapping))
+            .format(format(mapping))
+            .description(attach(mapping).desc())
+            .example(attach(mapping).example());
+
+        if (mapping instanceof Framework.GroupMapping) {
+            ((Framework.GroupMapping) mapping).fields().forEach(m -> {
+                model.addProperty(m.getKey(), mToProperty(m.getValue()));
+                if (required(m.getValue())) model.required(m.getKey());
+            });
+        }
+
+        return model;
+    }
+
+    @Override
+    public List<Map.Entry<String, Model>> scanModels(Framework.Mapping<?> mapping) {
+        List<Map.Entry<String, Model>> models = new ArrayList<>();
+
+        String refName = attach(mapping).refName();
+        if (!isEmpty(refName)) {
+            Framework.Mapping<?> mappingNoRef = new Builder(mapping).refName(null).$$;
+            models.add(entry(refName, mToModel(mappingNoRef)));
+        }
+
+        if (mapping instanceof Framework.GroupMapping) {
+            ((Framework.GroupMapping) mapping).fields()
+                    .forEach(m -> models.addAll(scanModels(m.getValue())));
+        }
+        if (mapping.meta().targetType == Map.class) {
+            models.addAll(scanModels(mapping.meta().baseMappings[1]));
+        }
+        if (mapping.meta().targetType == List.class) {
+            models.addAll(scanModels(mapping.meta().baseMappings[0]));
+        }
+        if (mapping.meta().targetType == Optional.class) {
+            models.addAll(scanModels(mapping.meta().baseMappings[0]));
+        }
+
+        return models;
+    }
+
+    ///
+    protected AbstractSerializableParameter fillParameter(AbstractSerializableParameter parameter, Framework.Mapping<?> mapping) {
+        parameter = parameter.type(targetType(mapping))
+            .format(format(mapping))
+            .required(required(mapping))
+            .description(attach(mapping).desc())
+            .example(exampleString(mapping))
+            .items(items(mapping))
+            ._enum(enums(mapping));
+
+        parameter.setPattern(pattern(mapping));
+        parameter.setMaximum(maximum(mapping));
+        parameter.setExclusiveMaximum(exclusiveMaximum(mapping));
+        parameter.setMinimum(minimum(mapping));
+        parameter.setExclusiveMinimum(exclusiveMinimum(mapping));
+
+        return parameter;
+    }
+
     protected AbstractProperty fillProperty(AbstractProperty property, Framework.Mapping<?> mapping) {
         property.setDescription(attach(mapping).desc());
         property.setFormat(format(mapping));
@@ -236,33 +270,6 @@ public class MSwaggerHelper {
         return property;
     }
 
-    public List<Map.Entry<String, Model>> scanModels(Framework.Mapping<?> mapping) {
-        List<Map.Entry<String, Model>> models = new ArrayList<>();
-
-        String refName = attach(mapping).refName();
-        if (!isEmpty(refName)) {
-            Framework.Mapping<?> mappingNoRef = new Attachment.Builder(mapping).refName(null).$$;
-            models.add(entry(refName, mToModel(mappingNoRef)));
-        }
-
-        if (mapping instanceof Framework.GroupMapping) {
-            ((Framework.GroupMapping) mapping).fields()
-                    .forEach(m -> models.addAll(scanModels(m.getValue())));
-        }
-        if (mapping.meta().targetType == Map.class) {
-            models.addAll(scanModels(mapping.meta().baseMappings[1]));
-        }
-        if (mapping.meta().targetType == List.class) {
-            models.addAll(scanModels(mapping.meta().baseMappings[0]));
-        }
-        if (mapping.meta().targetType == Optional.class) {
-            models.addAll(scanModels(mapping.meta().baseMappings[0]));
-        }
-
-        return models;
-    }
-
-    ///
     protected boolean isPrimitive(Framework.Mapping<?> mapping) {
         return isPrimitive(mapping, true);
     }

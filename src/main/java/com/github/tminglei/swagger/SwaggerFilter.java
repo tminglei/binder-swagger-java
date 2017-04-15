@@ -2,15 +2,22 @@ package com.github.tminglei.swagger;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.tminglei.swagger.bind.MappingConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.Optional;
+import java.net.URL;
+import java.net.URLDecoder;
+import java.util.*;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+import java.util.stream.Collectors;
 
 import static com.github.tminglei.swagger.SwaggerUtils.*;
 
@@ -31,16 +38,16 @@ public class SwaggerFilter implements Filter {
                 .orElse("/swagger.json");
 
         // set user extended swagger helper
-        String mySwaggerHelper = filterConfig.getInitParameter("my-extended-swagger-helper");
-        logger.info("swagger config - my-extended-swagger-helper: " + mySwaggerHelper);
-        if (!isEmpty(mySwaggerHelper)) {
+        String mappingConverter = filterConfig.getInitParameter("mapping-converter");
+        logger.info("swagger config - mapping-converter: " + mappingConverter);
+        if (!isEmpty(mappingConverter)) {
             try {
-                Class<MSwaggerHelper> clazz = (Class<MSwaggerHelper>) Class.forName(mySwaggerHelper);
-                SwaggerContext.setMHelper(clazz.newInstance());
+                Class<MappingConverter> clazz = (Class<MappingConverter>) Class.forName(mappingConverter);
+                SwaggerContext.INSTANCE.setMConverter(clazz.newInstance());
             } catch (ClassNotFoundException e) {
-                throw new RuntimeException("INVALID swagger helper class: '" + mySwaggerHelper + "'!!!");
+                throw new RuntimeException("INVALID mapping converter class: '" + mappingConverter + "'!!!");
             } catch (InstantiationException e) {
-                throw new RuntimeException("FAILED to instantiate the swagger helper class: '" + mySwaggerHelper + "'!!!");
+                throw new RuntimeException("FAILED to instantiate the mapping converter class: '" + mappingConverter + "'!!!");
             } catch (IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
@@ -83,7 +90,7 @@ public class SwaggerFilter implements Filter {
                 resp.addHeader("Access-Control-Max-Age", "43200"); // half a day
 
                 String json = new ObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL)
-                        .writer().writeValueAsString(check(SwaggerContext.swagger()));
+                        .writer().writeValueAsString(SwaggerContext.swagger());
                 resp.getWriter().write(json);
                 resp.flushBuffer();
                 return;
@@ -96,4 +103,62 @@ public class SwaggerFilter implements Filter {
     public void destroy() {
         // nothing to do
     }
+
+    ///---
+    // (recursively) find class names under specified base package
+    // inspired by: http://www.uofr.net/~greg/java/get-resource-listing.html
+    List<String> scan(Class<?> loaderClazz, String pkgOrClassName) throws URISyntaxException, IOException {
+        pkgOrClassName = pkgOrClassName.replace(".", "/").replaceAll("^/", "").replaceAll("/$", "") + "/";
+
+        Set<String> result = new HashSet<>();
+        boolean found = false;
+
+        //1. first, let's try to treat it as package
+        Enumeration<URL> dirURLs = loaderClazz.getClassLoader().getResources(pkgOrClassName);
+        while (dirURLs.hasMoreElements()) {
+            found = true;
+            URL dirURL = dirURLs.nextElement();
+
+            if (dirURL.getProtocol().equals("file")) {
+                /* A file path: easy enough */
+                String[] names = new File(dirURL.toURI()).list();
+                for(String name : names) {
+                    if (name.endsWith(".class") && !name.contains("$")) { //filter out inner classes
+                        result.add(pkgOrClassName + name);
+                    } else {
+                        File f = new File(dirURL.getPath() + name);
+                        if (f.isDirectory()) { //recursively finding
+                            result.addAll(scan(loaderClazz, pkgOrClassName + name));
+                        }
+                    }
+                }
+            }
+
+            if (dirURL.getProtocol().equals("jar")) {
+                /* A JAR path */
+                String jarPath = dirURL.getPath().substring(5, dirURL.getPath().indexOf("!")); //strip out only the JAR file
+                JarFile jar = new JarFile(URLDecoder.decode(jarPath, "UTF-8"));
+                Enumeration<JarEntry> entries = jar.entries(); //gives ALL entries in jar
+                while(entries.hasMoreElements()) {
+                    String name = entries.nextElement().getName();
+                    if (name.startsWith(pkgOrClassName) && name.endsWith(".class") && !name.contains("$")) {
+                        result.add(name);
+                    }
+                }
+            }
+        }
+
+        //2. if not found, let's try to treat it as class
+        if (!found) {
+            pkgOrClassName = pkgOrClassName.replaceAll("/$", "").replaceAll("/class", ".class");
+            if (!pkgOrClassName.endsWith(".class")) pkgOrClassName = pkgOrClassName + ".class";
+            URL clsURL = loaderClazz.getClassLoader().getResource(pkgOrClassName);
+            if (clsURL != null) result.add(pkgOrClassName);
+        }
+
+        return result.stream().map(
+            n -> n.replaceAll("\\.class$", "").replace(File.separator, ".").replace("/", ".")
+        ).collect(Collectors.toList());
+    }
+
 }

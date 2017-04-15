@@ -1,4 +1,4 @@
-package com.github.tminglei.swagger;
+package com.github.tminglei.swagger.bind;
 
 import io.swagger.models.ArrayModel;
 import io.swagger.models.Model;
@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.*;
-import static com.github.tminglei.swagger.Attachment.*;
+import static com.github.tminglei.swagger.SwaggerContext.*;
 import static com.github.tminglei.bind.Simple.*;
 import static com.github.tminglei.bind.Mappings.*;
 import static com.github.tminglei.bind.Constraints.*;
@@ -23,12 +23,12 @@ import static com.github.tminglei.bind.Constraints.*;
 /**
  * Created by tminglei on 9/10/15.
  */
-public class MSwaggerHelperTest {
-    private MSwaggerHelper mHelper = new MSwaggerHelper();
+public class DefaultMappingConverterTest {
+    private DefaultMappingConverter converter = new DefaultMappingConverter();
 
     @Test
     public void testMtoParameters_Single() {
-        List<Parameter> params = mHelper.mToParameters("id", $(longv(required())).in("query").desc("id").$$);
+        List<Parameter> params = converter.mToParameters("id", $(longv(required())).in("query").desc("id").$$);
 
         assertEquals(params.size(), 1);
 
@@ -42,7 +42,7 @@ public class MSwaggerHelperTest {
 
         /// 'in' is required!!!
         try {
-            List<Parameter> params1 = mHelper.mToParameters("id", $(longv(required())).desc("id").$$);
+            List<Parameter> params1 = converter.mToParameters("id", $(longv(required())).desc("id").$$);
             assertTrue("shouldn't", false);
         } catch (Exception e) {
             assertEquals(e.getMessage(), "in is required!!!");
@@ -51,7 +51,7 @@ public class MSwaggerHelperTest {
 
     @Test
     public void testMtoParameters_Multiple() {
-        List<Parameter> params = mHelper.mToParameters("", mapping(
+        List<Parameter> params = converter.mToParameters("", mapping(
                 field("id", $(intv()).in("path").desc("id").$$),
                 field("data", $(mapping(
                         field("id", $(intv()).desc("id").$$),
@@ -84,7 +84,7 @@ public class MSwaggerHelperTest {
 
         /// 'in' is required!!!
         try {
-            List<Parameter> params1 = mHelper.mToParameters("", mapping(
+            List<Parameter> params1 = converter.mToParameters("", mapping(
                     field("id", $(intv()).desc("id").$$),
                     field("data", $(mapping(
                             field("id", $(intv()).desc("id").$$),
@@ -99,7 +99,7 @@ public class MSwaggerHelperTest {
 
     @Test
     public void testMtoModel() {
-        Model model = mHelper.mToModel(list(mapping(
+        Model model = converter.mToModel(list(mapping(
                 field("id", $(intv()).desc("id").$$),
                 field("name", $(text(required())).desc("name").$$)
         )));
@@ -126,7 +126,7 @@ public class MSwaggerHelperTest {
 
     @Test
     public void testMtoProperty() {
-        Property prop = mHelper.mToProperty(list(mapping(
+        Property prop = converter.mToProperty(list(mapping(
                 field("id", $(intv()).desc("id").$$),
                 field("name", $(text(required())).desc("name").$$)
         )));
@@ -153,7 +153,7 @@ public class MSwaggerHelperTest {
 
     @Test
     public void testScanModels() {
-        List<Map.Entry<String, Model>> models = mHelper.scanModels($(mapping(
+        List<Map.Entry<String, Model>> models = converter.scanModels($(mapping(
                 field("id", longv()),
                 field("props1", $(mapping(
                         field("id", longv()),
@@ -189,26 +189,26 @@ public class MSwaggerHelperTest {
     ///
     @Test
     public void testIsPrimitive() {
-        assertEquals(mHelper.isPrimitive(longv(), true), true);
-        assertEquals(mHelper.isPrimitive(list(longv()), true), true);
-        assertEquals(mHelper.isPrimitive(list(longv()), false), false);
-        assertEquals(mHelper.isPrimitive(mapping(), true), false);
+        assertEquals(converter.isPrimitive(longv(), true), true);
+        assertEquals(converter.isPrimitive(list(longv()), true), true);
+        assertEquals(converter.isPrimitive(list(longv()), false), false);
+        assertEquals(converter.isPrimitive(mapping(), true), false);
     }
 
     @Test
     public void testTargetType() {
-        assertEquals(mHelper.targetType(longv()), "integer");
-        assertEquals(mHelper.targetType(list(intv())), "array");
-        assertEquals(mHelper.targetType(mapping()), "object");
-        assertEquals(mHelper.targetType(uuid()), "string");
-        assertEquals(mHelper.targetType(bigDecimal()), "number");
+        assertEquals(converter.targetType(longv()), "integer");
+        assertEquals(converter.targetType(list(intv())), "array");
+        assertEquals(converter.targetType(mapping()), "object");
+        assertEquals(converter.targetType(uuid()), "string");
+        assertEquals(converter.targetType(bigDecimal()), "number");
     }
 
     @Test
     public void testFormat() {
-        assertEquals(mHelper.format(datetime()), "date-time");
-        assertEquals(mHelper.format(text(email())), "email");
-        assertEquals(mHelper.format(longv(email())), "int64");
-        assertEquals(mHelper.format($(text()).format("json").$$), "json");
+        assertEquals(converter.format(datetime()), "date-time");
+        assertEquals(converter.format(text(email())), "email");
+        assertEquals(converter.format(longv(email())), "int64");
+        assertEquals(converter.format($(text()).format("json").$$), "json");
     }
 }
