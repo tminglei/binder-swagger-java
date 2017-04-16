@@ -11,6 +11,16 @@ import java.util.Map;
  * Extend `Operation` to provide some more helper methods
  */
 public class ExOperation extends Operation {
+    private SwaggerContext context;
+    private String path;
+    private HttpMethod method;
+
+    public ExOperation(SwaggerContext context, String path, HttpMethod method) {
+        this.context = context;
+        this.path = path;
+        this.method = method;
+    }
+
     @Override
     public ExOperation summary(String summary) {
         this.setSummary(summary);
@@ -124,6 +134,12 @@ public class ExOperation extends Operation {
     @Override
     public ExOperation vendorExtensions(Map<String, Object> vendorExtensions) {
         super.vendorExtensions( vendorExtensions );
+        return this;
+    }
+
+    // mark the operation not implemented
+    public ExOperation notImplemented() {
+        context.markNotImplemented(method, path);
         return this;
     }
 }

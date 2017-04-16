@@ -32,6 +32,7 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.ResourceBundle;
 
+import static io.swagger.models.HttpMethod.*;
 import static com.github.tminglei.swagger.SwaggerContext.*;
 import static com.github.tminglei.bind.Simple.*;
 import static com.github.tminglei.bind.Mappings.*;
@@ -59,7 +60,7 @@ public class PetStoreResource {
 
     ///
     static {
-        sharing.operation("get", "/order/{orderId}")
+        sharing.operation(GET, "/order/:orderId")
             .summary("get order by id")
             .parameter(param(longv()).in("path").name("orderId").desc("order id"))
             .response(200, response(order))
@@ -79,7 +80,7 @@ public class PetStoreResource {
     }
 
     static {
-        sharing.operation("post", "/order")
+        sharing.operation(POST, "/order")
             .summary("add an order")
             .parameter(param(order).in("body"))
             .response(200, response())
@@ -100,7 +101,7 @@ public class PetStoreResource {
     }
 
     static {
-        sharing.operation("delete", "/order")
+        sharing.operation(DELETE, "/order/:orderId")
             .summary("delete specified order")
             .parameter(param(longv()).in("path").name("orderId").desc("order id"))
             .response(200, response())

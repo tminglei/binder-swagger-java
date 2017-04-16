@@ -1,6 +1,8 @@
 package com.github.tminglei.swagger;
 
 import com.github.tminglei.swagger.bind.MParamBuilder;
+import com.github.tminglei.swagger.util.MiscUtils;
+import io.swagger.models.HttpMethod;
 import io.swagger.models.Response;
 import io.swagger.models.Scheme;
 import io.swagger.models.parameters.Parameter;
@@ -148,8 +150,8 @@ public class SharingHolder {
     }
 
     ///
-    public ExOperation operation(String method, String path) {
-        path = SwaggerUtils.joinPaths(pathPrefix, path);
+    public ExOperation operation(HttpMethod method, String path) {
+        path = MiscUtils.joinPaths(pathPrefix, path);
         ExOperation operation = context.operation(method, path);
         operation.setTags(tags);
         operation.setSchemes(schemes);

@@ -1,4 +1,4 @@
-package com.github.tminglei.swagger;
+package com.github.tminglei.swagger.util;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 /**
  * Some util methods
  */
-public class SwaggerUtils {
+public class MiscUtils {
 
     public static boolean isEmpty(Object value) {
         return (value instanceof String && ((String) value).trim().length() == 0)
@@ -28,4 +28,16 @@ public class SwaggerUtils {
             .replaceAll("/+", "/");
     }
 
+    public static <T> T newInstance(String clazzName) {
+        try {
+            Class<T> clazz = (Class<T>) Class.forName(clazzName);
+            return clazz.newInstance();
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException("INVALID class: '" + clazzName + "'!!!");
+        } catch (InstantiationException e) {
+            throw new RuntimeException("FAILED to instantiate class: '" + clazzName + "'!!!");
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

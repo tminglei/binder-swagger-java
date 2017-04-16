@@ -32,6 +32,7 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.ResourceBundle;
 
+import static io.swagger.models.HttpMethod.*;
 import static com.github.tminglei.swagger.SwaggerContext.*;
 import static com.github.tminglei.bind.Simple.*;
 import static com.github.tminglei.bind.Mappings.*;
@@ -63,11 +64,12 @@ public class PetResource {
 
     ///
     static {
-        sharing.operation("get", "/{petId}")
+        sharing.operation(GET, "/:petId")
             .summary("get pet by id")
             .parameter(param(longv()).in("path").name("petId").example(1l))
             .response(200, response(pet))
             .response(404, response().description("pet not found"))
+            .notImplemented()
         ;
     }
     @GET
@@ -83,7 +85,7 @@ public class PetResource {
     }
 
     static {
-        sharing.operation("post", "/")
+        sharing.operation(POST, "/")
             .summary("create a pet")
             .parameter(param(pet).in("body"))
             .response(200, response().description("success"))
@@ -104,7 +106,7 @@ public class PetResource {
     }
 
     static {
-        sharing.operation("put", "/")
+        sharing.operation(PUT, "/")
             .summary("update pet")
             .parameter(param(pet).in("body"))
             .response(200, response().description("success"))
@@ -125,7 +127,7 @@ public class PetResource {
     }
 
     static {
-        sharing.operation("get", "/findByStatus")
+        sharing.operation(GET, "/findByStatus")
             .summary("find pets by status")
             .parameter(param(list(petStatus, required())).in("query").name("status"))
             .response(200, response(list(pet)).description("pet list"))
@@ -138,7 +140,7 @@ public class PetResource {
     }
 
     static {
-        sharing.operation("get", "/findByTags")
+        sharing.operation(GET, "/findByTags")
             .summary("find pets by tags")
             .parameter(param(list(text())).in("query").name("tags").desc("pet tags"))
             .response(200, response(list(pet)).description("pet list"))
