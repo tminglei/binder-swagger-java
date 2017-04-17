@@ -13,15 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.tminglei.swagger.route.impl;
+package com.github.tminglei.swagger.route;
 
 import java.util.*;
 import java.util.regex.Pattern;
 
-import com.github.tminglei.swagger.route.Route;
 import io.swagger.models.HttpMethod;
-
-import static com.github.tminglei.swagger.route.impl.RouteHelper.*;
 
 /**
  *
@@ -57,12 +54,12 @@ public class TreeNode {
           if (namedElem.hasRegex()) {
               routeRegex.append("(").append(namedElem.regex()).append(")");
           } else {
-              routeRegex.append("([^").append(PATH_ELEMENT_SEPARATOR).append("]+)");
+              routeRegex.append("([^").append(RouteHelper.PATH_ELEMENT_SEPARATOR).append("]+)");
           }
       } else if (elem instanceof PathSplatParamElement) {
           routeRegex.append("(.*)");
       } else {
-          routeRegex.append(escapeNonCustomRegex(elem.name()));
+          routeRegex.append(RouteHelper.escapeNonCustomRegex(elem.name()));
       }
 
       routeRegex.append("$");
@@ -156,7 +153,7 @@ public class TreeNode {
       private String getElem(PathElement element) {
           String elem = element.name();
           if (element instanceof PathNamedParamElement) {
-              elem = PARAM_PREFIX + elem;
+              elem = RouteHelper.PARAM_PREFIX + elem;
           }
           return elem;
       }

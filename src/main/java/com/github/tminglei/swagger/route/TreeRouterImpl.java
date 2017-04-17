@@ -13,16 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.tminglei.swagger.route.impl;
+package com.github.tminglei.swagger.route;
 
-import com.github.tminglei.swagger.route.Route;
-import com.github.tminglei.swagger.route.Router;
 import io.swagger.models.HttpMethod;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.github.tminglei.swagger.route.impl.RouteHelper.*;
 
 /**
  *
@@ -36,11 +32,11 @@ public class TreeRouterImpl implements Router {
         List<PathElement> pathElements = routeImpl.getPathElements();
         if (!pathElements.isEmpty() && routeImpl.endsWithPathSeparator()) {
             pathElements.add(
-                new PathStaticElement(PATH_ELEMENT_SEPARATOR, pathElements.size() - 1));
+                new PathStaticElement(RouteHelper.PATH_ELEMENT_SEPARATOR, pathElements.size() - 1));
         }
 
         if (root == null) {
-            root = new TreeNode(new PathStaticElement(PATH_ELEMENT_SEPARATOR, 0));
+            root = new TreeNode(new PathStaticElement(RouteHelper.PATH_ELEMENT_SEPARATOR, 0));
         }
 
         TreeNode currentNode = root;
@@ -91,8 +87,8 @@ public class TreeRouterImpl implements Router {
     private List<String> getPathAsSearchTokens(String path) {
         List<String> tokens = new ArrayList<>();
 
-        path = urlDecodeForRouting(path);
-        String[] pathElements = getPathElements(path);
+        path = RouteHelper.urlDecodeForRouting(path);
+        String[] pathElements = RouteHelper.getPathElements(path);
         for (int i = 0; i < pathElements.length; i++) {
             String token = pathElements[i];
             if (token != null && token.trim().length() > 0) {
@@ -100,8 +96,8 @@ public class TreeRouterImpl implements Router {
             }
         }
         if (!tokens.isEmpty() &&
-            path.trim().endsWith(PATH_ELEMENT_SEPARATOR)) {
-            tokens.add(PATH_ELEMENT_SEPARATOR);
+            path.trim().endsWith(RouteHelper.PATH_ELEMENT_SEPARATOR)) {
+            tokens.add(RouteHelper.PATH_ELEMENT_SEPARATOR);
         }
 
         return tokens;

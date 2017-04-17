@@ -13,11 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.tminglei.swagger.route.impl;
+package com.github.tminglei.swagger.route;
 
 import java.util.Comparator;
-
-import static com.github.tminglei.swagger.route.impl.RouteHelper.*;
 
 /**
  *
@@ -29,17 +27,17 @@ public class PathElementComparator implements Comparator<String> {
         if (r1Elem.equals("")) return -1;
         if (r2Elem.equals("")) return 1;
 
-        if (r1Elem.equals(WILDCARD) && !r2Elem.equals("")) return -1;
-        if (r2Elem.equals(WILDCARD) && !r1Elem.equals("")) return 1;
+        if (r1Elem.equals(RouteHelper.WILDCARD) && !r2Elem.equals("")) return -1;
+        if (r2Elem.equals(RouteHelper.WILDCARD) && !r1Elem.equals("")) return 1;
 
-        if (r1Elem.equals(WILDCARD) && r2Elem.equals("")) return 1;
-        if (r2Elem.equals(WILDCARD) && r1Elem.equals("")) return -1;
+        if (r1Elem.equals(RouteHelper.WILDCARD) && r2Elem.equals("")) return 1;
+        if (r2Elem.equals(RouteHelper.WILDCARD) && r1Elem.equals("")) return -1;
 
-        if (r1Elem.startsWith(PARAM_PREFIX) && !r2Elem.equals("") && !r2Elem.equals(WILDCARD)) return 1;
-        if (r2Elem.startsWith(PARAM_PREFIX) && !r1Elem.equals("") && !r1Elem.equals(WILDCARD)) return -1;
+        if (r1Elem.startsWith(RouteHelper.PARAM_PREFIX) && !r2Elem.equals("") && !r2Elem.equals(RouteHelper.WILDCARD)) return 1;
+        if (r2Elem.startsWith(RouteHelper.PARAM_PREFIX) && !r1Elem.equals("") && !r1Elem.equals(RouteHelper.WILDCARD)) return -1;
 
-        if (r1Elem.startsWith(PARAM_PREFIX) && (r2Elem.equals(WILDCARD) || r2Elem.equals(""))) return -1;
-        if (r2Elem.startsWith(PARAM_PREFIX) && (r1Elem.equals(WILDCARD) || r1Elem.equals(""))) return 1;
+        if (r1Elem.startsWith(RouteHelper.PARAM_PREFIX) && (r2Elem.equals(RouteHelper.WILDCARD) || r2Elem.equals(""))) return -1;
+        if (r2Elem.startsWith(RouteHelper.PARAM_PREFIX) && (r1Elem.equals(RouteHelper.WILDCARD) || r1Elem.equals(""))) return 1;
 
         return r1Elem.compareTo(r2Elem);
     }

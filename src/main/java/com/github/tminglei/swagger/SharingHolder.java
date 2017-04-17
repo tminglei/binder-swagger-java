@@ -1,7 +1,6 @@
 package com.github.tminglei.swagger;
 
 import com.github.tminglei.swagger.bind.MParamBuilder;
-import com.github.tminglei.swagger.util.MiscUtils;
 import io.swagger.models.HttpMethod;
 import io.swagger.models.Response;
 import io.swagger.models.Scheme;
@@ -47,9 +46,10 @@ public class SharingHolder {
         clone.tags = tags != null ? tags : new ArrayList<>();
         return clone;
     }
-    public SharingHolder tag(String tag) {
+    public SharingHolder tag(String... tags) {
         SharingHolder clone = this.clone();
-        clone.tags.add(tag);
+        for (String tag : tags)
+            clone.tags.add(tag);
         return clone;
     }
 
@@ -62,9 +62,10 @@ public class SharingHolder {
         clone.schemes = schemes != null ? schemes : new ArrayList<>();
         return clone;
     }
-    public SharingHolder scheme(Scheme scheme) {
+    public SharingHolder scheme(Scheme... schemes) {
         SharingHolder clone = this.clone();
-        clone.schemes.add(scheme);
+        for (Scheme scheme : schemes)
+            clone.schemes.add(scheme);
         return clone;
     }
 
@@ -77,9 +78,10 @@ public class SharingHolder {
         clone.consumes = consumes != null ? consumes : new ArrayList<>();
         return clone;
     }
-    public SharingHolder consume(String consume) {
+    public SharingHolder consume(String... consumes) {
         SharingHolder clone = this.clone();
-        clone.consumes.add(consume);
+        for (String consume : consumes)
+            clone.consumes.add(consume);
         return clone;
     }
 
@@ -92,9 +94,10 @@ public class SharingHolder {
         clone.produces = produces != null ? produces : new ArrayList<>();
         return clone;
     }
-    public SharingHolder produce(String produce) {
+    public SharingHolder produce(String... produces) {
         SharingHolder clone = this.clone();
-        clone.produces.add(produce);
+        for (String produce : produces)
+            clone.produces.add(produce);
         return clone;
     }
 
@@ -151,7 +154,7 @@ public class SharingHolder {
 
     ///
     public ExOperation operation(HttpMethod method, String path) {
-        path = MiscUtils.joinPaths(pathPrefix, path);
+        path = SimpleUtils.joinPaths(pathPrefix, path);
         ExOperation operation = context.operation(method, path);
         operation.setTags(tags);
         operation.setSchemes(schemes);

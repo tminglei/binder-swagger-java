@@ -13,9 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.tminglei.swagger.route.impl;
-
-import static com.github.tminglei.swagger.route.impl.RouteHelper.*;
+package com.github.tminglei.swagger.route;
 
 /**
  *
@@ -24,6 +22,6 @@ import static com.github.tminglei.swagger.route.impl.RouteHelper.*;
 public class PathSplatParamElement extends PathElement {
 
     public PathSplatParamElement(int index) {
-        super(WILDCARD, index);
+        super(RouteHelper.WILDCARD, index);
     }
 }

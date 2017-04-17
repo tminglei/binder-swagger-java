@@ -1,8 +1,6 @@
-package com.github.tminglei.swagger.route.impl;
+package com.github.tminglei.swagger.route;
 
 import com.github.tminglei.swagger.fake.DataProvider;
-import com.github.tminglei.swagger.route.Route;
-import com.github.tminglei.swagger.route.RouteFactory;
 import io.swagger.models.HttpMethod;
 
 /**

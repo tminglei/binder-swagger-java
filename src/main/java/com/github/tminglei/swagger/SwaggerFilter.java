@@ -26,7 +26,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.stream.Collectors;
 
-import static com.github.tminglei.swagger.util.MiscUtils.*;
+import static com.github.tminglei.swagger.SimpleUtils.*;
 
 /**
  * Filter used to init/scan swagger registering info and serv swagger json
@@ -147,6 +147,7 @@ public class SwaggerFilter implements Filter {
                 }
             }
         }
+
         filterChain.doFilter(request, response);
     }
 

@@ -8,8 +8,8 @@ import com.github.tminglei.swagger.bind.MappingConverter;
 import com.github.tminglei.swagger.fake.*;
 import com.github.tminglei.swagger.route.RouteFactory;
 import com.github.tminglei.swagger.route.Router;
-import com.github.tminglei.swagger.route.impl.RouteFactoryImpl;
-import com.github.tminglei.swagger.route.impl.TreeRouterImpl;
+import com.github.tminglei.swagger.route.RouteFactoryImpl;
+import com.github.tminglei.swagger.route.TreeRouterImpl;
 import io.swagger.models.*;
 import io.swagger.models.auth.ApiKeyAuthDefinition;
 import io.swagger.models.auth.BasicAuthDefinition;
@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
-import static com.github.tminglei.swagger.util.MiscUtils.*;
+import static com.github.tminglei.swagger.SimpleUtils.*;
 
 /**
  * Context class to hold swagger instance and related helper methods
@@ -116,7 +116,7 @@ public class SwaggerContext {
             }
 
             logger.info(">>> adding operation - " + method + " '" + path + "'");
-            pathObj.set(method.name().toLowerCase(), new ExOperation(this, path, method));
+            pathObj.set(method.name().toLowerCase(), new ExOperation(this, method, path));
             implemented.put(entry(method, path), true);     // set implemented by default
             return (ExOperation) pathObj.getOperationMap().get(method);
         }

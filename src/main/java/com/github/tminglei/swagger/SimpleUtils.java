@@ -1,4 +1,4 @@
-package com.github.tminglei.swagger.util;
+package com.github.tminglei.swagger;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 /**
  * Some util methods
  */
-public class MiscUtils {
+public class SimpleUtils {
 
     public static boolean isEmpty(Object value) {
         return (value instanceof String && ((String) value).trim().length() == 0)

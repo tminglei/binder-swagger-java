@@ -12,13 +12,13 @@ import java.util.Map;
  */
 public class ExOperation extends Operation {
     private SwaggerContext context;
-    private String path;
     private HttpMethod method;
+    private String path;
 
-    public ExOperation(SwaggerContext context, String path, HttpMethod method) {
+    public ExOperation(SwaggerContext context, HttpMethod method, String path) {
         this.context = context;
-        this.path = path;
         this.method = method;
+        this.path = path;
     }
 
     @Override

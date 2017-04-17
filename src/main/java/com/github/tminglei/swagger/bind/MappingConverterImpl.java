@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 
 import static com.github.tminglei.swagger.bind.Attachment.*;
 import static com.github.tminglei.swagger.SwaggerContext.entry;
-import static com.github.tminglei.swagger.util.MiscUtils.*;
+import static com.github.tminglei.swagger.SimpleUtils.*;
 import static com.github.tminglei.bind.OptionsOps.*;
 
 /**

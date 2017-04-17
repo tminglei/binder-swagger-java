@@ -1,7 +1,6 @@
-package com.github.tminglei.swagger.route.impl;
+package com.github.tminglei.swagger.route;
 
 import com.github.tminglei.swagger.fake.DataProvider;
-import com.github.tminglei.swagger.route.Route;
 import io.swagger.models.HttpMethod;
 
 import java.util.ArrayList;
@@ -10,8 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 
-import static com.github.tminglei.swagger.util.MiscUtils.*;
-import static com.github.tminglei.swagger.route.impl.RouteHelper.*;
+import static com.github.tminglei.swagger.SimpleUtils.*;
 
 /**
  * Created by minglei on 4/17/17.
@@ -63,20 +61,20 @@ public class RouteImpl implements Route {
     }
 
     private void extractPathElements() {
-        Matcher m = CUSTOM_REGEX_PATTERN.matcher(pathPattern);
+        Matcher m = RouteHelper.CUSTOM_REGEX_PATTERN.matcher(pathPattern);
         Map<String, String> regexMap = getRegexMap(m);
         String path = m.replaceAll("");
 
         String[] pathElements = RouteHelper.getPathElements(path);
         for (int i = 0; i < pathElements.length; i++) {
             String currentElement = pathElements[i];
-            if (currentElement.startsWith(PARAM_PREFIX)) {
+            if (currentElement.startsWith(RouteHelper.PARAM_PREFIX)) {
                 currentElement = currentElement.substring(1);
                 PathNamedParamElement named =
                     new PathNamedParamElement(currentElement, i, regexMap.get(currentElement));
                 namedParamElements.add(named);
                 allPathElements.add(named);
-            } else if (currentElement.equals(WILDCARD)) {
+            } else if (currentElement.equals(RouteHelper.WILDCARD)) {
                 PathSplatParamElement splat = new PathSplatParamElement(i);
                 splatParamElements.add(splat);
                 allPathElements.add(splat);
@@ -101,7 +99,7 @@ public class RouteImpl implements Route {
             int namedParamStart = m.start() - 1;
             int namedParamEnd = m.start();
             String namedParamName = pathPattern.substring(namedParamStart, namedParamEnd);
-            while (!namedParamName.startsWith(PARAM_PREFIX)) {
+            while (!namedParamName.startsWith(RouteHelper.PARAM_PREFIX)) {
                 namedParamStart--;
                 namedParamName = pathPattern.substring(namedParamStart, namedParamEnd);
             }
@@ -139,7 +137,7 @@ public class RouteImpl implements Route {
 
         for (PathNamedParamElement pathParam : pathParams) {
             if (pathParam.name().equals(paramName)) {
-                return urlDecodeForPathParams(pathTokens[pathParam.index()]);
+                return RouteHelper.urlDecodeForPathParams(pathTokens[pathParam.index()]);
             }
         }
         return null;
@@ -169,12 +167,12 @@ public class RouteImpl implements Route {
 
         for (int i = 0; i < splatParams.size(); i++) {
             PathSplatParamElement splatParam = splatParams.get(i);
-            splat[i] = urlDecodeForPathParams(pathTokens[splatParam.index()]);
+            splat[i] = RouteHelper.urlDecodeForPathParams(pathTokens[splatParam.index()]);
 
             if (i + 1 == splatParams.size() && endsWithSplat()) {
                 /* this is the last splat param and the route ends with splat */
                 for (int j = splatParam.index() + 1; j < pathTokens.length; j++) {
-                    splat[i] = splat[i] + PATH_ELEMENT_SEPARATOR + urlDecodeForPathParams(pathTokens[j]);
+                    splat[i] = splat[i] + RouteHelper.PATH_ELEMENT_SEPARATOR + RouteHelper.urlDecodeForPathParams(pathTokens[j]);
                 }
             }
         }
@@ -182,11 +180,11 @@ public class RouteImpl implements Route {
     }
 
     private boolean endsWithSplat() {
-        return pathPattern.endsWith(WILDCARD);
+        return pathPattern.endsWith(RouteHelper.WILDCARD);
     }
 
     public boolean endsWithPathSeparator() {
-        return pathPattern.endsWith(PATH_ELEMENT_SEPARATOR);
+        return pathPattern.endsWith(RouteHelper.PATH_ELEMENT_SEPARATOR);
     }
 
     public boolean hasPathElements() {
