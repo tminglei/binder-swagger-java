@@ -1,4 +1,4 @@
 /**
- * Created by minglei on 4/15/17.
+ * Copied and modified from [lantunes/routd](https://github.com/lantunes/routd)
  */
 package com.github.tminglei.swagger.route;

@@ -23,8 +23,8 @@ import static com.github.tminglei.bind.Constraints.*;
 /**
  * Created by tminglei on 9/10/15.
  */
-public class DefaultMappingConverterTest {
-    private DefaultMappingConverter converter = new DefaultMappingConverter();
+public class MappingConverterImplTest {
+    private MappingConverterImpl converter = new MappingConverterImpl();
 
     @Test
     public void testMtoParameters_Single() {

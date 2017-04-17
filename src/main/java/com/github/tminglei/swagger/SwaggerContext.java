@@ -3,14 +3,13 @@ package com.github.tminglei.swagger;
 import com.github.tminglei.bind.Framework;
 import com.github.tminglei.swagger.bind.Attachment;
 import com.github.tminglei.swagger.bind.MParamBuilder;
-import com.github.tminglei.swagger.bind.DefaultMappingConverter;
+import com.github.tminglei.swagger.bind.MappingConverterImpl;
 import com.github.tminglei.swagger.bind.MappingConverter;
-import com.github.tminglei.swagger.fake.AbstractDataProvider;
-import com.github.tminglei.swagger.fake.DataProvider;
-import com.github.tminglei.swagger.fake.DataWriter;
-import com.github.tminglei.swagger.fake.ParamDataProvider;
+import com.github.tminglei.swagger.fake.*;
 import com.github.tminglei.swagger.route.RouteFactory;
 import com.github.tminglei.swagger.route.Router;
+import com.github.tminglei.swagger.route.impl.RouteFactoryImpl;
+import com.github.tminglei.swagger.route.impl.TreeRouterImpl;
 import io.swagger.models.*;
 import io.swagger.models.auth.ApiKeyAuthDefinition;
 import io.swagger.models.auth.BasicAuthDefinition;
@@ -34,7 +33,7 @@ public class SwaggerContext {
     private static final Logger logger = LoggerFactory.getLogger(SwaggerContext.class);
 
     private static SwaggerContext INSTANCE = new SwaggerContext(
-        new Swagger(), new DefaultMappingConverter(), null, null, null); //TODO
+        new Swagger(), new MappingConverterImpl(), new TreeRouterImpl(), new RouteFactoryImpl(), new DataWriterImpl());
 
     private Swagger swagger;
     private MappingConverter mConverter;

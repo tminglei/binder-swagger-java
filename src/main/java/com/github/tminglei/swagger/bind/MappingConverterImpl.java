@@ -25,7 +25,7 @@ import static com.github.tminglei.bind.OptionsOps.*;
 /**
  * Helper class to build swagger elements from `com.github.tminglei.bind.Framework.Mapping`
  */
-public class DefaultMappingConverter implements MappingConverter {
+public class MappingConverterImpl implements MappingConverter {
 
     @Override
     public List<Parameter> mToParameters(String name, Framework.Mapping<?> mapping) {

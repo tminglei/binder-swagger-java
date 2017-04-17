@@ -13,7 +13,7 @@ public class MiscUtils {
             || value == null;
     }
 
-    public static Object notEmpty(Object value, String message) {
+    public static <T> T notEmpty(T value, String message) {
         if (value == null) throw new IllegalArgumentException(message);
         if (value instanceof String && "".equals(((String) value).trim())) {
             throw new IllegalArgumentException(message);
