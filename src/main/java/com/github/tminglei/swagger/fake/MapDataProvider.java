@@ -9,8 +9,7 @@ import java.util.Map;
 public class MapDataProvider extends AbstractDataProvider implements DataProvider {
     private DataProvider valueProvider;
 
-    public MapDataProvider(DataProvider valueProvider, boolean required) {
-        setRequired(required);
+    public MapDataProvider(DataProvider valueProvider) {
         this.valueProvider = valueProvider;
     }
 
@@ -18,6 +17,7 @@ public class MapDataProvider extends AbstractDataProvider implements DataProvide
     protected Object create() {
         Map map = new HashMap();
         for (int i = 0; i < 5; i++) {
+            valueProvider.setRequestParams(params);
             map.put("key"+i, valueProvider.get());
         }
         return map;

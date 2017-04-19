@@ -2,6 +2,7 @@ package com.github.tminglei.swagger;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.tminglei.bind.Simple;
 import com.github.tminglei.swagger.fake.ConstDataProvider;
 import com.github.tminglei.swagger.fake.DataProvider;
 import com.github.tminglei.swagger.fake.DataProviders;
@@ -103,7 +104,8 @@ public class SwaggerFilter implements Filter {
                         Response response = responses != null ? responses.get("200") : null;
                         DataProvider dataProvider = response != null && response.getSchema() != null
                             ? DataProviders.getInstance().collect(swaggerContext.getSwagger(), response.getSchema(), true)
-                            : new ConstDataProvider(null, true);
+                            : new ConstDataProvider(null);
+                        dataProvider.setRequired(true);
                         boolean implemented = swaggerContext.isImplemented(method, path, true);
                         Route route = swaggerContext.getRouteFactory().create(method, path, implemented, dataProvider);
                         swaggerContext.getRouter().add(route);
@@ -137,6 +139,8 @@ public class SwaggerFilter implements Filter {
                 HttpMethod method = HttpMethod.valueOf(req.getMethod().toUpperCase());
                 Route route = swaggerContext.getRouter().route(method, req.getRequestURI());
                 if (route != null && ! route.isImplemented()) {
+                    Map<String, String> params = Simple.data(req.getParameterMap());
+                    route.getDataProvider().setRequestParams(params);
                     Object fakeData = route.getDataProvider().get();
                     if (!isEmpty(fakeData)) {
                         String format = req.getHeader("accept");

@@ -6,8 +6,7 @@ package com.github.tminglei.swagger.fake;
 public class ConstDataProvider extends AbstractDataProvider implements DataProvider {
     private Object value;
 
-    public ConstDataProvider(Object value, boolean required) {
-        setRequired(required);
+    public ConstDataProvider(Object value) {
         this.value = value;
     }
 

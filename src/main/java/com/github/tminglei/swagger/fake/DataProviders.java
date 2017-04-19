@@ -46,57 +46,68 @@ public class DataProviders {
      * @return  organized data provider
      */
     public DataProvider collect(Swagger swagger, Property schema, boolean clean) {
-        if (schema == null) return new ConstDataProvider(null, true);
+        if (schema == null) return new ConstDataProvider(null);
 
         Object example = schema.getExample();
         if (example instanceof DataProvider) {
             DataProvider provider = (DataProvider) example;
-            if (clean) schema.setExample(provider.get());
+            if (clean) {
+                provider.setRequired(true);
+                schema.setExample(provider.get());
+            }
             provider.setRequired(schema.getRequired());
             return provider;
         } else if (example != null) {
-            return new ConstDataProvider(example, schema.getRequired());
+            DataProvider dataProvider = new ConstDataProvider(example);
+            dataProvider.setRequired(schema.getRequired());
+            return dataProvider;
         }
 
         ///---
+        DataProvider dataProvider = null;
         if (schema instanceof RefProperty) {
-            return collectRefProperty(swagger, (RefProperty) schema, clean);
+            dataProvider = collectRefProperty(swagger, (RefProperty) schema, clean);
         }
         else if (schema instanceof ObjectProperty) {
-            return collectObjectProperty(swagger, (ObjectProperty) schema, clean);
+            dataProvider = collectObjectProperty(swagger, (ObjectProperty) schema, clean);
         }
         else if (schema instanceof MapProperty) {
-            return collectMapProperty(swagger, (MapProperty) schema, clean);
+            dataProvider = collectMapProperty(swagger, (MapProperty) schema, clean);
         }
         else if (schema instanceof ArrayProperty) {
-            return collectArrayProperty(swagger, (ArrayProperty) schema, clean);
+            dataProvider = collectArrayProperty(swagger, (ArrayProperty) schema, clean);
         }
         else if (schema instanceof AbstractNumericProperty) {
-            return collectNumericProperty(swagger, (AbstractNumericProperty) schema, clean);
+            dataProvider = collectNumericProperty(swagger, (AbstractNumericProperty) schema, clean);
         }
         else if (schema instanceof ByteArrayProperty || schema instanceof BinaryProperty) {
-            return collectByteProperty(swagger, schema, clean);
+            dataProvider = collectByteProperty(swagger, schema, clean);
         }
         else if (schema instanceof DateProperty || schema instanceof DateTimeProperty) {
-            return collectDateProperty(swagger, schema, clean);
+            dataProvider = collectDateProperty(swagger, schema, clean);
         }
         else if (schema instanceof EmailProperty) {
-            return collectEmailProperty(swagger, (EmailProperty) schema, clean);
+            dataProvider = collectEmailProperty(swagger, (EmailProperty) schema, clean);
         }
         else if (schema instanceof FileProperty) {
-            return collectFileProperty(swagger, (FileProperty) schema, clean);
+            dataProvider = collectFileProperty(swagger, (FileProperty) schema, clean);
         }
         else if (schema instanceof UUIDProperty) {
-            return collectUUIDProperty(swagger, (UUIDProperty) schema, clean);
+            dataProvider = collectUUIDProperty(swagger, (UUIDProperty) schema, clean);
         }
         else if (schema instanceof BooleanProperty) {
-            return collectBooleanProperty(swagger, (BooleanProperty) schema, clean);
+            dataProvider = collectBooleanProperty(swagger, (BooleanProperty) schema, clean);
         }
         else if (schema instanceof StringProperty) {
-            return collectStringProperty(swagger, (StringProperty) schema, clean);
+            dataProvider = collectStringProperty(swagger, (StringProperty) schema, clean);
         }
         else if (schema instanceof PasswordProperty) {
-            return collectPasswordProperty(swagger, (PasswordProperty) schema, clean);
+            dataProvider = collectPasswordProperty(swagger, (PasswordProperty) schema, clean);
+        }
+
+        if (dataProvider != null) {
+            dataProvider.setRequired(schema.getRequired());
+            return dataProvider;
         }
 
         throw new IllegalArgumentException("Unsupported property type: " + schema.getClass());
@@ -108,14 +119,14 @@ public class DataProviders {
 
         if (model instanceof ArrayModel) {
             DataProvider itemProvider = collect(swagger, ((ArrayModel) model).getItems(), clean);
-            return new ListDataProvider(itemProvider, schema.getRequired());
+            return new ListDataProvider(itemProvider);
         } else if (model instanceof ModelImpl) {
             Map<String, DataProvider> fields =
                 (model.getProperties() != null ? model.getProperties() : Collections.<String, Property>emptyMap()).entrySet().stream()
                     .map(e -> entry(e.getKey(), collect(swagger, e.getValue(), clean)))
                     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-            return new ObjectDataProvider(fields, schema.getRequired());
+            return new ObjectDataProvider(fields);
         }
 
         throw new IllegalArgumentException("Unsupported model type: " + model.getClass());
@@ -127,17 +138,17 @@ public class DataProviders {
                 .map(e -> entry(e.getKey(), collect(swagger, e.getValue(), clean)))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-        return new ObjectDataProvider(fields, schema.getRequired());
+        return new ObjectDataProvider(fields);
     }
 
     protected DataProvider collectMapProperty(Swagger swagger, MapProperty schema, boolean clean) {
         DataProvider valueProvider = collect(swagger, schema.getAdditionalProperties(), clean);
-        return new MapDataProvider(valueProvider, schema.getRequired());
+        return new MapDataProvider(valueProvider);
     }
 
     protected DataProvider collectArrayProperty(Swagger swagger, ArrayProperty schema, boolean clean) {
         DataProvider itemProvider = collect(swagger, schema.getItems(), clean);
-        return new ListDataProvider(itemProvider, schema.getRequired());
+        return new ListDataProvider(itemProvider);
     }
 
     protected DataProvider collectNumericProperty(Swagger swagger, AbstractNumericProperty schema, boolean clean) {
@@ -155,9 +166,9 @@ public class DataProviders {
 
     protected DataProvider collectByteProperty(Swagger swagger, Property schema, boolean clean) {
         if (schema instanceof ByteArrayProperty)
-            return new ConstDataProvider("[ByteArray]", schema.getRequired());
+            return new ConstDataProvider("[ByteArray]");
         else if (schema instanceof BinaryProperty)
-            return new ConstDataProvider("[Binary]", schema.getRequired());
+            return new ConstDataProvider("[Binary]");
 
         throw new IllegalArgumentException("Unsupported property type: " + schema.getClass());
     }
@@ -200,6 +211,6 @@ public class DataProviders {
     }
 
     protected DataProvider collectPasswordProperty(Swagger swagger, PasswordProperty schema, boolean clean) {
-        return new ConstDataProvider("*********", schema.getRequired());
+        return new ConstDataProvider("*********");
     }
 }

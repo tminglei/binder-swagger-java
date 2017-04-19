@@ -9,8 +9,7 @@ import java.util.List;
 public class ListDataProvider extends AbstractDataProvider implements DataProvider {
     private DataProvider itemProvider;
 
-    public ListDataProvider(DataProvider itemProvider, boolean required) {
-        setRequired(required);
+    public ListDataProvider(DataProvider itemProvider) {
         this.itemProvider = itemProvider;
     }
 
@@ -18,6 +17,7 @@ public class ListDataProvider extends AbstractDataProvider implements DataProvid
     protected Object create() {
         List list = new ArrayList();
         for (int i = 0; i < 5; i++) {
+            itemProvider.setRequestParams(params);
             list.add(itemProvider.get());
         }
         return list;
