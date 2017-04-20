@@ -35,7 +35,7 @@ import static com.github.tminglei.swagger.SimpleUtils.*;
 public class SwaggerFilter implements Filter {
     private boolean enabled = true;
     private boolean fakeEnabled = true;
-    private String swaggerUri = "/api/swagger.json";
+    private String swaggerUri = "/swagger.json";
 
     private static final Logger logger = LoggerFactory.getLogger(SwaggerFilter.class);
 
@@ -93,7 +93,7 @@ public class SwaggerFilter implements Filter {
                 }
             }
 
-            // step 3: scan and collect (mock) data providers
+            // step 3: scan and collect (fake) data providers
             if (fakeEnabled) {
                 Map<String, Path> paths = swaggerContext.getSwagger().getPaths();
                 if (paths == null) paths = Collections.emptyMap();
@@ -122,7 +122,7 @@ public class SwaggerFilter implements Filter {
             HttpServletResponse resp = (HttpServletResponse) response;
             SwaggerContext swaggerContext = SwaggerContext.getInstance();
 
-            if (req.getRequestURI().equals(swaggerUri) && "GET".equalsIgnoreCase(req.getMethod())) {
+            if (req.getPathInfo().equals(swaggerUri) && "GET".equalsIgnoreCase(req.getMethod())) {
                 // enable cross-origin resource sharing
                 resp.addHeader("Access-Control-Allow-Origin", "*");
                 resp.addHeader("Access-Control-Allow-Methods", "POST, GET, PUT, PATCH, DELETE, HEAD, OPTIONS");
@@ -137,9 +137,10 @@ public class SwaggerFilter implements Filter {
 
             if (fakeEnabled) {
                 HttpMethod method = HttpMethod.valueOf(req.getMethod().toUpperCase());
-                Route route = swaggerContext.getRouter().route(method, req.getRequestURI());
+                Route route = swaggerContext.getRouter().route(method, req.getPathInfo());
                 if (route != null && ! route.isImplemented()) {
                     Map<String, String> params = Simple.data(req.getParameterMap());
+                    params.putAll(route.getPathParams(req.getPathInfo()));
                     route.getDataProvider().setRequestParams(params);
                     Object fakeData = route.getDataProvider().get();
                     if (!isEmpty(fakeData)) {

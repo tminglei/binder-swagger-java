@@ -18,8 +18,10 @@ public class DataWriterImpl implements DataWriter {
         try {
             switch (format.toLowerCase()) {
                 case FORMAT_JSON:
-                    String dataJson = new ObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL)
-                        .writer().writeValueAsString(data);
+                    String dataJson = new ObjectMapper()
+                        .setSerializationInclusion(JsonInclude.Include.NON_NULL)
+                        .writer().withDefaultPrettyPrinter()
+                        .writeValueAsString(data);
                     writer.write(dataJson);
                     break;
                 case FORMAT_XML:

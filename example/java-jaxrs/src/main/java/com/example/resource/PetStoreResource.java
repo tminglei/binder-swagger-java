@@ -60,7 +60,7 @@ public class PetStoreResource {
 
     ///
     static {
-        sharing.operation(GET, "/order/:orderId")
+        sharing.operation(GET, "/order/{orderId}")
             .summary("get order by id")
             .parameter(param(longv()).in("path").name("orderId").desc("order id"))
             .response(200, response(order))
@@ -101,7 +101,7 @@ public class PetStoreResource {
     }
 
     static {
-        sharing.operation(DELETE, "/order/:orderId")
+        sharing.operation(DELETE, "/order/{orderId}")
             .summary("delete specified order")
             .parameter(param(longv()).in("path").name("orderId").desc("order id"))
             .response(200, response())

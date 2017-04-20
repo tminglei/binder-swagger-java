@@ -54,7 +54,6 @@ public class MappingConverterImpl implements MappingConverter {
             if (!isPrimitive(mapping)) throw new IllegalArgumentException("must be primitives or primitive list!!!");
             return Arrays.asList(mToParameter(name, mapping));
         }
-
     }
 
     @Override
@@ -445,5 +444,4 @@ public class MappingConverterImpl implements MappingConverter {
         }
         return null;
     }
-
 }

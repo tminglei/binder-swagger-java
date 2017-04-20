@@ -104,10 +104,10 @@ static {  // for swagger
         <param-value>com.example.resource; com.example.Bootstrap</param-value>
     </init-param>
 
-    <!-- specify the requestURI to fetch your swagger json, default '/api/swagger.json'
+    <!-- specify the requestURI relative to base path, to fetch your swagger json, default '/swagger.json'
     <init-param>
         <param-name>swagger-uri</param-name>
-        <param-value>/api/swagger.json</param-value>
+        <param-value>/swagger.json</param-value>
     </init-param>
     -->
 
@@ -141,7 +141,7 @@ static {  // for swagger
 </filter>
 <filter-mapping>
     <filter-name>SwaggerFilter</filter-name>
-    <url-pattern>/*</url-pattern>
+    <url-pattern>/api/*</url-pattern>
 </filter-mapping>
 ...
 ```

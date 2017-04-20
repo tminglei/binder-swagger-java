@@ -37,7 +37,7 @@ public class RouteImpl implements Route {
         this.staticPathElements = new ArrayList<>();
         this.namedParamElements = new ArrayList<>();
 
-        extractPathElements();
+        extractPathElements(pathPattern);
     }
 
     @Override
@@ -51,6 +51,17 @@ public class RouteImpl implements Route {
     }
 
     @Override
+    public Map<String, String> getPathParams(String path) {
+        Map<String, String> params = new HashMap<>();
+        String[] pathTokens = RouteHelper.getPathElements(path);
+        for (PathNamedParamElement pathParam : namedParamElements) {
+            String value = RouteHelper.urlDecodeForPathParams(pathTokens[pathParam.index()]);
+            params.put(pathParam.name(), value);
+        }
+        return params;
+    }
+
+    @Override
     public boolean isImplemented() {
         return implemented;
     }
@@ -60,8 +71,9 @@ public class RouteImpl implements Route {
         return dataProvider;
     }
 
-    private void extractPathElements() {
-        Matcher m = RouteHelper.CUSTOM_REGEX_PATTERN.matcher(pathPattern);
+    private void extractPathElements(String pattern) {
+        pattern = pattern.replaceAll("/\\{([^\\}]+)\\}", "/:$1");
+        Matcher m = RouteHelper.CUSTOM_REGEX_PATTERN.matcher(pattern);
         Map<String, String> regexMap = getRegexMap(m);
         String path = m.replaceAll("");
 

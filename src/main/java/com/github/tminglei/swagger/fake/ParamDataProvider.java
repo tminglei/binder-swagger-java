@@ -11,6 +11,11 @@ public class ParamDataProvider extends AbstractDataProvider implements DataProvi
     }
 
     @Override
+    public Object get() {
+        return create(); // ignore the required's value
+    }
+
+    @Override
     protected Object create() {
         return params != null ? params.get(paramKey)
             : null;

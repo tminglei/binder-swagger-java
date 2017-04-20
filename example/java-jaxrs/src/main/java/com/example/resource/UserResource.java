@@ -129,7 +129,7 @@ public class UserResource {
     }
 
     static {
-        sharing.operation(PUT, "/:username")
+        sharing.operation(PUT, "/{username}")
                 .summary("update user")
                 .parameter(param(text()).in("path").name("username").desc("user name"))
                 .parameter(param(user).in("body"))
@@ -152,7 +152,7 @@ public class UserResource {
     }
 
     static {
-        sharing.operation(DELETE, "/:username")
+        sharing.operation(DELETE, "/{username}")
                 .summary("delete user")
                 .parameter(param(text()).in("path").name("username").desc("user name"))
                 .response(200, response())
@@ -166,7 +166,7 @@ public class UserResource {
     }
 
     static {
-        sharing.operation(GET, "/:username")
+        sharing.operation(GET, "/{username}")
                 .summary("get specified user")
                 .parameter(param(text()).in("path").name("username").desc("user name"))
                 .response(200, response(user))

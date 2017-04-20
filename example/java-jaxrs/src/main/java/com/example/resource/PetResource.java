@@ -49,7 +49,7 @@ public class PetResource {
     static Mapping<?> petStatus = $(text(oneOf(Arrays.asList("available", "pending", "sold"))))
             .desc("pet status in the store").example("available").$$;
     static Mapping<?> pet = $(mapping(
-            field("id", $(longv()).desc("pet id").$$),
+            field("id", $(longv()).desc("pet id").example(gen("petId")).$$),
             field("name", $(text(required())).desc("pet name").$$),
             field("category", $(mapping(
                     field("id", longv(required())),
@@ -64,7 +64,7 @@ public class PetResource {
 
     ///
     static {
-        sharing.operation(GET, "/:petId")
+        sharing.operation(GET, "/{petId}")
             .summary("get pet by id")
             .parameter(param(longv()).in("path").name("petId").example(1l))
             .response(200, response(pet))

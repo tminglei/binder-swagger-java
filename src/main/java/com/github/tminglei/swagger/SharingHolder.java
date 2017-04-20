@@ -156,12 +156,12 @@ public class SharingHolder {
     public ExOperation operation(HttpMethod method, String path) {
         path = SimpleUtils.joinPaths(pathPrefix, path);
         ExOperation operation = context.operation(method, path);
-        operation.setTags(tags);
-        operation.setSchemes(schemes);
-        operation.setConsumes(consumes);
-        operation.setProduces(produces);
-        securities.forEach((name, scopes) -> operation.security(name, scopes));
-        operation.setParameters(params);
+        operation.setTags(new ArrayList<>(tags));   // !!!NOTE: use clone object here
+        operation.setSchemes(new ArrayList<>(schemes));
+        operation.setConsumes(new ArrayList<>(consumes));
+        operation.setProduces(new ArrayList<>(produces));
+        securities.forEach((name, scopes) -> operation.security(name, new ArrayList<>(scopes)));
+        operation.setParameters(new ArrayList<>(params));
         responses.forEach((code, response) -> operation.response(code, response));
         return operation;
     }

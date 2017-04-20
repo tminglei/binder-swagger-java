@@ -110,7 +110,8 @@ public class SwaggerContext {
                 swagger.path(path, new Path());
             }
 
-            Path pathObj = swagger.getPath(path);
+            String swaggerPath = path.replaceAll("/:([^/]+)", "/{$1}").replaceAll("<[^>]+>", "");
+            Path pathObj = swagger.getPath(swaggerPath);
             if (pathObj.getOperationMap().get(method) != null) {
                 throw new IllegalArgumentException("DUPLICATED operation - " + method + " '" + path + "'");
             }
@@ -154,7 +155,7 @@ public class SwaggerContext {
     }
 
     public void markNotImplemented(HttpMethod method, String path) {
-        Boolean prevValue = implemented.put(entry(method, path), true);
+        Boolean prevValue = implemented.put(entry(method, path), false);
         if (prevValue == null) throw new IllegalStateException(method + " " + path + "NOT defined!!!");
     }
 
