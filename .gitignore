@@ -1,4 +1,10 @@
 .idea
+.settings
+.vscode
+
+.classpath
+.project
+
 target/
 binder-swagger-java.iml
 

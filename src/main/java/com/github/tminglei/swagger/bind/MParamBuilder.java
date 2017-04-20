@@ -45,6 +45,6 @@ public class MParamBuilder {
     }
     public List<Parameter> build() {
         context.scanAndRegisterNamedModels(attachBuilder.$$);
-        return context.getMConverter().mToParameters(name, attachBuilder.$$);
+        return context.getMappingConverter().mToParameters(name, attachBuilder.$$);
     }
 }

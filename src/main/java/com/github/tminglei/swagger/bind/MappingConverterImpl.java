@@ -19,13 +19,13 @@ import java.util.stream.Collectors;
 
 import static com.github.tminglei.swagger.bind.Attachment.*;
 import static com.github.tminglei.swagger.SwaggerContext.entry;
-import static com.github.tminglei.swagger.SwaggerUtils.*;
+import static com.github.tminglei.swagger.SimpleUtils.*;
 import static com.github.tminglei.bind.OptionsOps.*;
 
 /**
  * Helper class to build swagger elements from `com.github.tminglei.bind.Framework.Mapping`
  */
-public class DefaultMappingConverter implements MappingConverter {
+public class MappingConverterImpl implements MappingConverter {
 
     @Override
     public List<Parameter> mToParameters(String name, Framework.Mapping<?> mapping) {
@@ -54,7 +54,6 @@ public class DefaultMappingConverter implements MappingConverter {
             if (!isPrimitive(mapping)) throw new IllegalArgumentException("must be primitives or primitive list!!!");
             return Arrays.asList(mToParameter(name, mapping));
         }
-
     }
 
     @Override
@@ -132,8 +131,11 @@ public class DefaultMappingConverter implements MappingConverter {
         if (mapping.meta().targetType == Boolean.class) {
             return fillProperty(new BooleanProperty(), mapping);
         }
-        if (mapping.meta().targetType == Byte[].class) {
+        if (mapping.meta().targetType == Byte.class) {
             return fillProperty(new ByteArrayProperty(), mapping);
+        }
+        if (mapping.meta().targetType == Byte[].class) {
+            return fillProperty(new BinaryProperty(), mapping);
         }
         if (mapping.meta().targetType == LocalDate.class) {
             return fillProperty(new DateProperty(), mapping);
@@ -192,7 +194,9 @@ public class DefaultMappingConverter implements MappingConverter {
         if (mapping instanceof Framework.GroupMapping) {
             ((Framework.GroupMapping) mapping).fields().forEach(m -> {
                 model.addProperty(m.getKey(), mToProperty(m.getValue()));
-                if (required(m.getValue())) model.required(m.getKey());
+                if (required(m.getValue())) {
+                    model.required(m.getKey());
+                }
             });
         }
 
@@ -440,5 +444,4 @@ public class DefaultMappingConverter implements MappingConverter {
         }
         return null;
     }
-
 }

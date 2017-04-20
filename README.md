@@ -91,26 +91,51 @@ static {  // for swagger
 <filter>
     <filter-name>SwaggerFilter</filter-name>
     <filter-class>com.github.tminglei.swagger.SwaggerFilter</filter-class>
+
+    <!-- enable/disable swagger, default value: true
+    <init-param>
+        <param-name>enabled</param-name>
+        <param-value>false</param-value>
+    </init-param>
+    -->
+
+    <init-param>
+        <param-name>scan-packages-and-classes</param-name>
+        <param-value>com.example.resource; com.example.Bootstrap</param-value>
+    </init-param>
+
+    <!-- specify the requestURI relative to base path, to fetch your swagger json, default '/swagger.json'
+    <init-param>
+        <param-name>swagger-uri</param-name>
+        <param-value>/swagger.json</param-value>
+    </init-param>
+    -->
+
     <!-- configure your custom mapping converter
     <init-param>
         <param-name>mapping-converter</param-name>
         <param-value>com.company.pkg.MyMappingConverter</param-value>
     </init-param>
     -->
+
+    <!-- enable/disable mock data generation, default value: true
     <init-param>
-        <param-name>scan-packages-and-classes</param-name>
-        <param-value>com.example.resource; com.example.Bootstrap</param-value>
-    </init-param>
-    <!-- specify the requestURI to fetch your swagger json, default '/api/swagger.json'
-    <init-param>
-        <param-name>swagger-uri</param-name>
-        <param-value>/api/swagger.json</param-value>
+        <param-name>fake-enabled</param-name>
+        <param-value>false</param-value>
     </init-param>
     -->
-    <!-- enable/disable swagger, default value: true
+
+    <!-- configure your custom url router used by `binder-swagger-java`
     <init-param>
-        <param-name>enabled</param-name>
-        <param-value>false</param-value>
+        <param-name>url-router</param-name>
+        <param-value>com.company.pkg.MyRouter</param-value>
+    </init-param>
+    -->
+
+    <!-- configure your custom data writer used by `binder-swagger-java`
+    <init-param>
+        <param-name>data-writer</param-name>
+        <param-value>com.company.pkg.MyDataWriter</param-value>
     </init-param>
     -->
 </filter>
@@ -120,7 +145,6 @@ static {  // for swagger
 </filter-mapping>
 ...
 ```
-NOTES: if you extend the [MSwaggerHelper](https://github.com/tminglei/binder-swagger-java/blob/master/src/main/java/com/github/tminglei/swagger/MSwaggerHelper.java) and configure it here, pls ensure **SwaggerFilter** to be loaded eariler, that is, ensure the swagger helper to be set to [SwaggerContext](https://github.com/tminglei/binder-swagger-java/blob/master/src/main/java/com/github/tminglei/swagger/SwaggerContext.java) before other class scanner started working.
 
 
 ##### That's all. Enjoy it!

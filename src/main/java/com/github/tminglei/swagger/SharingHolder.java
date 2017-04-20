@@ -1,6 +1,7 @@
 package com.github.tminglei.swagger;
 
 import com.github.tminglei.swagger.bind.MParamBuilder;
+import io.swagger.models.HttpMethod;
 import io.swagger.models.Response;
 import io.swagger.models.Scheme;
 import io.swagger.models.parameters.Parameter;
@@ -45,9 +46,10 @@ public class SharingHolder {
         clone.tags = tags != null ? tags : new ArrayList<>();
         return clone;
     }
-    public SharingHolder tag(String tag) {
+    public SharingHolder tag(String... tags) {
         SharingHolder clone = this.clone();
-        clone.tags.add(tag);
+        for (String tag : tags)
+            clone.tags.add(tag);
         return clone;
     }
 
@@ -60,9 +62,10 @@ public class SharingHolder {
         clone.schemes = schemes != null ? schemes : new ArrayList<>();
         return clone;
     }
-    public SharingHolder scheme(Scheme scheme) {
+    public SharingHolder scheme(Scheme... schemes) {
         SharingHolder clone = this.clone();
-        clone.schemes.add(scheme);
+        for (Scheme scheme : schemes)
+            clone.schemes.add(scheme);
         return clone;
     }
 
@@ -75,9 +78,10 @@ public class SharingHolder {
         clone.consumes = consumes != null ? consumes : new ArrayList<>();
         return clone;
     }
-    public SharingHolder consume(String consume) {
+    public SharingHolder consume(String... consumes) {
         SharingHolder clone = this.clone();
-        clone.consumes.add(consume);
+        for (String consume : consumes)
+            clone.consumes.add(consume);
         return clone;
     }
 
@@ -90,9 +94,10 @@ public class SharingHolder {
         clone.produces = produces != null ? produces : new ArrayList<>();
         return clone;
     }
-    public SharingHolder produce(String produce) {
+    public SharingHolder produce(String... produces) {
         SharingHolder clone = this.clone();
-        clone.produces.add(produce);
+        for (String produce : produces)
+            clone.produces.add(produce);
         return clone;
     }
 
@@ -148,15 +153,15 @@ public class SharingHolder {
     }
 
     ///
-    public ExOperation operation(String method, String path) {
-        path = SwaggerUtils.joinPaths(pathPrefix, path);
+    public ExOperation operation(HttpMethod method, String path) {
+        path = SimpleUtils.joinPaths(pathPrefix, path);
         ExOperation operation = context.operation(method, path);
-        operation.setTags(tags);
-        operation.setSchemes(schemes);
-        operation.setConsumes(consumes);
-        operation.setProduces(produces);
-        securities.forEach((name, scopes) -> operation.security(name, scopes));
-        operation.setParameters(params);
+        operation.setTags(new ArrayList<>(tags));   // !!!NOTE: use clone object here
+        operation.setSchemes(new ArrayList<>(schemes));
+        operation.setConsumes(new ArrayList<>(consumes));
+        operation.setProduces(new ArrayList<>(produces));
+        securities.forEach((name, scopes) -> operation.security(name, new ArrayList<>(scopes)));
+        operation.setParameters(new ArrayList<>(params));
         responses.forEach((code, response) -> operation.response(code, response));
         return operation;
     }
