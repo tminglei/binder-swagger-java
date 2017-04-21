@@ -42,6 +42,7 @@ public class SwaggerContext {
     private DataWriter dataWriter;
 
     private Map<Map.Entry<HttpMethod, String>, Boolean> implemented;
+    private Map<Map.Entry<HttpMethod, String>, String> origPaths;
 
     public SwaggerContext(Swagger swagger, MappingConverter mConverter,
                           Router router, RouteFactory routeFactory, DataWriter dataWriter) {
@@ -51,6 +52,7 @@ public class SwaggerContext {
         this.routeFactory = routeFactory;
         this.dataWriter = dataWriter;
         this.implemented = new HashMap<>();
+        this.origPaths = new HashMap<>();
     }
 
     public static SwaggerContext getInstance() {
@@ -105,13 +107,14 @@ public class SwaggerContext {
         notEmpty(method, "'method' CAN'T be null or empty!!!");
 
         synchronized (swagger) {
+            String origPath = path;
+            path = path.replaceAll("<[^>]+>", "").replaceAll("/:([^/]+)", "/{$1}"); // replace `/:id<[0-9]+>` with `/{id}`
             if (swagger.getPath(path) == null) {
                 logger.info(">>> adding path - '" + path + "'");
                 swagger.path(path, new Path());
             }
 
-            String swaggerPath = path.replaceAll("/:([^/]+)", "/{$1}").replaceAll("<[^>]+>", "");
-            Path pathObj = swagger.getPath(swaggerPath);
+            Path pathObj = swagger.getPath(path);
             if (pathObj.getOperationMap().get(method) != null) {
                 throw new IllegalArgumentException("DUPLICATED operation - " + method + " '" + path + "'");
             }
@@ -119,6 +122,9 @@ public class SwaggerContext {
             logger.info(">>> adding operation - " + method + " '" + path + "'");
             pathObj.set(method.name().toLowerCase(), new ExOperation(this, method, path));
             implemented.put(entry(method, path), true);     // set implemented by default
+            String prevPath = origPaths.put(entry(method, path), origPath);
+            if (prevPath != null) throw new IllegalArgumentException(
+                "`" + path + "` was repeatedly defined by `" + prevPath + "` and `" + origPath + "`!!!");
             return (ExOperation) pathObj.getOperationMap().get(method);
         }
     }
@@ -161,6 +167,12 @@ public class SwaggerContext {
 
     public Boolean isImplemented(HttpMethod method, String path, boolean errIfAbsent) {
         Boolean value = implemented.get(entry(method, path));
+        if (value == null && errIfAbsent) throw new IllegalStateException(method + " " + path + "NOT defined!!!");
+        return value;
+    }
+
+    public String getOrigPath(HttpMethod method, String path, boolean errIfAbsent) {
+        String value = origPaths.get(entry(method, path));
         if (value == null && errIfAbsent) throw new IllegalStateException(method + " " + path + "NOT defined!!!");
         return value;
     }

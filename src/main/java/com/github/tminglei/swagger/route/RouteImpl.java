@@ -16,7 +16,7 @@ import static com.github.tminglei.swagger.SimpleUtils.*;
  */
 public class RouteImpl implements Route {
     private final HttpMethod method;
-    private final String pathPattern;
+    private final String path;
     private final boolean implemented;
     private final DataProvider dataProvider;
 
@@ -28,7 +28,7 @@ public class RouteImpl implements Route {
     public RouteImpl(HttpMethod method, String pathPattern,
                      boolean implemented, DataProvider dataProvider) {
         this.method = notEmpty(method, "method cannot be null");
-        this.pathPattern = notEmpty(pathPattern, "pathPattern cannot be null");
+        this.path = notEmpty(pathPattern, "pathPattern cannot be null");
         this.implemented = implemented;
         this.dataProvider = notEmpty(dataProvider, "dataProvider cannot be null");
 
@@ -46,8 +46,8 @@ public class RouteImpl implements Route {
     }
 
     @Override
-    public String getPathPattern() {
-        return pathPattern;
+    public String getPath() {
+        return path;
     }
 
     @Override
@@ -71,10 +71,11 @@ public class RouteImpl implements Route {
         return dataProvider;
     }
 
-    private void extractPathElements(String pattern) {
-        pattern = pattern.replaceAll("/\\{([^\\}]+)\\}", "/:$1");
-        Matcher m = RouteHelper.CUSTOM_REGEX_PATTERN.matcher(pattern);
-        Map<String, String> regexMap = getRegexMap(m);
+    private void extractPathElements(String pathPattern) {
+        pathPattern = pathPattern.matches("<[^>]+>") ? pathPattern
+            : pathPattern.replaceAll("/\\{([^\\}]+)\\}", "/:$1");  // replace `/{id}` with `/:id`
+        Matcher m = RouteHelper.CUSTOM_REGEX_PATTERN.matcher(pathPattern);
+        Map<String, String> regexMap = getRegexMap(pathPattern, m);
         String path = m.replaceAll("");
 
         String[] pathElements = RouteHelper.getPathElements(path);
@@ -104,18 +105,18 @@ public class RouteImpl implements Route {
      * named params that have a regex.
      * e.g. {"name" -> "[a-z]+"}
      */
-    private Map<String, String> getRegexMap(Matcher m) {
+    private Map<String, String> getRegexMap(String path, Matcher m) {
         Map<String, String> regexMap = new HashMap<>();
         while (m.find()) {
-            String regex = pathPattern.substring(m.start() + 1, m.end() - 1);
+            String regex = path.substring(m.start() + 1, m.end() - 1);
             int namedParamStart = m.start() - 1;
             int namedParamEnd = m.start();
-            String namedParamName = pathPattern.substring(namedParamStart, namedParamEnd);
+            String namedParamName = path.substring(namedParamStart, namedParamEnd);
             while (!namedParamName.startsWith(RouteHelper.PARAM_PREFIX)) {
                 namedParamStart--;
-                namedParamName = pathPattern.substring(namedParamStart, namedParamEnd);
+                namedParamName = path.substring(namedParamStart, namedParamEnd);
             }
-            namedParamName = pathPattern.substring(namedParamStart + 1, namedParamEnd);
+            namedParamName = path.substring(namedParamStart + 1, namedParamEnd);
             regexMap.put(namedParamName, regex);
         }
         return regexMap;
@@ -192,11 +193,11 @@ public class RouteImpl implements Route {
     }
 
     private boolean endsWithSplat() {
-        return pathPattern.endsWith(RouteHelper.WILDCARD);
+        return path.endsWith(RouteHelper.WILDCARD);
     }
 
     public boolean endsWithPathSeparator() {
-        return pathPattern.endsWith(RouteHelper.PATH_ELEMENT_SEPARATOR);
+        return path.endsWith(RouteHelper.PATH_ELEMENT_SEPARATOR);
     }
 
     public boolean hasPathElements() {
@@ -205,14 +206,14 @@ public class RouteImpl implements Route {
 
     public String toString() {
         return "Route(method=" + method
-            + ", pathPattern=" + pathPattern
+            + ", path=" + path
             + ", implemented=" + implemented
             + ")";
     }
 
     public int hashCode() {
         int hash = 1;
-        hash = hash * 13 + (pathPattern == null ? 0 : pathPattern.hashCode());
+        hash = hash * 13 + (path == null ? 0 : path.hashCode());
         return hash;
     }
 
@@ -222,7 +223,7 @@ public class RouteImpl implements Route {
         if (!(o instanceof RouteImpl)) return false;
 
         RouteImpl that = (RouteImpl) o;
-        return this.pathPattern == null ? that.pathPattern == null
-            : this.pathPattern.equals(that.pathPattern);
+        return this.path == null ? that.path == null
+            : this.path.equals(that.path);
     }
 }

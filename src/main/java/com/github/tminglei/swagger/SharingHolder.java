@@ -6,6 +6,7 @@ import io.swagger.models.Response;
 import io.swagger.models.Scheme;
 import io.swagger.models.parameters.Parameter;
 
+import java.nio.file.Paths;
 import java.util.*;
 
 /**
@@ -154,7 +155,7 @@ public class SharingHolder {
 
     ///
     public ExOperation operation(HttpMethod method, String path) {
-        path = SimpleUtils.joinPaths(pathPrefix, path);
+        path = Paths.get(pathPrefix, path).toString();
         ExOperation operation = context.operation(method, path);
         operation.setTags(new ArrayList<>(tags));   // !!!NOTE: use clone object here
         operation.setSchemes(new ArrayList<>(schemes));

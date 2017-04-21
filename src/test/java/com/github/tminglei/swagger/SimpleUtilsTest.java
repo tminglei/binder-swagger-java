@@ -37,12 +37,4 @@ public class SimpleUtilsTest {
             assertEquals("value is null or empty", e.getMessage());
         }
     }
-
-    @Test
-    public void testJoinPaths() {
-        assertEquals("/a/b/c", SimpleUtils.joinPaths("/a/b/", "c"));
-        assertEquals("/a/b/c", SimpleUtils.joinPaths("/a/b/", "/c"));
-        assertEquals("/a/b/c", SimpleUtils.joinPaths("/a/b", "c"));
-        assertEquals("/a/b/c", SimpleUtils.joinPaths("/a/b", null, "c"));
-    }
 }

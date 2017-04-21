@@ -1,8 +1,5 @@
 package com.github.tminglei.swagger;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
 /**
  * Some util methods
  */
@@ -19,13 +16,6 @@ public class SimpleUtils {
             throw new IllegalArgumentException(message);
         }
         return value;
-    }
-
-    public static String joinPaths(String... paths) {
-        return Arrays.asList(paths).stream()
-            .filter(s -> !isEmpty(s))
-            .collect(Collectors.joining("/"))
-            .replaceAll("/+", "/");
     }
 
     public static <T> T newInstance(String clazzName) {

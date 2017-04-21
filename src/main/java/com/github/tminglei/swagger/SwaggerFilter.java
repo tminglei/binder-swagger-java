@@ -107,7 +107,8 @@ public class SwaggerFilter implements Filter {
                             : new ConstDataProvider(null);
                         dataProvider.setRequired(true);
                         boolean implemented = swaggerContext.isImplemented(method, path, true);
-                        Route route = swaggerContext.getRouteFactory().create(method, path, implemented, dataProvider);
+                        String origPath = swaggerContext.getOrigPath(method, path, true);
+                        Route route = swaggerContext.getRouteFactory().create(method, origPath, implemented, dataProvider);
                         swaggerContext.getRouter().add(route);
                     }
                 }

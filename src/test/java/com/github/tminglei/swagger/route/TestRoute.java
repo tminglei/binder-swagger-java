@@ -117,25 +117,25 @@ public class TestRoute {
     @Test
     public void toString_WithController_NoAction_NoParamPath() {
         Route r = newRoute("/cntrl");
-        assertEquals("/cntrl", r.getPathPattern());
+        assertEquals("/cntrl", r.getPath());
     }
 
     @Test
     public void toString_WithController_WithAction_NoParamPath() {
         Route r = newRoute("/cntrl/actn");
-        assertEquals("/cntrl/actn", r.getPathPattern());
+        assertEquals("/cntrl/actn", r.getPath());
     }
 
     @Test
     public void toString_WithController_WithAction_WithParamPath() {
         Route r = newRoute("/cntrl/actn/clients/:id");
-        assertEquals("/cntrl/actn/clients/:id", r.getPathPattern());
+        assertEquals("/cntrl/actn/clients/:id", r.getPath());
     }
 
     @Test
     public void toString_WithSplat() {
         RouteImpl r = newRoute("/*");
-        assertEquals("/*", r.getPathPattern());
+        assertEquals("/*", r.getPath());
     }
 
     @Test

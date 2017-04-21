@@ -20,7 +20,7 @@ public interface Route {
      *
      * @return binded path pattern
      */
-    String getPathPattern();
+    String getPath();
 
     /**
      *

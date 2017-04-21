@@ -64,7 +64,7 @@ public class PetResource {
 
     ///
     static {
-        sharing.operation(GET, "/{petId}")
+        sharing.operation(GET, "/:petId<[0-9]+>")
             .summary("get pet by id")
             .parameter(param(longv()).in("path").name("petId").example(1l))
             .response(200, response(pet))
