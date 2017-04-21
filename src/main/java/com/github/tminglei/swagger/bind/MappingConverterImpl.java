@@ -1,5 +1,6 @@
 package com.github.tminglei.swagger.bind;
 
+import com.github.tminglei.bind.Const;
 import com.github.tminglei.bind.Framework;
 import com.github.tminglei.bind.spi.Constraint;
 import com.github.tminglei.bind.spi.ExtraConstraint;
@@ -25,7 +26,7 @@ import static com.github.tminglei.bind.OptionsOps.*;
 /**
  * Helper class to build swagger elements from `com.github.tminglei.bind.Framework.Mapping`
  */
-public class MappingConverterImpl implements MappingConverter {
+public class MappingConverterImpl implements MappingConverter, Const {
 
     @Override
     public List<Parameter> mToParameters(String name, Framework.Mapping<?> mapping) {
@@ -369,7 +370,7 @@ public class MappingConverterImpl implements MappingConverter {
 
     protected boolean required(Framework.Mapping<?> mapping) {
         if (mapping.meta().targetType == Optional.class) return false;
-        else return findConstraint(mapping, "required") != null;
+        else return findConstraint(mapping, CONSTRAINT_REQUIRED) != null;
     }
 
     protected Property items(Framework.Mapping<?> mapping) {
@@ -379,46 +380,46 @@ public class MappingConverterImpl implements MappingConverter {
     }
 
     protected List<String> enums(Framework.Mapping<?> mapping) {
-        Constraint oneOf = findConstraint(mapping, "oneOf");
+        Constraint oneOf = findConstraint(mapping, CONSTRAINT_ONE_OF);
         return oneOf != null ? new ArrayList<>((Collection<String>) oneOf.meta().params.get(0)) : null;
     }
 
     protected String pattern(Framework.Mapping<?> mapping) {
-        Constraint pattern = findConstraint(mapping, "pattern");
+        Constraint pattern = findConstraint(mapping, CONSTRAINT_PATTERN);
         return pattern != null ? (String) pattern.meta().params.get(0) : null;
     }
 
     protected BigDecimal maximum(Framework.Mapping<?> mapping) {
-        ExtraConstraint<?> max = findExtraConstraint(mapping, "max");
+        ExtraConstraint<?> max = findExtraConstraint(mapping, EX_CONSTRAINT_MAX);
         return max != null && max.meta().params.get(0) instanceof Number
                 ? new BigDecimal( ((Number) max.meta().params.get(0)) .doubleValue() )
                 : null;
     }
 
     protected Boolean exclusiveMaximum(Framework.Mapping<?> mapping) {
-        ExtraConstraint<?> max = findExtraConstraint(mapping, "max");
+        ExtraConstraint<?> max = findExtraConstraint(mapping, EX_CONSTRAINT_MAX);
         return max != null ? (Boolean) max.meta().params.get(1) : null;
     }
 
     protected BigDecimal minimum(Framework.Mapping<?> mapping) {
-        ExtraConstraint<?> min = findExtraConstraint(mapping, "min");
+        ExtraConstraint<?> min = findExtraConstraint(mapping, EX_CONSTRAINT_MIN);
         return min != null && min.meta().params.get(0) instanceof Number
                 ? new BigDecimal( ((Number) min.meta().params.get(0)) .doubleValue() )
                 : null;
     }
 
     protected Boolean exclusiveMinimum(Framework.Mapping<?> mapping) {
-        ExtraConstraint<?> max = findExtraConstraint(mapping, "min");
+        ExtraConstraint<?> max = findExtraConstraint(mapping, EX_CONSTRAINT_MIN);
         return max != null ? (Boolean) max.meta().params.get(1) : null;
     }
 
     protected Integer maxLength(Framework.Mapping<?> mapping) {
-        Constraint maxlen = findConstraint(mapping, "maxLength");
+        Constraint maxlen = findConstraint(mapping, CONSTRAINT_MAX_LENGTH);
         return maxlen != null ? (Integer) maxlen.meta().params.get(0) : null;
     }
 
     protected Integer minLength(Framework.Mapping<?> mapping) {
-        Constraint minlen = findConstraint(mapping, "minLength");
+        Constraint minlen = findConstraint(mapping, CONSTRAINT_MIN_LENGTH);
         return minlen != null ? (Integer) minlen.meta().params.get(0) : null;
     }
 

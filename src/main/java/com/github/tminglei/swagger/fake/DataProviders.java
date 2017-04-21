@@ -1,6 +1,7 @@
 package com.github.tminglei.swagger.fake;
 
 import com.github.javafaker.Faker;
+import com.mifmif.common.regex.Generex;
 import io.swagger.models.ArrayModel;
 import io.swagger.models.Model;
 import io.swagger.models.ModelImpl;
@@ -18,6 +19,7 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import static com.github.tminglei.swagger.SimpleUtils.isEmpty;
 import static com.github.tminglei.swagger.SwaggerContext.entry;
 import static com.github.tminglei.swagger.SwaggerContext.gen;
 
@@ -205,9 +207,16 @@ public class DataProviders {
     }
 
     protected DataProvider collectStringProperty(Swagger swagger, StringProperty schema, boolean clean) {
-        StringProperty.Format uriFormat = StringProperty.Format.fromName(schema.getFormat());
-        return gen(() -> uriFormat == StringProperty.Format.URI || uriFormat == StringProperty.Format.URL
-            ? faker.internet().url() : faker.lorem().word());
+        return gen(() -> {
+            StringProperty.Format uriFormat = StringProperty.Format.fromName(schema.getFormat());
+            if (uriFormat == StringProperty.Format.URI || uriFormat == StringProperty.Format.URL)
+                return faker.internet().url();
+            else if (!isEmpty(schema.getPattern())) {
+                Generex generex = new Generex(schema.getPattern());
+                return generex.random();
+            } else
+                return faker.lorem().word();
+        });
     }
 
     protected DataProvider collectPasswordProperty(Swagger swagger, PasswordProperty schema, boolean clean) {
