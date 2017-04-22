@@ -18,24 +18,20 @@ public class DataWriterImpl implements DataWriter {
     private static final String FORMAT_XML  = "application/xml";
 
     @Override
-    public void write(Writer writer, String format, DataProvider provider) {
-        try {
-            switch (format.toLowerCase()) {
-                case FORMAT_JSON:
-                    String dataJson = new ObjectMapper()
-                        .setSerializationInclusion(JsonInclude.Include.NON_NULL)
-                        .writer().withDefaultPrettyPrinter()
-                        .writeValueAsString(provider.get());
-                    writer.write(dataJson);
-                    break;
-                case FORMAT_XML:
-                    toXml(writer, provider.get(), provider.name(), 0);
-                    break;
-                default:
-                    throw new IllegalArgumentException("Unsupported format: " + format);
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+    public void write(Writer writer, String format, DataProvider provider) throws IOException {
+        switch (format.toLowerCase()) {
+            case FORMAT_JSON:
+                String dataJson = new ObjectMapper()
+                    .setSerializationInclusion(JsonInclude.Include.NON_NULL)
+                    .writer().withDefaultPrettyPrinter()
+                    .writeValueAsString(provider.get());
+                writer.write(dataJson);
+                break;
+            case FORMAT_XML:
+                toXml(writer, provider.get(), provider.name(), 0);
+                break;
+            default:
+                throw new IllegalArgumentException("Unsupported format: " + format);
         }
     }
 

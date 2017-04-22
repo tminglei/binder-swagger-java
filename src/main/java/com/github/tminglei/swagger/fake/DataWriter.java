@@ -1,5 +1,6 @@
 package com.github.tminglei.swagger.fake;
 
+import java.io.IOException;
 import java.io.Writer;
 
 /**
@@ -14,6 +15,6 @@ public interface DataWriter {
      * @param format    target format
      * @param provider  data provider
      */
-    void write(Writer writer, String format, DataProvider provider);
+    void write(Writer writer, String format, DataProvider provider) throws IOException;
 
 }
