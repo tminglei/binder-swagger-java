@@ -7,10 +7,7 @@ import com.github.tminglei.swagger.fake.ConstDataProvider;
 import com.github.tminglei.swagger.fake.DataProvider;
 import com.github.tminglei.swagger.fake.DataProviders;
 import com.github.tminglei.swagger.route.Route;
-import io.swagger.models.HttpMethod;
-import io.swagger.models.Operation;
-import io.swagger.models.Path;
-import io.swagger.models.Response;
+import io.swagger.models.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,23 +90,32 @@ public class SwaggerFilter implements Filter {
                 }
             }
 
-            // step 3: scan and collect (fake) data providers
-            if (fakeEnabled) {
-                Map<String, Path> paths = swaggerContext.getSwagger().getPaths();
-                if (paths == null) paths = Collections.emptyMap();
-                for (String path : paths.keySet()) {
-                    Map<HttpMethod, Operation> operations = paths.get(path).getOperationMap();
-                    for (HttpMethod method : operations.keySet()) {
-                        Map<String, Response> responses = operations.get(method).getResponses();
+            // step 3: tidy swagger and prepare fake generators
+            Swagger swagger = swaggerContext.getSwagger();
+            Map<String, Path> paths = swagger.getPaths();
+            if (paths == null) paths = Collections.emptyMap();
+            for (String path : paths.keySet()) {
+                Map<HttpMethod, Operation> operations = paths.get(path).getOperationMap();
+                for (HttpMethod method : operations.keySet()) {
+                    Operation operation = operations.get(method);
+                    if (isEmpty(operation.getConsumes()))
+                        operation.setConsumes(swagger.getConsumes());
+                    if (isEmpty(operation.getProduces()))
+                        operation.setProduces(swagger.getProduces());
+
+                    if (fakeEnabled) {
+                        Map<String, Response> responses = operation.getResponses();
                         Response response = responses != null ? responses.get("200") : null;
                         DataProvider dataProvider = response != null && response.getSchema() != null
-                            ? DataProviders.getInstance().collect(swaggerContext.getSwagger(), response.getSchema(), true)
+                            ? DataProviders.getInstance().collect(swagger, response.getSchema(), true)
                             : new ConstDataProvider(null);
                         dataProvider.setRequired(true);
                         boolean implemented = swaggerContext.isImplemented(method, path, true);
-                        String origPath = swaggerContext.getOrigPath(method, path, true);
-                        Route route = swaggerContext.getRouteFactory().create(method, origPath, implemented, dataProvider);
-                        swaggerContext.getRouter().add(route);
+                        String origPath = swaggerContext.getOriginalPath(method, path, true);
+                        Route route = swaggerContext.getRouteFactory()
+                            .create(method, origPath, implemented, dataProvider);
+                        swaggerContext.getRouter()
+                            .add(route);
                     }
                 }
             }
@@ -142,13 +148,11 @@ public class SwaggerFilter implements Filter {
                 if (route != null && ! route.isImplemented()) {
                     Map<String, String> params = Simple.data(req.getParameterMap());
                     params.putAll(route.getPathParams(req.getPathInfo()));
-                    route.getDataProvider().setRequestParams(params);
-                    Object fakeData = route.getDataProvider().get();
-                    if (!isEmpty(fakeData)) {
-                        String format = req.getHeader("accept");
-                        swaggerContext.getDataWriter().write(resp.getWriter(), format, fakeData);
-                        resp.flushBuffer();
-                    }
+                    DataProvider dataProvider = route.getDataProvider();
+                    dataProvider.setRequestParams(params);
+                    String format = req.getHeader("accept");
+                    swaggerContext.getDataWriter().write(resp.getWriter(), format, dataProvider);
+                    resp.flushBuffer();
                     return;
                 }
             }

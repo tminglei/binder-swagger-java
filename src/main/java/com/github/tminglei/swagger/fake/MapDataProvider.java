@@ -10,6 +10,10 @@ public class MapDataProvider extends AbstractDataProvider implements DataProvide
     private DataProvider valueProvider;
 
     public MapDataProvider(DataProvider valueProvider) {
+        this(valueProvider, "root");
+    }
+    public MapDataProvider(DataProvider valueProvider, String name) {
+        super(name);
         this.valueProvider = valueProvider;
     }
 

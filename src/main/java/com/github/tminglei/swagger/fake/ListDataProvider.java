@@ -10,6 +10,10 @@ public class ListDataProvider extends AbstractDataProvider implements DataProvid
     private DataProvider itemProvider;
 
     public ListDataProvider(DataProvider itemProvider) {
+        this(itemProvider, "root");
+    }
+    public ListDataProvider(DataProvider itemProvider, String name) {
+        super(name);
         this.itemProvider = itemProvider;
     }
 

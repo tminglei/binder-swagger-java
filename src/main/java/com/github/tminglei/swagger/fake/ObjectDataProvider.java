@@ -10,6 +10,10 @@ public class ObjectDataProvider extends AbstractDataProvider implements DataProv
     private Map<String, DataProvider> fields;
 
     public ObjectDataProvider(Map<String, DataProvider> fields) {
+        this(fields, "root");
+    }
+    public ObjectDataProvider(Map<String, DataProvider> fields, String name) {
+        super(name);
         this.fields = fields;
     }
 

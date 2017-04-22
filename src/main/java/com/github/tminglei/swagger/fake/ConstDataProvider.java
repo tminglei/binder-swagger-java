@@ -7,6 +7,10 @@ public class ConstDataProvider extends AbstractDataProvider implements DataProvi
     private Object value;
 
     public ConstDataProvider(Object value) {
+        this(value, "root");
+    }
+    public ConstDataProvider(Object value, String name) {
+        super(name);
         this.value = value;
     }
 

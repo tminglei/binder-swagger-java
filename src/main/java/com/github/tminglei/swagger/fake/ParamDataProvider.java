@@ -7,6 +7,10 @@ public class ParamDataProvider extends AbstractDataProvider implements DataProvi
     private String paramKey;
 
     public ParamDataProvider(String paramKey) {
+        this(paramKey, "root");
+    }
+    public ParamDataProvider(String paramKey, String name) {
+        super(name);
         this.paramKey = paramKey;
     }
 

@@ -21,6 +21,12 @@ public interface DataProvider {
 
     /**
      *
+     * @return  name of the data
+     */
+    default String name() { return null; }
+
+    /**
+     *
      * @return  data object or null
      */
     Object get();

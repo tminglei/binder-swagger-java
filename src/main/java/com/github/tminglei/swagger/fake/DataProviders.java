@@ -121,14 +121,14 @@ public class DataProviders {
 
         if (model instanceof ArrayModel) {
             DataProvider itemProvider = collect(swagger, ((ArrayModel) model).getItems(), clean);
-            return new ListDataProvider(itemProvider);
+            return new ListDataProvider(itemProvider, schema.getSimpleRef());
         } else if (model instanceof ModelImpl) {
             Map<String, DataProvider> fields =
                 (model.getProperties() != null ? model.getProperties() : Collections.<String, Property>emptyMap()).entrySet().stream()
                     .map(e -> entry(e.getKey(), collect(swagger, e.getValue(), clean)))
                     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-            return new ObjectDataProvider(fields);
+            return new ObjectDataProvider(fields, schema.getSimpleRef());
         }
 
         throw new IllegalArgumentException("Unsupported model type: " + model.getClass());

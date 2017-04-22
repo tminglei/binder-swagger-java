@@ -171,7 +171,7 @@ public class SwaggerContext {
         return value;
     }
 
-    public String getOrigPath(HttpMethod method, String path, boolean errIfAbsent) {
+    public String getOriginalPath(HttpMethod method, String path, boolean errIfAbsent) {
         String value = origPaths.get(entry(method, path));
         if (value == null && errIfAbsent) throw new IllegalStateException(method + " " + path + "NOT defined!!!");
         return value;
@@ -241,7 +241,7 @@ public class SwaggerContext {
     }
 
     public static DataProvider gen(Supplier provider) {
-        return new AbstractDataProvider() {
+        return new AbstractDataProvider("root") {
             @Override
             protected Object create() {
                 return provider.get();

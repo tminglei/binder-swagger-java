@@ -12,8 +12,8 @@ public interface DataWriter {
      *
      * @param writer    target writer
      * @param format    target format
-     * @param data      data object
+     * @param provider  data provider
      */
-    void write(Writer writer, String format, Object data);
+    void write(Writer writer, String format, DataProvider provider);
 
 }

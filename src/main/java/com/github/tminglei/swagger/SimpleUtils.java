@@ -1,5 +1,8 @@
 package com.github.tminglei.swagger;
 
+import java.util.Collection;
+import java.util.Map;
+
 /**
  * Some util methods
  */
@@ -7,6 +10,8 @@ public class SimpleUtils {
 
     public static boolean isEmpty(Object value) {
         return (value instanceof String && ((String) value).trim().length() == 0)
+            || (value instanceof Map && ((Map) value).isEmpty())
+            || (value instanceof Collection && ((Collection) value).isEmpty())
             || value == null;
     }
 
