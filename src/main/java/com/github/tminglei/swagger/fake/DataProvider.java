@@ -31,4 +31,11 @@ public interface DataProvider {
      */
     Object get();
 
+
+    ///---
+
+    default DataProvider or(DataProvider other) {
+        return new OrDataProvider(this, other);
+    }
+
 }

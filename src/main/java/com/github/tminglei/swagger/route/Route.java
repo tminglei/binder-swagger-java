@@ -25,7 +25,7 @@ public interface Route {
     /**
      *
      * @param path request path, should match the binded path pattern
-     * @return
+     * @return params extracted from path
      */
     Map<String, String> getPathParams(String path);
 

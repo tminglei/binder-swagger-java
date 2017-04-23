@@ -141,6 +141,8 @@ public class RouteImpl implements Route {
     /**
      * Use of this method assumes the path given matches this Route.
      *
+     * @param paramName param name
+     * @param path      path
      * @return the value of the named parameter in the path, or null if
      *         no named parameter exists with the given name
      */
@@ -159,6 +161,8 @@ public class RouteImpl implements Route {
     /**
      * Use of this method assumes the path given matches this Route.
      *
+     * @param index the param index
+     * @param path  path
      * @return the value of the splat parameter at the given index,
      *         or null if the splat parameter index does not exist
      */
@@ -172,6 +176,9 @@ public class RouteImpl implements Route {
 
     /**
      * Use of this method assumes the path given matches this Route.
+     *
+     * @param path  path
+     * @return splat params' values
      */
     public String[] splat(String path) {
         List<PathSplatParamElement> splatParams = getSplatParameterElements();

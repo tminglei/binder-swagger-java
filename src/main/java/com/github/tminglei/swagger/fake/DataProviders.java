@@ -43,6 +43,7 @@ public class DataProviders {
     /**
      * collect data providers from schema
      *
+     * @param swagger the hosting swagger object
      * @param schema  the schema object
      * @param clean   whether to clean data providers in the schema
      * @return  organized data provider

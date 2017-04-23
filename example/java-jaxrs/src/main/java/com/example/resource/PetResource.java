@@ -22,6 +22,7 @@ import javax.ws.rs.core.Response;
 import com.example.data.PetData;
 import com.example.exception.BadRequestException;
 import com.example.exception.NotFoundException;
+import com.github.javafaker.Faker;
 import com.github.tminglei.bind.BindObject;
 import com.github.tminglei.bind.FormBinder;
 import com.github.tminglei.bind.Messages;
@@ -49,7 +50,7 @@ public class PetResource {
     static Mapping<?> petStatus = $(text(oneOf(Arrays.asList("available", "pending", "sold"))))
             .desc("pet status in the store").example("available").$$;
     static Mapping<?> pet = $(mapping(
-            field("id", $(longv()).desc("pet id").example(gen("petId")).$$),
+            field("id", $(longv()).desc("pet id").example(gen("petId").or(gen(() -> new Faker().number().randomNumber()))).$$),
             field("name", $(text(required())).desc("pet name").$$),
             field("category", $(mapping(
                     field("id", longv(required())),

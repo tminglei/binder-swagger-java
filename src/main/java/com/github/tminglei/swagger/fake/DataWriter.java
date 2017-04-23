@@ -14,6 +14,7 @@ public interface DataWriter {
      * @param writer    target writer
      * @param format    target format
      * @param provider  data provider
+     * @throws IOException
      */
     void write(Writer writer, String format, DataProvider provider) throws IOException;
 
