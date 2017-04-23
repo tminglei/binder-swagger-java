@@ -36,7 +36,7 @@ You define the api meta data in classes' static code blocks, then it was collect
 static Mapping<?> petStatus = $(text(oneOf(Arrays.asList("available", "pending", "sold"))))
     .desc("pet status in the store").example("available").$$;
 static Mapping<?> pet = $(mapping(
-    field("id", $(vLong()).desc("pet id").example(gen("petId").or(gen(() -> new Faker().number().randomNumber()))).$$),
+    field("id", $(vLong()).desc("pet id").example(gen("petId").or(gen(() -> faker.number().randomNumber()))).$$),
     field("name", $(text(required())).desc("pet name").$$),
     field("category", attach(required()).to($(mapping(
           field("id", vLong(required())),

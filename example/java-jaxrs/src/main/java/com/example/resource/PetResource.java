@@ -43,14 +43,16 @@ import static com.github.tminglei.bind.Processors.*;
 @Path("/pet")
 @Produces({"application/json", "application/xml"})
 public class PetResource {
-    static PetData petData = new PetData();
+    private static PetData petData = new PetData();
+    private static Faker faker = new Faker();
+
     private ResourceBundle bundle = ResourceBundle.getBundle("bind-messages");
     private Messages messages = (key) -> bundle.getString(key);
 
     static Mapping<?> petStatus = $(text(oneOf(Arrays.asList("available", "pending", "sold"))))
             .desc("pet status in the store").example("available").$$;
     static Mapping<?> pet = $(mapping(
-            field("id", $(longv()).desc("pet id").example(gen("petId").or(gen(() -> new Faker().number().randomNumber()))).$$),
+            field("id", $(longv()).desc("pet id").example(gen("petId").or(gen(() -> faker.number().randomNumber()))).$$),
             field("name", $(text(required())).desc("pet name").$$),
             field("category", $(mapping(
                     field("id", longv(required())),

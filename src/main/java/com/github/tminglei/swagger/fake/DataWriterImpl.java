@@ -2,6 +2,7 @@ package com.github.tminglei.swagger.fake;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -17,14 +18,15 @@ public class DataWriterImpl implements DataWriter {
     private static final String FORMAT_JSON = "application/json";
     private static final String FORMAT_XML  = "application/xml";
 
+    private static final ObjectMapper objectMapper = new ObjectMapper()
+        .setSerializationInclusion(JsonInclude.Include.NON_NULL)
+        .configure(SerializationFeature.INDENT_OUTPUT, true);
+
     @Override
     public void write(Writer writer, String format, DataProvider provider) throws IOException {
         switch (format.toLowerCase()) {
             case FORMAT_JSON:
-                String dataJson = new ObjectMapper()
-                    .setSerializationInclusion(JsonInclude.Include.NON_NULL)
-                    .writer().withDefaultPrettyPrinter()
-                    .writeValueAsString(provider.get());
+                String dataJson = objectMapper.writeValueAsString(provider.get());
                 writer.write(dataJson);
                 break;
             case FORMAT_XML:
