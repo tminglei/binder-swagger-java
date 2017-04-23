@@ -6,7 +6,7 @@
 
 
 ## Features
-- lightweight, less then 3000 line codes (framework + built-in route/fake data generating)
+- lightweight, less than 3000 line codes (framework + built-in route/fake data generating)
 - based on `form-binder-java`, allowing dynamic objects in operation's parameter/response definitions
 - directly integrate with `swagger-models`, allowing to operate swagger object when necessary
 - can generate mock response w/ fake data on demand for unimplemented api operations
@@ -50,7 +50,7 @@ static Mapping<?> pet = $(mapping(
 static SharingHolder sharing = sharing().pathPrefix("/pet").tag("pet");
 
 static {
-    sharing.operation(GET, "/:petId<[0-9]+>")
+    sharing.operation(GET, "/{petId}")
         .summary("get pet by id")
         .parameter(param(longv()).in("path").name("petId").example(1l))
         .response(200, response(pet))
@@ -58,8 +58,9 @@ static {
         .notImplemented() // MARK IT `notImplemented`, THEN `binder-swagger-java` WILL GENERATE MOCK RESPONSE FOR YOU
     ;
 }
-@POST
-public Response addPet(String data) throws BadRequestException, SQLException {
+@GET
+@Path("/{petId}")
+public Response getPetById(@PathParam("petId") String petId) throws NotFoundException, SQLException {
 ...
 ```
 #### 2) supplement your other swagger info:
