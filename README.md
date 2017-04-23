@@ -2,9 +2,15 @@
 
 [![Build Status](https://travis-ci.org/tminglei/binder-swagger-java.svg?branch=master)](https://travis-ci.org/tminglei/binder-swagger-java)
 
-I noticed, if we provided the `swagger.json`, [`swagger ui`](http://petstore.swagger.io/) will take care of the others: dynamically build the web client, enable us online browsing the APIs, sending request to and receiving response from the real services.
+`binder-swagger-java` is a simple api management solution, which let api maintainence and dev based on api easily.
 
-`binder-swagger-java` was designed to help construct the swagger object (corresponding to `swagger.json`), and let it accessible from swagger ui or other http visitors.
+
+## Features
+- lightweight, less then 3000 line codes (framework + built-in route/fake data generating)
+- based on `form-binder-java`, allowing dynamic objects in operation's parameter/response definitions
+- directly integrate with `swagger-models`, allowing to operate swagger object when necessary
+- can generate mock response w/ fake data on demand for unimplemented api operations
+- high customizable, you can replace almost all of the core components
 
 
 ## How it works
@@ -15,13 +21,13 @@ You define the api meta data in classes' static code blocks, then it was collect
 > _p.s. `binder-swagger-java` based on [`form-binder-java`](https://github.com/tminglei/form-binder-java) and [`swagger-models`](https://github.com/swagger-api/swagger-core), allow to define dynamic data structures and operate the swagger object directly when necessary, so it's more expressive in theory._
 
 
-## How to use
+## How to use it
 #### 0) add the dependency to your project:
 ```xml
 <dependency>
   <groupId>com.github.tminglei</groupId>
   <artifactId>binder-swagger-java</artifactId>
-  <version>0.6.2</version>
+  <version>0.8.0</version>
 </dependency>
 ```
 #### 1) define and register your api operations:
