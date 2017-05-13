@@ -18,7 +18,7 @@ You define the api meta data in classes' static code blocks, then it was collect
 
 ![binder-swagger description](https://raw.githubusercontent.com/tminglei/binder-swagger-java/master/binder-swagger-java.png)
 
-> _p.s. `binder-swagger-java` based on [`form-binder-java`](https://github.com/tminglei/form-binder-java) and [`swagger-models`](https://github.com/swagger-api/swagger-core), allow to define dynamic data structures and operate the swagger object directly when necessary, so it's more expressive in theory._
+> _p.s. based on [`form-binder-java`](https://github.com/tminglei/form-binder-java) and [`swagger-models`](https://github.com/swagger-api/swagger-core), `binder-swagger-java` enable you to define dynamic data structures and operate the swagger object directly when necessary, so it's more expressive in theory._
 
 
 ## How to use it
