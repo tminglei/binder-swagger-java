@@ -14,7 +14,8 @@
 
 
 ## How it works
-You define the api meta data in classes' static code blocks, then it was collected to a static global swagger object when class scan/loading, so when requested, the program can serve it right now.
+You define the api meta data in classes' static code blocks, then it was collected to a static global swagger object when class scan/loading, so when requested, the program can serve it right now.  
+_With swagger.json, the swagger-ui can render the API menu in the browser. Then you can browse, fill parameters and send to/receive from service impls (p.s. the service urls were included in swagger.json)._
 
 ![binder-swagger description](https://raw.githubusercontent.com/tminglei/binder-swagger-java/master/binder-swagger-java.png)
 
